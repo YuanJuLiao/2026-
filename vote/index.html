@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>評分校準投票</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* 版面：上方細工具列；老師投影＝左情境右分布；學生手機＝單欄大按鈕 */
+:root{
+  --bg:#F6F8F8; --panel:#FFFFFF; --ink:#1F2A30; --muted:#5F6E74; --line:#D8E2E3;
+  --teal:#0E6767; --teal-soft:#E3F0EF; --orange:#A84C0A; --orange-soft:#FBEADB;
+  --ok:#2C7A47; --ok-soft:#E3F1E7; --bar:#9DB8BA;
+  --font:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121A1C; --panel:#1B2629; --ink:#E6EEEF; --muted:#9AAEB2; --line:#2E3E42;
+  --teal:#4FB3AE; --teal-soft:#16393A; --orange:#F0A060; --orange-soft:#3A2617;
+  --ok:#6CC28A; --ok-soft:#173523; --bar:#4A6468; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121A1C; --panel:#1B2629; --ink:#E6EEEF; --muted:#9AAEB2; --line:#2E3E42;
+  --teal:#4FB3AE; --teal-soft:#16393A; --orange:#F0A060; --orange-soft:#3A2617;
+  --ok:#6CC28A; --ok-soft:#173523; --bar:#4A6468; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:18px}
+.top h1{font-size:20px;margin:0;font-weight:900;letter-spacing:.02em}
+.top .sub{color:var(--muted);font-size:13px}
+.grow{flex:1 1 auto}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 12px;font-size:13px;background:var(--teal-soft);color:var(--teal);font-weight:500}
+.chip.off{background:var(--orange-soft);color:var(--orange)}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:6px 14px;font:inherit;font-size:14px;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--teal);color:#fff}
+button{font-family:inherit}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:9px 16px;font-size:15px;font-weight:500;cursor:pointer}
+.btn:hover{border-color:var(--teal)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.warn{background:var(--orange);border-color:var(--orange);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}
+.tag{display:inline-block;font-size:13px;font-weight:700;color:var(--teal);letter-spacing:.06em}
+.item{font-size:15px;color:var(--muted);margin-left:8px}
+.scen{font-size:clamp(20px,2.3vw,28px);line-height:1.65;font-weight:500;margin:10px 0 0;text-wrap:pretty}
+.teacher .scen{font-size:clamp(22px,2.6vw,32px)}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.count{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.count b{font-size:56px;font-weight:900;color:var(--teal);font-variant-numeric:tabular-nums;line-height:1}
+.count span{color:var(--muted)}
+.rows{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:10px 12px;border-radius:12px;border:1px solid var(--line)}
+.row.ans{border-color:var(--ok);background:var(--ok-soft)}
+.badge{min-width:64px;text-align:center;font-weight:900;font-size:18px;border-radius:8px;padding:4px 8px;background:var(--teal-soft);color:var(--teal);font-variant-numeric:tabular-nums}
+.row.ans .badge{background:var(--ok);color:#fff}
+.lab{font-size:15px;min-width:0}
+.num{font-variant-numeric:tabular-nums;font-weight:700;text-align:right;white-space:nowrap}
+.track{grid-column:1/-1;height:14px;border-radius:7px;background:var(--bg);overflow:hidden}
+.fill{height:100%;background:var(--bar);border-radius:7px;transition:width .4s ease}
+.row.top1 .fill{background:var(--orange)}
+.row.ans .fill{background:var(--ok)}
+.flag{font-size:12px;font-weight:700;color:var(--orange);margin-left:6px}
+.row.ans .flag.ok{color:var(--ok)}
+.stats{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px}
+.stat{flex:1 1 140px;background:var(--bg);border-radius:12px;padding:10px 14px}
+.stat b{display:block;font-size:26px;font-weight:900;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--muted)}
+.why{margin-top:18px;border-radius:14px;padding:16px 18px;background:var(--ok-soft)}
+.why h3,.ask h3{margin:0 0 6px;font-size:16px}
+.ask{margin-top:12px;border-radius:14px;padding:16px 18px;background:var(--orange-soft)}
+.ask ul{margin:4px 0 0;padding-left:1.2em}
+.muted{color:var(--muted);font-size:14px}
+.picker{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+select{font:inherit;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);max-width:100%}
+.opts{display:grid;gap:10px;margin-top:18px}
+.opt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;text-align:left;width:100%;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:14px;padding:14px;font-size:16px;cursor:pointer}
+.opt:hover{border-color:var(--teal)}
+.opt.sel{border-color:var(--teal);background:var(--teal-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt:disabled{cursor:default}
+.note{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--teal-soft);font-size:15px}
+.tally{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+.tally summary{cursor:pointer;color:var(--muted);font-size:14px}
+.trow{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.trow .badge{min-width:56px;font-size:15px}
+.trow button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:18px;cursor:pointer}
+.trow output{min-width:28px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.demo{font-size:12px;font-weight:700;color:var(--orange);background:var(--orange-soft);border-radius:6px;padding:1px 8px;margin-left:8px}
+.foot{margin-top:28px;color:var(--muted);font-size:13px;display:flex;flex-wrap:wrap;gap:8px 18px}
+.foot a{color:var(--teal)}
+@media (prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+
+<div class="wrap" id="root">
+  <div class="top">
+    <div><h1>評分校準投票</h1><div class="sub">高齡周全性健康評估與實作｜全班同時評分，當場看分歧</div></div>
+    <div class="grow"></div>
+    <span id="conn" class="chip off"><span class="dot"></span>連線中…</span>
+    <div class="seg" role="group" aria-label="模式">
+      <button type="button" id="mStu">學生作答</button><button type="button" id="mTea">老師投影</button>
+    </div>
+  </div>
+  <main id="app"></main>
+  <div class="foot"><span>題目改編自課堂「評估思辨」小情境，答案依本課程評估單定義。</span></div>
+</div>
+
+<script>
+/* ============ 題庫 ============ */
+const ADL3=(a,b,c)=>[[10,"10 分",a],[5,"5 分",b],[0,"0 分",c]];
+const YN=[[0,"0 分","否"],[1,"1 分","是"]];
+const IPAQ=[["v","費力","費力的身體活動"],["m","中等","中等費力的活動"],["w","走路","走路"],["x","不計","不計入"]];
+const CASES=[
+ {id:"e4",unit:"ADL",item:"E4 穿脫衣物",scen:"阿嬤上衣、褲子、鞋襪都能自己穿，但肩膀活動受限，手伸不到背後扣內衣的鈕扣，每天要家人幫忙。",q:"穿脫衣物給幾分？",
+  opts:ADL3("能自行穿脫衣褲及鞋襪","需協助，但自己能完成一半以上","完全依賴"),ans:5,
+  why:"需協助，但自己能完成一半以上。若改穿前扣式或套頭式內衣後能自己完成，就是 10 分（＋5 分），這也可以寫進照護建議。",
+  ask:["給 10 分的同學：扣內衣算不算穿衣的一部分？","給 0 分的同學：她自己完成了多少比例？","如果改穿前扣式內衣，分數會變嗎？"]},
+ {id:"e2",unit:"ADL",item:"E2 洗澡",scen:"阿公其實能安全地自己洗澡，但太太怕他累，每次都幫他洗。",q:"洗澡給幾分？",
+  opts:[[5,"5 分","能自行完成"],[0,"0 分","協助下完成"]],ans:5,
+  why:"「沒讓他做」不算失能，評的是能力。可以衛教家屬避免過度保護。",
+  ask:["給 0 分的同學：你評的是他「有沒有做」還是「能不能做」？","你會怎麼追問，確認他自己洗是安全、乾淨的？"]},
+ {id:"e10",unit:"ADL",item:"E10 上下樓梯",scen:"阿公抓著扶手可以自己上樓，但下樓會害怕、腳步不穩，家人一定要走在前面看著他。",q:"上下樓梯給幾分？",
+  opts:ADL3("安全上下樓梯，可用扶手、拐杖","需要別人給予幫助或監督","無法上下樓"),ans:5,
+  why:"基於安全考量需要他人監督，不能任其獨自上下樓，仍評為「需要別人幫助或監督」。",
+  ask:["他明明抓扶手就上得去，為什麼不是 10 分？","量表裡「需要監督」算獨立還是需協助？"]},
+ {id:"e9",unit:"ADL",item:"E9 走路",scen:"阿伯推著助行器，可以一口氣走 60 公尺，不用人扶，也不會搖晃。",q:"走路給幾分？",
+  opts:[[15,"15 分","不需協助走 50 公尺以上，可用輔具"],[10,"10 分","需要協助扶持走 50 公尺以上"],[5,"5 分","不能步行，但能獨立操縱輪椅"],[0,"0 分","無法步行或操縱輪椅"]],ans:15,
+  why:"量表允許使用輔具（拐杖、助行器、義肢、支架）。能用輔具獨立、安全地走 50 公尺以上，就是 15 分。",
+  ask:["給 10 分的同學：用助行器就不算獨立嗎？量表原文怎麼寫？","如果中間要停下來休息兩次，分數會變嗎？"]},
+ {id:"e8",unit:"ADL",item:"E8 移位",scen:"阿嬤可以自己從床上坐起，扶著床欄站起來坐到輪椅，但常常忘記先煞車，女兒每次都要在旁邊提醒。",q:"移位給幾分？",
+  opts:[[15,"15 分","可自行坐起，安全地移位，無安全之顧慮"],[10,"10 分","需一點點協助或提醒，或有安全之顧慮"],[5,"5 分","可自行坐起，但離床仍需要幫助"],[0,"0 分","完全依賴"]],ans:10,
+  why:"整個移位過程（含輪椅煞車）都要能自己安全完成。忘記煞車、需要有人在旁提醒，屬於有安全顧慮，評 10 分。",
+  ask:["給 15 分的同學：輪椅煞車算不算移位過程的一部分？","如果她自己會記得煞車，分數會怎麼變？"]},
+ {id:"e1",unit:"ADL",item:"E1 吃飯",scen:"阿嬤中風後右手無力，用加粗握柄湯匙可以自己吃，但一餐要吃 70 分鐘，飯粒掉滿桌。",q:"吃飯給幾分？",
+  opts:ADL3("可在合理時間（一小時）內自行或用輔具進食","需要一些協助","完全依賴"),ans:5,
+  why:"使用輔具可以，但需在合理時間（一小時）內完成。超過一小時或食物灑落一地，評為「需要一些協助」。",
+  ask:["給 10 分的同學：她用輔具自己吃，哪一點沒有達到 10 分的條件？","你會建議什麼方法，幫她在一小時內吃完？"]},
+ {id:"e5",unit:"ADL",item:"E5 大便控制",scen:"阿公從來沒有大便失禁，但常便秘，要女兒幫他塞甘油球才解得出來。",q:"大便控制給幾分？",
+  opts:ADL3("不會失禁，便秘時可自行使用塞劑","偶爾失禁，或便秘時需他人協助用塞劑","需依賴別人協助處理"),ans:5,
+  why:"雖然不會失禁，但便秘時需要他人協助使用塞劑，評 5 分。",
+  ask:["給 10 分的同學：10 分的條件除了不失禁，還有什麼？"]},
+ {id:"e6",unit:"ADL",item:"E6 小便控制",scen:"阿公白天、晚上都沒有漏尿，因為攝護腺問題留置導尿管，尿袋都由太太倒。",q:"小便控制給幾分？",
+  opts:ADL3("不會失禁","偶爾失禁，使用尿布或尿套需要別人協助","需依賴別人協助處理"),ans:0,
+  why:"使用導尿管評為需依賴別人協助處理（0 分）。尿袋由誰清理，則在「上廁所」那一題判斷。",
+  ask:["給 10 分的同學：沒有漏尿，為什麼量表還是給 0 分？","尿袋由太太倒，會影響哪一題？"]},
+ {id:"s2",unit:"SOF",item:"SOF 下肢功能",scen:"阿嬤雙手交叉抱胸，連續站起 4 次，第 5 次用手撐了一下膝蓋才站起來。",q:"「無法不用手支撐從椅子站起五次」要勾是還是否？",
+  opts:YN,ans:1,why:"必須「不用手支撐」完成五次。過程中用手撐椅子、扶手或膝蓋，都算無法完成，記 1 分。",
+  ask:["給 0 分的同學：她只有一次用手，為什麼還是算無法完成？"]},
+ {id:"s1",unit:"SOF",item:"SOF 體重減輕",scen:"阿嬤身材瘦小，一年前 45 公斤，現在 42.5 公斤，沒有刻意減重。",q:"體重減輕要勾是還是否？",
+  opts:YN,ans:1,why:"3 公斤「或」5% 以上，符合一項就算。2.5 ÷ 45 ≈ 5.6%，已超過 5%。體重輕的長者要算百分比。",
+  ask:["給 0 分的同學：你只看了公斤數，還是也算了百分比？"]},
+ {id:"f7",unit:"IADL",item:"F7 服用藥物",scen:"阿伯會自己把一週的藥分進藥盒，但常常忘記吃，需要女兒每天打電話提醒。",q:"服用藥物給幾分？",
+  opts:[[3,"3 分","能自己負責在正確的時間用正確的藥物"],[2,"2 分","需要提醒或少許協助"],[1,"1 分","事先準備好藥物份量，可自行服用"],[0,"0 分","不能自己服用藥物"]],ans:2,
+  why:"需要提醒或少許協助是 2 分。若連份量都要別人先分好才會吃，才是 1 分。",
+  ask:["給 3 分的同學：「正確的時間」他做到了嗎？","給 1 分的同學：1 分和 2 分差在哪裡？"]},
+ {id:"f6",unit:"IADL",item:"F6 外出",scen:"阿嬤不會搭公車，但會自己打電話叫計程車去醫院，看完診再自己叫車回家。",q:"外出活動給幾分？",
+  opts:[[4,"4 分","能夠自己開車、騎車"],[3,"3 分","能夠自己搭乘大眾運輸工具"],[2,"2 分","能自己搭計程車，但不會搭大眾運輸"],[1,"1 分","有人陪同時可搭計程車或大眾運輸"],[0,"0 分","完全不能出門"]],ans:2,
+  why:"能自己搭計程車、但不會搭大眾運輸是 2 分。若要有人陪同才能搭車，則是 1 分。",
+  ask:["給 1 分的同學：她出門需要人陪嗎？","為什麼大眾運輸比計程車需要更高的能力？"]},
+ {id:"f3",unit:"IADL",item:"F3 食物烹調",scen:"阿公一輩子都是太太煮飯，他說：「我沒煮過。」學生追問後，他說：「太太回娘家那幾天，我會把冰箱的菜用電鍋熱來吃。」",q:"食物烹調給幾分？",
+  opts:[[3,"3 分","能獨立計畫、烹煮和擺設一頓飯菜"],[2,"2 分","準備好一切佐料，會做一頓飯菜"],[1,"1 分","會將已做好的飯菜加熱"],[0,"0 分","需要別人把飯菜煮好、擺好"]],ans:1,
+  why:"「沒煮過」不等於不會。追問後確認能把做好的飯菜加熱，評 1 分。沒追問就評 0 分，會低估能力。",
+  ask:["給 0 分的同學：你是根據哪一句話給分的？","如果他沒說後面那句，你會怎麼追問？"]},
+ {id:"f2",unit:"IADL",item:"F2 購物",scen:"阿嬤會自己走到巷口便利商店買牛奶、衛生紙，但要去大賣場買衣服、家電，一定要兒子陪。",q:"上街購物給幾分？",
+  opts:[[3,"3 分","獨立完成所有購物需求"],[2,"2 分","獨立購買日常生活用品"],[1,"1 分","每一次上街購物都需要有人陪"],[0,"0 分","完全不會上街購物"]],ans:2,
+  why:"附近商店的日常用品能自己買，較複雜的需要有人陪，是 2 分。",
+  ask:["給 1 分的同學：「每一次」都需要人陪嗎？"]},
+ {id:"p1",unit:"IPAQ",item:"IPAQ 活動強度",scen:"阿嬤每天早上到公園打太極拳 40 分鐘，有點喘但還能聊天，一週 5 天。",q:"這項活動要記在哪一類？",
+  opts:IPAQ,ans:"m",why:"有點喘、仍可說話，屬中等費力。4.0 × 40 × 5 ＝ 800 MET-分鐘／週。",
+  ask:["給「費力」的同學：費力和中等費力的呼吸差在哪裡？"]},
+ {id:"p2",unit:"IPAQ",item:"IPAQ 持續時間",scen:"阿嬤一天掃地三次，每次大約 5 分鐘，一週七天都這樣。",q:"這項活動要記在哪一類？",
+  opts:IPAQ,ans:"x",why:"IPAQ 只計「一次持續 10 分鐘以上」的活動，短時間累加不算。可以再問有沒有其他一次做比較久的活動。",
+  ask:["給「中等」的同學：一天加起來 15 分鐘，為什麼還是不算？"]},
+];
+const BY=Object.fromEntries(CASES.map(c=>[c.id,c]));
+const UNITS=["全部","ADL","SOF","IADL","IPAQ"];
+
+/* ============ 狀態 ============ */
+const S={mode:location.hash==="#teacher"?"teacher":"student",unit:"全部",
+  t:{id:CASES[0].id,phase:"vote",round:1},         // 老師端目前題目
+  manual:{},demo:{},                               // key=id:round → {v:count}
+  follow:null,lastHeard:0,                         // 學生端：老師廣播的狀態
+  myVote:null,myKey:null,                          // 學生端：本題的選擇
+  practice:{i:0,pick:null},
+  room:null,connected:false,peers:[],sendErr:""};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const key=(id,r)=>id+":"+r;
+const $=s=>document.querySelector(s);
+const list=()=>S.unit==="全部"?CASES:CASES.filter(c=>c.unit===S.unit);
+
+/* 本題票數：連線同學＋手動＋示範 */
+function counts(id,round){const c=BY[id],o={};c.opts.forEach(([v])=>o[v]=0);
+  S.peers.forEach(p=>{const pr=p.presence||{};if(pr.role==="student"&&pr.q===id&&pr.r===round&&pr.v in o)o[pr.v]++;});
+  const m=S.manual[key(id,round)]||{},d=S.demo[key(id,round)]||{};
+  for(const v in o){o[v]+=(m[v]||0)+(d[v]||0);}return o;}
+const total=o=>Object.values(o).reduce((a,b)=>a+b,0);
+
+/* ============ 共用：分布圖 ============ */
+function distHTML(c,o,showAns){const n=total(o);const mx=Math.max(0,...Object.values(o));
+  const rows=c.opts.map(([v,b,t])=>{const k=o[v]||0,p=n?Math.round(k/n*100):0;const isA=showAns&&v===c.ans,isTop=n&&k===mx&&k>0;
+    return `<div class="row${isA?" ans":""}${isTop?" top1":""}"><span class="badge">${esc(b)}</span><span class="lab">${esc(t)}${isA?'<span class="flag ok">✓ 參考答案</span>':""}${isTop&&!isA?'<span class="flag">最多人選</span>':""}</span><span class="num">${k} 人・${p}%</span><div class="track"><div class="fill" style="width:${p}%"></div></div></div>`;}).join("");
+  let stats="";if(n){const agree=Math.round(mx/n*100);stats=`<div class="stats"><div class="stat"><b>${agree}%</b><span>最多人選的比例（一致度）</span></div>${showAns?`<div class="stat"><b>${Math.round((o[c.ans]||0)/n*100)}%</b><span>與參考答案相同</span></div>`:""}<div class="stat"><b>${Object.values(o).filter(x=>x>0).length}</b><span>出現幾種答案</span></div></div>`;}
+  return `<div class="rows">${rows}</div>${stats}`;}
+
+/* ============ 老師投影 ============ */
+function teacherHTML(){const c=BY[S.t.id],o=counts(c.id,S.t.round),n=total(o),ph=S.t.phase,k=key(c.id,S.t.round);
+  const L=list();const idx=L.findIndex(x=>x.id===c.id);
+  const sel=`<select id="caseSel" aria-label="選擇題目">${L.map((x,i)=>`<option value="${x.id}"${x.id===c.id?" selected":""}>${i+1}. ${esc(x.item)}</option>`).join("")}</select>`;
+  const unitSel=`<select id="unitSel" aria-label="單元">${UNITS.map(u=>`<option${u===S.unit?" selected":""}>${u}</option>`).join("")}</select>`;
+  const left=`<div class="panel"><div class="picker">${unitSel}${sel}<span class="muted">第 ${idx+1}／${L.length} 題・第 ${S.t.round} 輪</span></div>
+    <span class="tag">${esc(c.unit)}</span><span class="item">${esc(c.item)}</span>
+    <p class="scen">${esc(c.scen)}</p><p class="scen" style="font-weight:700;color:var(--teal);margin-top:6px">${esc(c.q)}</p>
+    <div class="ctrl">
+      <button class="btn${ph==="vote"?" primary":""}" type="button" data-ph="dist"${ph!=="vote"?" disabled":""}>公布分布</button>
+      <button class="btn${ph==="dist"?" primary":""}" type="button" data-ph="answer"${ph==="answer"?" disabled":""}>公布答案</button>
+      <button class="btn" type="button" id="again">重新作答</button>
+      <button class="btn" type="button" id="prev"${idx<=0?" disabled":""}>上一題</button>
+      <button class="btn warn" type="button" id="next"${idx>=L.length-1?" disabled":""}>下一題</button>
+    </div>${S.sendErr?`<p class="muted" style="color:var(--orange)">${esc(S.sendErr)}</p>`:""}</div>`;
+  let right;
+  if(ph==="vote"){right=`<div class="panel"><div class="count"><b>${n}</b><span>人已作答</span>${S.demo[k]?'<span class="demo">含示範資料</span>':""}</div>
+    <div class="rows">${c.opts.map(([v,b,t])=>`<div class="row"><span class="badge">${esc(b)}</span><span class="lab">${esc(t)}</span><span class="num"></span></div>`).join("")}</div>
+    <p class="muted" style="margin-top:12px">作答中先不公布分布，避免同學跟著多數改答案。</p>${tallyHTML(c,k)}</div>`;}
+  else{right=`<div class="panel"><div class="count"><b>${n}</b><span>人作答</span>${S.demo[k]?'<span class="demo">含示範資料</span>':""}</div>${distHTML(c,o,ph==="answer")}
+    ${ph==="dist"?`<div class="ask"><h3>先討論，再公布答案</h3><ul>${c.ask.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>`:""}
+    ${ph==="answer"?`<div class="why"><h3>參考答案：${esc(c.opts.find(x=>x[0]===c.ans)[1])}</h3>${esc(c.why)}</div><div class="ask"><h3>討論問題</h3><ul>${c.ask.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>`:""}
+    ${tallyHTML(c,k)}</div>`;}
+  return `<div class="grid teacher">${left}${right}</div>`;}
+function tallyHTML(c,k){const m=S.manual[k]||{};
+  return `<details class="tally" id="tally"${S.tallyOpen?" open":""}><summary>手動加票・示範</summary>
+   <p class="muted" style="margin:8px 0 0">同學無法連線時，可用舉手或其他投票系統的票數輸入。</p>
+   ${c.opts.map(([v,b])=>`<div class="trow"><span class="badge">${esc(b)}</span><button type="button" data-tv="${esc(v)}" data-d="-1" aria-label="${esc(b)} 減一">−</button><output>${m[v]||0}</output><button type="button" data-tv="${esc(v)}" data-d="1" aria-label="${esc(b)} 加一">＋</button></div>`).join("")}
+   <div class="trow"><button class="btn" type="button" id="demo" style="width:auto;height:auto">${S.demo[k]?"移除示範資料":"示範：模擬 40 人作答"}</button></div></details>`;}
+
+/* 示範資料：答案約五成、其他選項分散 */
+function makeDemo(c){const o={};const vs=c.opts.map(x=>x[0]);const others=vs.filter(v=>v!==c.ans);
+  let left=40;const a=18+Math.floor(Math.random()*8);o[c.ans]=a;left-=a;
+  others.forEach((v,i)=>{const share=i===others.length-1?left:Math.round(left*(i===0?.65:.5));o[v]=share;left-=share;});return o;}
+
+/* ============ 學生作答 ============ */
+function studentHTML(){
+  const f=S.follow&&Date.now()-S.lastHeard<20000?S.follow:null;
+  if(f&&BY[f.id]){const c=BY[f.id];const k=key(c.id,f.round);if(S.myKey!==k){S.myKey=k;S.myVote=null;}
+    const locked=f.phase!=="vote";const showAns=f.phase==="answer";
+    const opts=c.opts.map(([v,b,t])=>{const cls=(S.myVote===v?" sel":"")+(showAns&&v===c.ans?" right":"");
+      return `<button type="button" class="opt${cls}" data-v="${esc(v)}"${locked?" disabled":""}><span class="badge">${esc(b)}</span><span>${esc(t)}</span></button>`;}).join("");
+    let after="";
+    if(f.phase==="vote")after=`<div class="note">${S.myVote===null?"選一個答案；老師公布前都可以改。":"已送出，可以再改。等老師公布全班分布。"}</div>`;
+    if(f.phase!=="vote"&&f.counts){after+=`<h3 style="margin:20px 0 10px">全班分布</h3>${distHTML(c,f.counts,showAns)}`;}
+    if(showAns)after+=`<div class="why"><h3>參考答案</h3>${esc(c.why)}</div>`;
+    return `<div class="panel" style="max-width:720px;margin:0 auto"><span class="chip"><span class="dot"></span>跟著老師作答</span>
+      <div style="margin-top:12px"><span class="tag">${esc(c.unit)}</span><span class="item">${esc(c.item)}</span></div>
+      <p class="scen">${esc(c.scen)}</p><p style="font-weight:700;color:var(--teal);font-size:18px;margin:8px 0 0">${esc(c.q)}</p>
+      <div class="opts">${opts}</div>${after}</div>`;}
+  /* 自己練習 */
+  const L=list();const i=Math.min(S.practice.i,L.length-1);const c=L[i];const pk=S.practice.pick;
+  const opts=c.opts.map(([v,b,t])=>{const cls=(pk===v?" sel":"")+(pk!==null&&v===c.ans?" right":"");
+    return `<button type="button" class="opt${cls}" data-pv="${esc(v)}"${pk!==null?" disabled":""}><span class="badge">${esc(b)}</span><span>${esc(t)}</span></button>`;}).join("");
+  const res=pk===null?"":`<div class="why"><h3>${pk===c.ans?"和參考答案相同":"參考答案："+esc(c.opts.find(x=>x[0]===c.ans)[1])}</h3>${esc(c.why)}</div><div class="ask"><h3>想一想</h3><ul>${c.ask.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>`;
+  return `<div class="panel" style="max-width:720px;margin:0 auto">
+    <div class="picker"><span class="chip off"><span class="dot"></span>自己練習</span><select id="unitSel" aria-label="單元">${UNITS.map(u=>`<option${u===S.unit?" selected":""}>${u}</option>`).join("")}</select><span class="muted">第 ${i+1}／${L.length} 題</span></div>
+    <p class="muted" style="margin:0">老師開始上課投影後，這裡會自動切換成跟著老師作答。</p>
+    <div style="margin-top:12px"><span class="tag">${esc(c.unit)}</span><span class="item">${esc(c.item)}</span></div>
+    <p class="scen">${esc(c.scen)}</p><p style="font-weight:700;color:var(--teal);font-size:18px;margin:8px 0 0">${esc(c.q)}</p>
+    <div class="opts">${opts}</div>${res}
+    <div class="ctrl"><button class="btn" type="button" id="pprev"${i<=0?" disabled":""}>上一題</button><button class="btn primary" type="button" id="pnext"${i>=L.length-1?" disabled":""}>下一題</button></div></div>`;}
+
+/* ============ 繪製與事件 ============ */
+function render(){
+  $("#mStu").classList.toggle("on",S.mode==="student");$("#mTea").classList.toggle("on",S.mode==="teacher");
+  const cn=$("#conn");
+  if(S.room&&S.connected){const n=S.peers.filter(p=>(p.presence||{}).role==="student").length;cn.className="chip";cn.innerHTML=`<span class="dot"></span>即時連線・${n} 位同學在線`;}
+  else if(S.room){cn.className="chip off";cn.innerHTML='<span class="dot"></span>連線中斷，重新連線中';}
+  else{cn.className="chip off";cn.innerHTML='<span class="dot"></span>未連線（可自己練習、手動計票）';}
+  $("#app").innerHTML=S.mode==="teacher"?teacherHTML():studentHTML();}
+let raf=0;const soon=()=>{if(!raf)raf=requestAnimationFrame(()=>{raf=0;render();});};
+
+function setTeacher(patch){Object.assign(S.t,patch);S.sendErr="";broadcast();render();}
+function broadcast(){if(S.mode!=="teacher"||!S.room)return;const st={id:S.t.id,phase:S.t.phase,round:S.t.round};
+  if(st.phase!=="vote")st.counts=counts(st.id,st.round);
+  S.room.emit("state",st).catch(e=>{if(e&&e.code==="not_permitted"){S.sendErr="只有這個頁面的擁有者或編輯者能用老師投影控制同學的畫面；目前仍可在本機投影、手動計票。";render();}});}
+
+document.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;
+  if(b.id==="mStu"){S.mode="student";history.replaceState(null,"",location.pathname);setPresence();render();return;}
+  if(b.id==="mTea"){S.mode="teacher";history.replaceState(null,"",location.pathname+"#teacher");setPresence();broadcast();render();return;}
+  if(S.mode==="teacher"){const L=list();const idx=L.findIndex(x=>x.id===S.t.id);
+    if(b.dataset.ph)return setTeacher({phase:b.dataset.ph});
+    if(b.id==="next"&&idx<L.length-1)return setTeacher({id:L[idx+1].id,phase:"vote",round:1});
+    if(b.id==="prev"&&idx>0)return setTeacher({id:L[idx-1].id,phase:"vote",round:1});
+    if(b.id==="again")return setTeacher({phase:"vote",round:S.t.round+1});
+    if(b.dataset.tv!==undefined){const c=BY[S.t.id];const v=c.opts.map(x=>x[0]).find(x=>String(x)===b.dataset.tv);const k=key(c.id,S.t.round);
+      const m=S.manual[k]=S.manual[k]||{};m[v]=Math.max(0,(m[v]||0)+(+b.dataset.d));S.tallyOpen=true;broadcast();render();return;}
+    if(b.id==="demo"){const k=key(S.t.id,S.t.round);if(S.demo[k])delete S.demo[k];else S.demo[k]=makeDemo(BY[S.t.id]);S.tallyOpen=true;broadcast();render();return;}
+  }else{
+    if(b.dataset.v!==undefined&&S.follow){const c=BY[S.follow.id];S.myVote=c.opts.map(x=>x[0]).find(x=>String(x)===b.dataset.v);setPresence();render();return;}
+    if(b.dataset.pv!==undefined){const L=list();const c=L[Math.min(S.practice.i,L.length-1)];S.practice.pick=c.opts.map(x=>x[0]).find(x=>String(x)===b.dataset.pv);render();return;}
+    if(b.id==="pnext"){S.practice.i++;S.practice.pick=null;render();return;}
+    if(b.id==="pprev"){S.practice.i=Math.max(0,S.practice.i-1);S.practice.pick=null;render();return;}
+  }});
+document.addEventListener("change",e=>{
+  if(e.target.id==="unitSel"){S.unit=e.target.value;S.practice={i:0,pick:null};
+    if(S.mode==="teacher"){const L=list();if(!L.some(x=>x.id===S.t.id))return setTeacher({id:L[0].id,phase:"vote",round:1});}render();}
+  if(e.target.id==="caseSel")setTeacher({id:e.target.value,phase:"vote",round:1});});
+document.addEventListener("toggle",e=>{if(e.target.id==="tally")S.tallyOpen=e.target.open;},true);
+document.addEventListener("keydown",e=>{if(S.mode!=="teacher"||/INPUT|SELECT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.key==="ArrowRight")$("#next")?.click();if(e.key==="ArrowLeft")$("#prev")?.click();});
+
+/* ============ 即時連線（room） ============ */
+function setPresence(){if(!S.room)return;
+  if(S.mode==="teacher")S.room.presence({role:"teacher",q:null,r:null,v:null}).catch(()=>{});
+  else{const f=S.follow;S.room.presence({role:"student",q:f?f.id:null,r:f?f.round:null,v:S.myVote}).catch(()=>{});}}
+function validState(d){return d&&typeof d==="object"&&BY[d.id]&&["vote","dist","answer"].includes(d.phase)&&Number.isInteger(d.round);}
+(async()=>{render();
+  try{S.room=window.claude&&window.claude.use?await window.claude.use("room"):null;}catch(_){S.room=null;}
+  if(!S.room){render();return;}
+  S.connected=S.room.connected();
+  S.room.onPeers(ch=>{S.peers=ch.peers;S.connected=S.room.connected();
+    if(S.mode==="teacher"){if(ch.joined.length)broadcast();if(S.t.phase!=="vote"&&ch.updated.length)broadcast();}soon();},()=>{S.connected=false;soon();});
+  S.room.on("state",m=>{if(m.sameTab||!validState(m.data))return;const d=m.data;
+    const changed=!S.follow||S.follow.id!==d.id||S.follow.round!==d.round;
+    S.follow={id:d.id,phase:d.phase,round:d.round,counts:d.counts&&typeof d.counts==="object"?d.counts:null};S.lastHeard=Date.now();
+    if(changed){S.myVote=null;S.myKey=key(d.id,d.round);setPresence();}
+    if(S.mode==="student")soon();},()=>{});
+  setPresence();
+  setInterval(()=>{S.connected=S.room.connected();if(S.mode==="teacher")broadcast();else soon();},5000);
+  render();})();
+</script>
+
+</body>
+</html>
