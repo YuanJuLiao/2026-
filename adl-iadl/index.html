@@ -727,7 +727,7 @@ function answered(i){const v=S[i.id];
     case "note":return true;
     case "checks":return Array.isArray(v)&&v.length>0;
     case "checklist":return Array.isArray(v)&&v.length===i.opts.length;
-    case "family":return !!(v&&String(v).trim())||!!S.tree_img||((S.geno&&S.geno.people||[]).length>=2);
+    case "family":return !!(v&&String(v).trim())||((S.geno&&S.geno.people||[]).length>=2);
     case "radio":return !!v&&(!i.other||v!==i.other||!!(S[i.id+"_o"]||"").trim());
     case "days":return !!v&&(v.none||(v.d!==undefined&&v.d!==""));
     case "dur":return !!v&&(v.unk||!!v.h||!!v.m);
@@ -749,7 +749,7 @@ function renderLearn(){
   $("#view-learn").innerHTML=`<div class="learn"><nav class="toc" aria-label="教材目錄">${groups.map(([g,c])=>`<h4>${g}</h4>`+TOPICS.filter(t=>t.group===g).map(t=>`<a class="${c}" href="#${t.id}">${t.title}</a>`).join("")).join("")}</nav>
   <div><div class="intro"><h2>功能退化不是一次失去，而是由複雜到基本</h2>
   <p class="prose" style="margin:0">ADL 看長者能不能照顧自己，IADL 看長者能不能在社區獨立生活。本單元整理課堂簡報，包含巴氏量表、SOF 衰弱評估、Lawton IADL 與 IPAQ 的評分定義，以及「評估思辨」小情境。讀完後可到「情境對話」自己提問、訪視林陳翠琴阿嬤，或到「評估單」依你們組擬定的案例填寫。</p>
-  <div class="facts"><div class="fact"><b>17.5%</b><span>長者衰弱風險</span></div><div class="fact"><b>12.7%</b><span>長者失能</span></div><div class="fact"><b>0–100</b><span>巴氏量表總分</span></div><div class="fact"><b>10/19・10/20</b><span>講述（A206）・技術實作（M121）</span></div></div>
+  <div class="facts"><div class="fact"><b>17.5%</b><span>長者衰弱風險</span></div><div class="fact"><b>12.7%</b><span>長者失能</span></div><div class="fact"><b>0–100</b><span>巴氏量表總分</span></div><div class="fact"><b>10/19・10/20</b><span>講述（A206）・技術實作（M503）</span></div></div>
   <p style="margin:0;font-size:13.5px;color:var(--muted)">實作學習評估單請於下週課前繳交至創課。</p></div>
   ${TOPICS.map(t=>`<section class="topic ${t.dom}" id="${t.id}">${topicHTML(t)}</section>`).join("")}
   <p style="text-align:center;margin-top:30px"><button class="btn primary" type="button" data-go="guide">開始情境對話 →</button></p></div></div>`;
@@ -765,9 +765,6 @@ function inputHTML(i){const v=S[i.id];const name=i.id;
    case "radio":return `<div class="choices${i.stack?" stack":""}" role="radiogroup">${i.opts.map((o,k)=>`<label class="choice"><input type="radio" name="r-${name}" id="f-${name}-${k}" data-k="${name}" value="${esc(o)}" ${v===o?"checked":""}><span>${esc(o)}</span></label>`).join("")}</div>${i.other?`<input type="text" id="f-${name}_o" data-k="${name}_o" value="${esc(S[name+"_o"])}" placeholder="其他（請說明）" ${v===i.other?"":"hidden"}>`:""}${i.withNote?`<input type="text" id="f-${name}_n" data-k="${name}_n" value="${esc(S[name+"_n"])}" placeholder="${esc(i.notePh||"補充說明（選填）")}">`:""}`;
    case "checks":case "checklist":{const a=Array.isArray(v)?v:[];return `<div class="choices">${i.opts.map((o,k)=>`<label class="choice sq"><input type="checkbox" id="f-${name}-${k}" data-k="${name}" value="${esc(o)}" ${a.includes(o)?"checked":""}><span>${i.type==="checklist"?"✓ ":""}${esc(o)}</span></label>`).join("")}</div>`;}
    case "family":return `<div class="geno-host" id="geno-${i.id}">${genoEditor(i)}</div>`;
-   case "family_old":return `<textarea id="f-${name}" data-k="${name}" rows="4" placeholder="例：個案為長子，配偶同住；育有一子一女，長女住台中……">${esc(v)}</textarea>
-     <div class="inline"><label class="btn small" for="f-tree-file">上傳手繪家族樹照片</label><input type="file" id="f-tree-file" accept="image/*" hidden>${S.tree_img?`<button type="button" class="btn small ghost" id="tree-del">移除照片</button>`:""}</div>
-     ${S.tree_img?`<img class="tree-img" src="${S.tree_img}" alt="家族樹照片">`:""}`;
    case "days":{const o=v||{};return `<div class="dd"><label><input type="number" min="0" max="7" step="1" id="f-${name}-d" data-obj="${name}" data-f="d" value="${esc(o.d)}" ${o.none?"disabled":""}> 天</label><label class="choice sq"><input type="checkbox" id="f-${name}-none" data-obj="${name}" data-f="none" ${o.none?"checked":""}><span>${esc(i.none)}</span></label></div>`;}
    case "dur":{const o=v||{};return `<div class="dd"><label>一天 <input type="number" min="0" max="24" id="f-${name}-h" data-obj="${name}" data-f="h" value="${esc(o.h)}" ${o.unk?"disabled":""}> 小時</label><label><input type="number" min="0" max="59" id="f-${name}-m" data-obj="${name}" data-f="m" value="${esc(o.m)}" ${o.unk?"disabled":""}> 分鐘</label>${i.nounk?"":`<label class="choice sq"><input type="checkbox" id="f-${name}-unk" data-obj="${name}" data-f="unk" ${o.unk?"checked":""}><span>不知道／不確定</span></label>`}</div>`;}
   }}
@@ -845,7 +842,6 @@ document.addEventListener("input",e=>{const t=e.target;
 });
 document.addEventListener("change",async e=>{const t=e.target;
   if(t.id==="opt-auto"){UI.auto=t.checked;saveUI();}
-  if(t.id==="f-tree-file"&&t.files[0]){try{S.tree_img=await shrink(t.files[0],1400);save();renderForm();toast("已加入家族樹照片");}catch(err){toast("無法讀取這張圖片，請改用 JPG 或 PNG");}}
   if(t.id==="f-import"&&t.files[0]){try{const d=JSON.parse(await t.files[0].text());if(typeof d!=="object"||!d)throw 0;S=d;save();renderForm();toast("已載入作答檔");}catch(err){toast("檔案格式不正確，請選擇先前下載的作答檔（.json）");}closeModal();}
 });
 function shrink(file,max){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.82));};im.src=r.result;};r.readAsDataURL(file);});}
@@ -879,7 +875,6 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,img[data-
   if(t.dataset.reveal){G.reveal[t.dataset.reveal]=true;refresh();return;}
   if(t.id==="btn-export3"){openExport();return;}
   if(t.dataset.unit){UI.unit=t.dataset.unit;saveUI();renderForm();window.scrollTo(0,0);return;}
-  if(t.id==="tree-del"){delete S.tree_img;save();renderForm();return;}
   if(t.id==="btn-next"){const n=nextOpen();if(n)focusItem(n);else{const u=UNITS.findIndex(x=>x.id===UI.unit);const nx=UNITS.slice(u+1).find(x=>{const[a,b]=unitStat(x);return a<b;});if(nx){UI.unit=nx.id;saveUI();renderForm();toast("本單元已完成，前往 "+nx.key+". "+nx.title);}else toast("所有項目都已完成，可以匯出 PDF");}return;}
   if(t.id==="btn-export"||t.id==="btn-export2"){openExport();return;}
   if(t.dataset.exportUnit){exportPDF([t.dataset.exportUnit],t);return;}
@@ -1481,7 +1476,6 @@ function genoEditor(i){const g=gData();const v=S[i.id];const P=Object.fromEntrie
    ${g.people.length?`<details class="gmembers" open><summary>成員資料（${g.people.length} 人）</summary><div class="gcards">${cards}</div></details>`:""}
    ${g.unions.length?`<details class="gunions" open><summary>婚姻／伴侶關係（${g.unions.length} 段）</summary><div class="gcards">${unions}</div></details>`:""}
    <label class="row" style="display:grid;gap:4px"><small class="msg">文字補充說明（選填）</small><textarea id="f-${i.id}" data-k="${i.id}" rows="2" placeholder="例：家族中慢性病史、主要支持者、聯絡頻率">${esc(v)}</textarea></label>
-   <details><summary class="msg" style="cursor:pointer">也可以上傳手繪家族樹照片</summary><div class="inline" style="margin-top:6px"><label class="btn small" for="f-tree-file">上傳照片</label><input type="file" id="f-tree-file" accept="image/*" hidden>${S.tree_img?`<button type="button" class="btn small ghost" id="tree-del">移除照片</button>`:""}</div>${S.tree_img?`<img class="tree-img" src="${S.tree_img}" alt="家族樹照片">`:""}</details>
   </div>`;}
 let gBusy=false;
 function redrawGeno(){if(gBusy)return;const el=$("#geno-tree");if(!el){save();return;}gBusy=true;const ae=document.activeElement;if(ae&&el.contains(ae))ae.blur();gBusy=false;
@@ -1531,7 +1525,7 @@ function fmt(i){const v=S[i.id];
   switch(i.type){
    case "checks":case "checklist":{const a=Array.isArray(v)?v:[];if(!a.length)return E;let s=a.map(x=>"☑ "+esc(x)).join("\n");if(i.type==="checklist"){const miss=i.opts.filter(o=>!a.includes(o));if(miss.length)s+="\n☐ "+miss.map(esc).join("　☐ ");}return s;}
    case "radio":{if(!v)return E;let s="☑ "+esc(v);if(i.other&&v===i.other&&S[i.id+"_o"])s+="："+esc(S[i.id+"_o"]);if(i.withNote&&S[i.id+"_n"])s+="\n補充："+esc(S[i.id+"_n"]);return s;}
-   case "family":{let s="";if(window._genoPng)s+=`<img src="${window._genoPng}">`;if(v)s+=(s?"\n":"")+esc(v);if(S.tree_img)s+=(s?"\n":"")+`<img src="${S.tree_img}">`;return s||E;}
+   case "family":{let s="";if(window._genoPng)s+=`<img src="${window._genoPng}">`;if(v)s+=(s?"\n":"")+esc(v);return s||E;}
    case "days":{if(!v)return E;return v.none?"☑ "+esc(i.none):(v.d!==undefined&&v.d!==""?esc(v.d)+" 天":E);}
    case "dur":{if(!v)return E;if(v.unk)return "☑ 不知道／不確定";if(!v.h&&!v.m)return E;return `一天 ${esc(v.h||0)} 小時 ${esc(v.m||0)} 分鐘`;}
    default:return v!==undefined&&String(v).trim()!==""?esc(v):E;}}
