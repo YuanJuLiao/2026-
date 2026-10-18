@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="亞洲大學長期照護學系 高齡周全性健康評估與實作 第7週：日常生活活動功能（ADL）與工具式日常生活活動功能（IADL）教材與評估單實作">
+<meta name="description" content="亞洲大學長期照護學系 高齡周全性健康評估與實作 第7週：日常生活活動功能（ADL）與工具式日常生活活動功能（IADL）教材、情境實作與評估單">
 <title>ADL與IADL評估實作</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -224,6 +224,32 @@ input:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 
 details.quiz{background:var(--sunk);border-radius:8px;padding:8px 12px;font-size:14px}
 details.quiz summary{cursor:pointer;color:var(--accent)}
 .sticky-score{position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);z-index:5;margin-top:10px}
+/* 情境實作 */
+.guide{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;padding-block:22px 80px}
+.steps{position:sticky;top:90px;align-self:start;display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 110px);overflow-y:auto;font-size:13.5px}
+.steps h4{margin:12px 0 2px;font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500;padding:0 8px}
+.stepbtn{display:flex;gap:8px;align-items:center;text-align:left;border:0;background:transparent;padding:5px 8px;border-radius:6px;cursor:pointer;color:var(--ink)}
+.stepbtn:hover{background:var(--sunk)}
+.stepbtn[aria-current="true"]{background:var(--surface);box-shadow:inset 3px 0 0 var(--accent)}
+.stepbtn i{width:10px;height:10px;border-radius:50%;border:2px solid var(--line);flex:0 0 auto}
+.stepbtn.done i{background:var(--ok);border-color:var(--ok)}
+.stepbtn.wrong i{background:var(--warn);border-color:var(--warn)}
+.mode-pill{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;padding:3px 10px;border-radius:999px;background:var(--sunk);color:var(--muted)}
+.mode-pill.on{background:var(--ok-soft);color:var(--ok)}
+.story{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:var(--r);padding:16px 20px;margin:12px 0 16px;font-size:15.5px;line-height:1.85}
+.story p{margin:0 0 .7em}.story p:last-child{margin:0}
+.story .say{color:var(--accent);font-weight:500}
+.story .tip{font-size:13.5px;color:var(--muted);background:var(--sunk);border-radius:8px;padding:8px 12px}
+.fb{border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.7}
+.fb.right{background:var(--ok-soft);color:var(--ok)}
+.fb.wrong{background:var(--warn-soft);color:var(--warn)}
+.fb.ref{background:var(--accent-soft);color:var(--ink)}
+.fb b{display:block}
+.fb .why{color:var(--ink);margin-top:2px}
+.fb .disc{margin-top:6px;font-size:13px;color:var(--ink)}
+.sc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:grid;gap:10px}
+.gnav{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+@media (max-width:900px){.guide{grid-template-columns:minmax(0,1fr)}.steps{display:none}}
 </style>
 </head>
 <body>
@@ -237,7 +263,8 @@ details.quiz summary{cursor:pointer;color:var(--accent)}
     </div>
     <div class="tabs" role="tablist">
       <button role="tab" id="tab-learn" aria-selected="false" data-mode="learn">課堂教材</button>
-      <button role="tab" id="tab-form" aria-selected="true" data-mode="form">評估單實作</button>
+      <button role="tab" id="tab-guide" aria-selected="false" data-mode="guide">情境實作</button>
+      <button role="tab" id="tab-form" aria-selected="true" data-mode="form">評估單</button>
     </div>
     <div class="top-actions">
       <button class="btn primary" id="btn-export" type="button">匯出 PDF</button>
@@ -248,6 +275,7 @@ details.quiz summary{cursor:pointer;color:var(--accent)}
 
 <main class="wrap">
   <section id="view-learn" hidden></section>
+  <section id="view-guide" hidden></section>
   <section id="view-form"></section>
 </main>
 
@@ -523,35 +551,35 @@ function barthelNote(S){const [t,n]=sumOf(BIDS);
 function sofNote(S){const ids=["s1","s2","s3"];const [t,n]=sumOf(ids);if(!n)return null;
   const lv=t>=2?"衰弱":t===1?"衰弱前期":"健壯";
   return [n<3?"info":t>=2?"bad":t===1?"info":"ok","SOF 總分："+t+" 分"+(n<3?`（已填 ${n}/3）`:""),n<3?"請完成三題。":`判讀參考：${lv}（0 分健壯、1 分衰弱前期、≥2 分衰弱）。`];}
-const HELP5={i1:s=>s<=1,i2:s=>s<=1,i3:s=>s===0,i4:s=>s<=1,i5:s=>s===0};
-function iadlHelp(S){return Object.keys(HELP5).filter(id=>{const s=scoreOf(BY[id],S[id]);return s!==null&&HELP5[id](s);});}
+const HELP5={i1:1,i2:1,i3:1,i4:1,i5:1};
+function iadlHelp(S){return Object.keys(HELP5).filter(id=>{const s=scoreOf(BY[id],S[id]);return s!==null&&s<maxOf(BY[id]);});}
 function iadlNote(S){const [t,n]=sumOf(IIDS);if(!n)return null;
   const h=iadlHelp(S),names=h.map(id=>BY[id].label);
   const done5=Object.keys(HELP5).every(id=>S[id]);
   let msg=`<div class="tally"><div><b>${t} / 24</b><span>IADL 總分（已填 ${n}/8 項）</span></div><div><b>${h.length} / 5</b><span>五項中需協助項目</span></div></div>`;
   if(names.length)msg+="需協助："+names.join("、")+"。";
   if(done5)msg+=h.length>=3?"<br><b>五項中有三項以上需要協助，符合輕度失能。</b>":"<br>五項中需協助未達三項，未達輕度失能。";
-  msg+=`<br><span style="font-size:12.5px;opacity:.8">「需協助」判定：購物、外出為 1 或 0 分；烹調、洗衣為 0 分；家務為 1 或 0 分。</span>`;
+  msg+=`<br><span style="font-size:12.5px;opacity:.8">「需協助」判定：該項未達最高分（未能完全獨立）。</span>`;
   return [h.length>=3?"bad":"info","IADL 計分",msg];}
 const daysOn=v=>!!v&&!v.none&&+v.d>0;
 function mins(v){if(!v||v.unk)return null;const h=+(v.h||0),m=+(v.m||0);if(!v.h&&!v.m)return null;return Math.min(180,h*60+m);}
 function ipaq(S){const part=(d,t,met)=>{if(!S[d])return null;if(!daysOn(S[d]))return {days:0,min:0,met:0};const mm=mins(S[t]);if(mm===null)return {days:+S[d].d,min:null,met:null};return {days:+S[d].d,min:mm,met:met*mm*(+S[d].d)};};
   const V=part("pv_d","pv_t",8),M=part("pm_d","pm_t",4),W=part("pw_d","pw_t",3.3);
   if(!V||!M||!W||V.met===null||M.met===null||W.met===null) return null;
-  const tot=Math.round(V.met+M.met+W.met), days=V.days+M.days+W.days;
+  const tot=V.met+M.met+W.met, days=V.days+M.days+W.days;
   let lv="低度";
   if((V.days>=3&&V.met>=1500)||(days>=7&&tot>=3000)) lv="高度";
   else if((V.days>=3&&V.min>=20)||(M.days+W.days>=5&&(Math.max(M.min,W.min)>=30))||(days>=5&&tot>=600)) lv="中度";
   return {V,M,W,tot,lv};}
 function ipaqNote(S){const r=ipaq(S);const sit=mins(S.ps_t);
   if(!r) return ["info","身體活動量","完成二～四題後，這裡會計算每週 MET-分鐘與活動量等級（依 IPAQ 計分原則，供參考）。"];
-  return ["info","身體活動量（判讀參考）",`<div class="tally"><div><b>${r.tot.toLocaleString()}</b><span>MET-分鐘／週</span></div><div><b style="font-size:16px">${r.lv}身體活動量</b><span>等級</span></div>${sit!==null?`<div><b>${(S.ps_t.h||0)}時${(S.ps_t.m||0)}分</b><span>工作天每日坐著</span></div>`:""}</div>費力 ${Math.round(r.V.met)}・中等 ${Math.round(r.M.met)}・走路 ${Math.round(r.W.met)} MET-分鐘／週。`];}
+  return ["info","身體活動量（判讀參考）",`<div class="tally"><div><b>${(Math.round(r.tot*10)/10).toLocaleString()}</b><span>MET-分鐘／週</span></div><div><b style="font-size:16px">${r.lv}身體活動量</b><span>等級</span></div>${sit!==null?`<div><b>${(S.ps_t.h||0)}時${(S.ps_t.m||0)}分</b><span>工作天每日坐著</span></div>`:""}</div>費力 ${Math.round(r.V.met)}・中等 ${Math.round(r.M.met)}・走路 ${Math.round(r.W.met)} MET-分鐘／週。`];}
 function overall(S){const rows=[];
   const [bt,bn]=sumOf(BIDS);if(bn)rows.push(`巴氏量表：${bt} 分${bn===10?"，"+barthelLevel(bt):`（已填 ${bn}/10）`}${S.b_final?"；最後級分："+S.b_final:""}`);
   const dep=BIDS.filter(id=>{const s=scoreOf(BY[id],S[id]);return s!==null&&s<maxOf(BY[id]);}).map(id=>BY[id].label.replace(/^\d+\.\s*/,""));if(dep.length)rows.push("ADL 需協助：" + dep.join("、"));
   const [st,sn]=sumOf(["s1","s2","s3"]);if(sn===3)rows.push(`SOF 衰弱評估：${st} 分（${st>=2?"衰弱":st===1?"衰弱前期":"健壯"}）`);
   const [it,inn]=sumOf(IIDS);if(inn){const h=iadlHelp(S);rows.push(`IADL：${it}/24 分；五項中需協助 ${h.length} 項${h.length>=3?"，符合輕度失能":""}`);}
-  const r=ipaq(S);if(r)rows.push(`IPAQ：${r.tot.toLocaleString()} MET-分鐘／週，${r.lv}身體活動量`);
+  const r=ipaq(S);if(r)rows.push(`IPAQ：${(Math.round(r.tot*10)/10).toLocaleString()} MET-分鐘／週，${r.lv}身體活動量`);
   if(!rows.length) return ["info","評估結果整理","完成前面各單元後，這裡會整理 ADL、衰弱、IADL 與活動量結果，幫你撰寫健康問題與建議。"];
   return ["info","評估結果整理","<ol>"+rows.map(x=>"<li>"+x+"</li>").join("")+"</ol>"];}
 
@@ -591,11 +619,11 @@ function renderLearn(){
   const groups=[["基本概念","a"],["ADL 評估","v"],["IADL 評估","h"],["補充說明","a"]];
   $("#view-learn").innerHTML=`<div class="learn"><nav class="toc" aria-label="教材目錄">${groups.map(([g,c])=>`<h4>${g}</h4>`+TOPICS.filter(t=>t.group===g).map(t=>`<a class="${c}" href="#${t.id}">${t.title}</a>`).join("")).join("")}</nav>
   <div><div class="intro"><h2>功能退化不是一次失去，而是由複雜到基本</h2>
-  <p class="prose" style="margin:0">ADL 看長者能不能照顧自己，IADL 看長者能不能在社區獨立生活。本單元整理課堂簡報，包含巴氏量表與 Lawton IADL 每一項的評分定義。讀完後切換到「評估單實作」，依你們組擬定的案例逐項評估。</p>
+  <p class="prose" style="margin:0">ADL 看長者能不能照顧自己，IADL 看長者能不能在社區獨立生活。本單元整理課堂簡報，包含巴氏量表與 Lawton IADL 每一項的評分定義。讀完後可到「情境實作」跟著林陳秀琴阿嬤的訪視逐段練習，或到「評估單」依你們組擬定的案例填寫。</p>
   <div class="facts"><div class="fact"><b>17.5%</b><span>長者衰弱風險</span></div><div class="fact"><b>12.7%</b><span>長者失能</span></div><div class="fact"><b>0–100</b><span>巴氏量表總分</span></div><div class="fact"><b>10/19・10/20</b><span>講述（A206）・技術實作（M121）</span></div></div>
   <p style="margin:0;font-size:13.5px;color:var(--muted)">實作學習評估單請於下週課前繳交至創課。</p></div>
   ${TOPICS.map(t=>`<section class="topic ${t.dom}" id="${t.id}">${topicHTML(t)}</section>`).join("")}
-  <p style="text-align:center;margin-top:30px"><button class="btn primary" type="button" data-go="form">開始評估單實作 →</button></p></div></div>`;
+  <p style="text-align:center;margin-top:30px"><button class="btn primary" type="button" data-go="guide">開始情境實作 →</button></p></div></div>`;
 }
 
 /* ============ 評估單 ============ */
@@ -613,13 +641,15 @@ function inputHTML(i){const v=S[i.id];const name=i.id;
    case "days":{const o=v||{};return `<div class="dd"><label><input type="number" min="0" max="7" step="1" id="f-${name}-d" data-obj="${name}" data-f="d" value="${esc(o.d)}" ${o.none?"disabled":""}> 天</label><label class="choice sq"><input type="checkbox" id="f-${name}-none" data-obj="${name}" data-f="none" ${o.none?"checked":""}><span>${esc(i.none)}</span></label></div>`;}
    case "dur":{const o=v||{};return `<div class="dd"><label>一天 <input type="number" min="0" max="24" id="f-${name}-h" data-obj="${name}" data-f="h" value="${esc(o.h)}" ${o.unk?"disabled":""}> 小時</label><label><input type="number" min="0" max="59" id="f-${name}-m" data-obj="${name}" data-f="m" value="${esc(o.m)}" ${o.unk?"disabled":""}> 分鐘</label>${i.nounk?"":`<label class="choice sq"><input type="checkbox" id="f-${name}-unk" data-obj="${name}" data-f="unk" ${o.unk?"checked":""}><span>不知道／不確定</span></label>`}</div>`;}
   }}
-function itemHTML(i){
+function itemHTML(i,g){
   if(i.type==="note") return `<div class="note-slot" data-note="${i.id}"></div>`;
+  const fb=g&&g.key&&g.key[i.id]?`<div class="fb-slot" data-fb="${i.id}"></div>`:"";
   return `<div class="item" id="it-${i.id}" data-id="${i.id}" ${vis(i)?"":"hidden"}>
    <div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div>
    <div class="body"><div class="lbl">${esc(i.label)}${i.score&&i.score!=="yn"?`<span class="score" data-score="${i.id}"></span>`:""}${i.em?`<em>${esc(i.em)}</em>`:""}${i.opt&&!i.em?`<em>選填</em>`:""}</div>
    ${i.hint?`<div class="hint">${i.hint}</div>`:""}
    ${inputHTML(i)}
+   ${fb}
    ${i.learn?`<button type="button" class="learnlink" data-learn="${i.learn}">${i.score==="paren"||i.score==="lead"?"評分定義：":"教材："}${T[i.learn].title}</button>`:""}
    </div></div>`;}
 function railHTML(){return UNITS.map(u=>{const [a,b]=unitStat(u);return `<button type="button" class="unit-btn ${a===b?"done":""}" data-unit="${u.id}" data-dom="${u.dom}" aria-current="${UI.unit===u.id}"><span class="k">${u.key}</span><span class="t">${u.title}</span><span class="c">${a}/${b}${a===b?" 完成":""}</span></button>`;}).join("");}
@@ -641,17 +671,19 @@ function renderForm(){
 }
 function refresh(){
   const u=UNITS.find(x=>x.id===UI.unit);
-  u.secs.forEach(s=>s.items.forEach(i=>{
+  ALL.forEach(i=>{
     if(i.type==="note"){const slot=$(`[data-note="${i.id}"]`);if(!slot)return;const r=i.fn(S);slot.innerHTML=r?`<div class="note ${r[0]}"><b>${r[1]}</b>${r[2]}</div>`:"";return;}
     const el=$("#it-"+i.id);if(!el)return;el.hidden=!vis(i);el.classList.toggle("ok",answered(i));
     if(i.other){const o=$("#f-"+i.id+"_o");if(o)o.hidden=S[i.id]!==i.other;}
     const sc=$(`[data-score="${i.id}"]`);if(sc){const s=scoreOf(i,S[i.id]);sc.textContent=(s===null?"—":s)+" / "+maxOf(i)+" 分";}
     if(i.type==="days"){const o=S[i.id]||{};const d=$(`#f-${i.id}-d`);if(d)d.disabled=!!o.none;}
     if(i.type==="dur"){const o=S[i.id]||{};["h","m"].forEach(f=>{const x=$(`#f-${i.id}-${f}`);if(x)x.disabled=!!o.unk;});}
-  }));
+  });
+  let A=0,B=0;UNITS.forEach(x=>{const [p,q]=unitStat(x);A+=p;B+=q;});$("#prog").style.width=(B?A/B*100:0)+"%";
+  if(UI.mode==="guide"){refreshGuide();return;}
+  if(!$("#unit-meta"))return;
   const [a,b]=unitStat(u);$("#unit-meta").textContent=`已完成 ${a} / ${b} 項`;
   $("#rail").innerHTML=railHTML();$("#mrail").innerHTML=railHTML();
-  let A=0,B=0;UNITS.forEach(x=>{const [p,q]=unitStat(x);A+=p;B+=q;});$("#prog").style.width=(B?A/B*100:0)+"%";
   const ct=$("#case-text");ct.textContent=S.scenario||"尚未填寫。請在 A 單元寫下你們組擬定的受評者角色與情境，或帶入課堂案例（張非）。";ct.style.color=S.scenario?"":"var(--muted)";ct.style.whiteSpace="pre-line";
 }
 function nextOpen(fromId){
@@ -668,13 +700,13 @@ document.addEventListener("input",e=>{const t=e.target;
     if(t.type==="checkbox"){const a=Array.isArray(S[k])?S[k]:[];S[k]=t.checked?[...new Set([...a,t.value])]:a.filter(x=>x!==t.value);}
     else S[k]=t.value;
     derive(k);save();refresh();
-    if(UI.auto&&t.type==="radio"&&i&&answered(i)){const n=nextOpen(k);if(n)setTimeout(()=>focusItem(n),260);}
+    if(UI.auto&&t.type==="radio"&&i&&answered(i)){const n=UI.mode==="guide"?nextOpenGuide(k):nextOpen(k);if(n)setTimeout(()=>focusItem(n),UI.mode==="guide"&&G.practice?900:260);}
   }
   if(t.dataset.obj){const k=t.dataset.obj,f=t.dataset.f;const o={...(S[k]||{})};
     if(t.type==="checkbox"){o[f]=t.checked;}else{let val=t.value;if(f==="d"&&val!==""){val=String(Math.max(0,Math.min(7,Math.round(+val))));}o[f]=val;}
     if(f==="d"&&o.d==="0"){o.none=true;o.d="";const cb=$(`#f-${k}-none`);if(cb)cb.checked=true;t.value="";}
     S[k]=o;save();refresh();
-    if(UI.auto&&t.type==="checkbox"&&t.checked){const n=nextOpen(k);if(n)setTimeout(()=>focusItem(n),260);}
+    if(UI.auto&&t.type==="checkbox"&&t.checked){const n=UI.mode==="guide"?nextOpenGuide(k):nextOpen(k);if(n)setTimeout(()=>focusItem(n),260);}
   }
 });
 document.addEventListener("change",async e=>{const t=e.target;
@@ -684,8 +716,12 @@ document.addEventListener("change",async e=>{const t=e.target;
 });
 function shrink(file,max){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.82));};im.src=r.result;};r.readAsDataURL(file);});}
 
-function setMode(m){UI.mode=m;saveUI();$("#view-learn").hidden=m!=="learn";$("#view-form").hidden=m!=="form";$("#btn-next").hidden=m!=="form";
-  $$(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.mode===m));if(m==="learn"&&!$("#view-learn").innerHTML)renderLearn();window.scrollTo(0,0);}
+function setMode(m){UI.mode=m;saveUI();["learn","guide","form"].forEach(v=>{$("#view-"+v).hidden=m!==v;});$("#btn-next").hidden=m!=="form";
+  $$(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.mode===m));
+  if(m==="learn"&&!$("#view-learn").innerHTML)renderLearn();
+  if(m==="guide"){$("#view-form").innerHTML="";renderGuide();}
+  if(m==="form"){$("#view-guide").innerHTML="";renderForm();}
+  window.scrollTo(0,0);}
 function openDrawer(id){closeModal();const t=T[id];const sc=document.createElement("div");sc.className="scrim";sc.dataset.close="";const d=document.createElement("aside");d.className="drawer";d.setAttribute("role","dialog");d.setAttribute("aria-label",t.title);
   d.innerHTML=`<button type="button" class="btn small close" data-close>關閉</button><div class="topic ${t.dom}" style="border:0;padding-top:4px">${topicHTML(t)}</div>`;document.body.append(sc,d);$(".close",d).focus();}
 function closeModal(){$$(".scrim,.drawer,.modal").forEach(x=>x.remove());}
@@ -696,6 +732,12 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,img[data-
   if(t.dataset.go){setMode(t.dataset.go);return;}
   if(t.dataset.close!==undefined){closeModal();return;}
   if(t.dataset.learn){openDrawer(t.dataset.learn);return;}
+  if(t.dataset.start){G.list=false;startScenario(t.dataset.start);return;}
+  if(t.dataset.resume){G.list=false;renderGuide();window.scrollTo(0,0);return;}
+  if(t.dataset.gstep!==undefined){S.scenarioStep=+t.dataset.gstep;save();renderGuide();window.scrollTo(0,0);return;}
+  if(t.id==="g-quit"){G.list=true;renderGuide();window.scrollTo(0,0);return;}
+  if(t.dataset.reveal){G.reveal[t.dataset.reveal]=true;refresh();return;}
+  if(t.id==="btn-export3"){openExport();return;}
   if(t.dataset.unit){UI.unit=t.dataset.unit;saveUI();renderForm();window.scrollTo(0,0);return;}
   if(t.id==="use-case"){S.scenario=CASE_ZHANG;if(!S.client)S.client="張非";if(!S.sex)S.sex="生理男";if(!S.age)S.age="80";if(!S.marital)S.marital="已婚";if(!S.edu)S.edu="國小";if(!S.cg){S.cg="有";S.cg_sex="生理女";S.cg_rel="妻子";}save();renderForm();toast("已帶入張非案例");return;}
   if(t.id==="tree-del"){delete S.tree_img;save();renderForm();return;}
@@ -716,6 +758,155 @@ function openExport(){closeModal();const sc=document.createElement("div");sc.cla
   <p class="msg">換電腦或手機繼續作答：先下載作答檔，在另一台裝置載入。</p>
   <div class="acts" style="justify-content:flex-start"><button type="button" class="btn small" id="do-json">下載作答檔</button><label class="btn small" for="f-import">載入作答檔</label><input type="file" id="f-import" accept="application/json,.json" hidden></div>`;
   document.body.append(sc,m);}
+
+/* ============ 情境實作 ============ */
+const P=(...ls)=>ls.map(l=>`<p>${l}</p>`).join("");
+const opt=(id,n)=>BY[id].opts[n];
+const SCENARIOS=[{
+ id:"linchen",title:"林陳秀琴阿嬤",sub:"85 歲，泌尿道感染出院後體力與食慾變差，怕跌倒不敢出門",
+ summary:"林陳秀琴女士，85 歲，喪偶，與小兒子一家同住在台中市大里區的三樓透天厝。2026 年 8 月因泌尿道感染住院 5 天，出院後體力和食慾都變差。以前她每週兩次自己走路去社區關懷據點，現在因為怕跌倒，沒有家人陪就不出門。媳婦是主要照顧者，平日要上班，擔心阿嬤白天一個人在家不安全。今天下午 2:00 學生到家中訪視，評估阿嬤的日常生活功能。",
+ steps:[
+ {g:"開場",title:"訪視開場與評估環境",text:P("林陳秀琴女士，85 歲，喪偶，與小兒子一家同住在台中市大里區的三樓透天厝。2026 年 8 月因泌尿道感染住院 5 天，出院後體力和食慾都變差。以前她每週兩次自己走路去社區關懷據點，現在因為怕跌倒，沒有家人陪就不出門。媳婦是主要照顧者，平日要上班，擔心阿嬤白天一個人在家不安全。今天下午 2:00 學生到家中訪視，評估阿嬤的日常生活功能。","阿嬤坐在客廳藤椅上，右耳戴助聽器，左耳聽力較差，說話要放慢、音量稍大，媳婦在旁陪同。","<b>家中格局</b>：一樓有客廳、廚房、浴室和阿嬤的臥室。阿嬤原本睡在二樓，出院後媳婦把她的床搬到一樓原本的儲藏室。二樓是神明廳和兒子夫妻的房間，三樓是孫子女的房間。樓梯單邊有扶手，階梯偏高、偏窄。","一樓浴室有坐式馬桶，但馬桶旁、淋浴區都沒有扶手。浴室門口有約 5 公分高的門檻，地板是光面磁磚。洗澡時阿嬤坐在一張矮的塑膠板凳上。","阿嬤臥室的床是一般木板床，高度偏低，床邊有一個五斗櫃。從臥室到浴室大約 6 公尺，走廊晚上沒有夜燈。",'<span class="tip">提示：請記錄你如何安排評估的順序，以及哪些項目適合請阿嬤實際做給你看。</span>'),
+  items:["prep_steps","respondent","prep_note"],
+  key:{prep_steps:{ans:BY.prep_steps.opts.slice(),why:"評估前五項準備都要完成。阿嬤聽力較差，自我介紹與說明時要面對她、放慢速度、音量稍大。"},
+   respondent:{ans:"個案本人",why:"阿嬤能清楚表達，應以個案回答為優先；媳婦在旁陪同補充。"},
+   prep_note:{ref:"參考做法：先建立關係、說明評估目的 → 坐著可完成的訪談（病史、吃飯、個人修飾、大小便）→ 請阿嬤實際示範：從藤椅站起（移位）、拄四腳拐杖走一段（走路）、雙手交叉胸前坐站（SOF 下肢功能）、撥打未儲存的電話號碼（IADL 電話）→ 最後訪談 IADL 與身體活動。示範時在旁防護，留意光面磁磚、無扶手、門檻等跌倒風險。"}}},
+ {g:"基本資料",title:"基本資料",text:P("基本資料與前兩份評估相同：生理女，民國 30 年 3 月 15 日生，喪偶，國小畢業，一般戶。持有新制身心障礙證明，第二類（聽力），ICD 為 H90.3。","主要照顧者是媳婦，52 歲，生理女。家族樹也相同。",'<span class="tip">組別、評估日期時間、評估者姓名請填你們組的資料。</span>'),
+  items:["group","datetime","assessor","client","sex","birth","age","marital","edu","identity","cg","cg_sex","cg_rel","tree"],
+  key:{client:{ref:"林陳秀琴"},sex:{ans:"生理女"},birth:{ans:"1941-03-15",why:"民國 30 年＝西元 1941 年。"},age:{ans:"85"},marital:{ans:"喪偶"},edu:{ans:"國小"},
+   identity:{ans:["一般戶","領有身心障礙證明（手冊）"],why:"一般戶，且持有新制身心障礙證明（第二類，聽力）。"},cg:{ans:"有"},cg_sex:{ans:"生理女"},cg_rel:{ref:"媳婦（52 歲）"},
+   tree:{ref:"沿用前兩份評估的家族樹。需標示：個案（女，85 歲）喪偶；與小兒子一家同住（以虛線圈出同住者）；媳婦為主要照顧者。"}}},
+ {g:"病史",title:"病史摘要",text:P("<b>主訴</b>：阿嬤說：「出院以後腳就沒什麼力氣，走一下就累，很怕跌倒，所以都不太敢出門。」","<b>現在病史</b>：2026 年 8 月因泌尿道感染住院 5 天，出院後食慾變差。三個月內體重從 51.0 公斤降到 48.5 公斤。上排假牙鬆動，咀嚼會痛。","<b>過去病史</b>：高血壓、第二型糖尿病、高血脂、退化性膝關節炎（右膝較嚴重）、骨質疏鬆、雙側感音性聽力損失，2019 年雙眼白內障手術。磺胺類藥物過敏。","<b>目前用藥</b>：Amlodipine 5 mg 每日一次、Metformin 500 mg 每日兩次、Atorvastatin 10 mg 睡前一次、Sennoside 12 mg 便秘時使用；另外自購葡萄糖胺和鈣片。","<b>心理社會史</b>：年輕時務農，之後在傳統市場賣菜到 70 歲。信佛，初一、十五吃素，以前常去廟裡幫忙。SPMSQ 答錯 2 題，GDS-15 為 4 分。","<b>跌倒史</b>：上個月某天半夜起床上廁所，走廊太暗，阿嬤在浴室門檻絆了一下，扶住門框沒有跌倒。過去一年沒有真正跌倒過。"),
+  items:["hpi","pmh","fh","psy","life"],
+  key:{hpi:{ref:"主訴：出院後腳沒力氣、走一下就累、怕跌倒不敢出門。2026 年 8 月泌尿道感染住院 5 天，出院後食慾變差，三個月內體重 51.0 → 48.5 公斤；上排假牙鬆動、咀嚼痛。用藥：Amlodipine 5 mg QD、Metformin 500 mg BID、Atorvastatin 10 mg HS、Sennoside 12 mg PRN；自購葡萄糖胺、鈣片。上個月夜間如廁在門檻絆到，差點跌倒。"},
+   pmh:{ref:"高血壓、第二型糖尿病、高血脂、退化性膝關節炎（右膝較重）、骨質疏鬆、雙側感音性聽力損失（右耳戴助聽器）、2019 年雙眼白內障手術；磺胺類藥物過敏。過去一年無真正跌倒。"},
+   fh:{ref:"情境未提供家族史。實際訪視時要追問，例如家族中有無中風、失智、糖尿病、心血管疾病；評估單不可空白，可註明「情境未提及，需追問」。"},
+   psy:{ref:"年輕時務農，後於傳統市場賣菜至 70 歲；信佛，初一、十五吃素，以前常去廟裡幫忙、每週兩次走去社區關懷據點，出院後都沒去。喪偶，與小兒子一家同住，媳婦白天上班。SPMSQ 錯 2 題、GDS-15 為 4 分。"},
+   life:{ref:"出院後幾乎都待在家。居家環境：三樓透天，臥室移到一樓且床偏低；浴室無扶手、門檻約 5 公分、光面磁磚、坐矮塑膠板凳洗澡；臥室到浴室約 6 公尺、走廊無夜燈；樓梯單側扶手、階梯偏高偏窄。使用四腳拐杖、右耳助聽器、上排假牙。"}}},
+ {g:"病史",title:"T.O.C.C.",text:P("與前兩份評估相同：近三個月未出國；退休農民與市場攤販；家中養狗、鄰居養雞；孫女上週感冒咳嗽已好轉；出院後未參加團體活動。"),
+  items:["t_travel","t_occ","t_contact","t_cluster"],
+  key:{t_travel:{ref:"近三個月未出國"},t_occ:{ref:"退休農民、市場攤販"},t_contact:{ref:"家中養狗、鄰居養雞；孫女上週感冒咳嗽已好轉"},t_cluster:{ref:"出院後未參加團體活動"}}},
+ {g:"巴氏量表",title:"移位",text:P("學生請阿嬤從藤椅站起來。阿嬤雙手撐住扶手，身體往前傾，第一次沒站起來，第二次才站穩，整個過程沒有人幫忙。","阿嬤說：「早上起床從床上坐起來、站起來都是我自己來，只是比較慢。」媳婦說：「她都自己起床，我沒有扶她。」"),
+  items:["b1"],key:{b1:{ans:opt("b1",0),why:"雖然慢，但能自行起身與移位，無需協助。（15 分）"}}},
+ {g:"巴氏量表",title:"走路",text:P("學生請阿嬤拄四腳拐杖，從客廳走到廚房再走回來，來回約 20 公尺。阿嬤可以自己走，步伐小、速度慢，走完坐下來說：「有點喘，腳會酸。」","學生問她能不能自己走到外面的便利商店（約 100 公尺）。阿嬤說：「自己不敢去。上禮拜天是媳婦扶著我的手臂，我拿拐杖，兩個人慢慢走過去的，中間還在騎樓的椅子上休息了一下。」媳婦補充：「她在家裡走沒問題，但出門走遠一點我一定要扶著，不然她會晃。」"),
+  items:["b2"],key:{b2:{ans:opt("b2",1),why:"家中可用拐杖獨立走，但 50 公尺以上需要扶持。（10 分）",disc:"走路不能只看家中表現，要問 50 公尺以上的情況。"}}},
+ {g:"巴氏量表",title:"吃飯",text:P("阿嬤自己用湯匙和筷子吃飯，不需要人餵，一餐大約吃 30 分鐘。媳婦說：「肉我煮的時候就先切成小丁，端上桌她就自己吃。」"),
+  items:["b3"],key:{b3:{ans:opt("b3",0),why:"自行進食；事先切丁屬於備餐，不算進食協助。（10 分）",disc:"吃飯時預先切好食物屬於備餐，不扣分。"}}},
+ {g:"巴氏量表",title:"上廁所",text:P("阿嬤白天自己拄拐杖去浴室，自己坐上、離開馬桶，自己用衛生紙擦拭、整理褲子、沖水。她說：「起來的時候要扶洗手台，因為馬桶旁邊沒有東西可以扶。」"),
+  items:["b4"],key:{b4:{ans:opt("b4",0),why:"自行完成坐上馬桶、擦拭、整理衣褲、沖水。（10 分）"}}},
+ {g:"巴氏量表",title:"上下樓梯",text:P("出院後阿嬤平常都待在一樓，只有初一、十五會上二樓神明廳拜拜。媳婦說：「她上樓要抓著扶手，一階一階慢慢上，我一定跟在她後面，怕她往後倒。下樓的時候我走在她前面。」阿嬤說：「媳婦不在，我就不敢上去。」"),
+  items:["b5"],key:{b5:{ans:opt("b5",1),why:"需要他人在旁監督。基於安全考量需他人監督，不能獨自執行時，仍評為需協助。（5 分）"}}},
+ {g:"巴氏量表",title:"穿脫衣物",text:P("阿嬤平常穿鬆緊帶的褲子和開襟上衣，上衣、褲子都是自己穿脫，扣子扣得比較慢。她說：「襪子穿不起來，膝蓋彎不下去，都是媳婦早上出門前幫我穿。鞋子我穿那種魔鬼氈的，自己可以。」"),
+  items:["b6"],key:{b6:{ans:opt("b6",1),why:"襪子需協助，其餘自己完成，超過一半。（5 分）"}}},
+ {g:"巴氏量表",title:"大便",text:P("二到三天解一次，偏硬，便秘時自己吃藥袋裡的軟便藥。沒有大便失禁。"),
+  items:["b7"],key:{b7:{ans:opt("b7",0),why:"無失禁，可自行使用軟便藥。（10 分）"}}},
+ {g:"巴氏量表",title:"小便",text:P("媳婦說：「出院以後，這個月有兩次半夜來不及走到廁所就尿出來了，褲子和床單都濕了，是我起來幫她換、幫她洗的。」阿嬤有點不好意思地說：「現在晚上睡覺都墊一片護墊。」白天沒有漏尿。"),
+  items:["b8"],key:{b8:{ans:opt("b8",1),why:"偶爾失禁，需要他人協助處理。（5 分）",disc:"夜間偶爾失禁需要他人處理，不能只看白天。"}}},
+ {g:"巴氏量表",title:"個人修飾",text:P("洗手、洗臉、刷牙、梳頭都是阿嬤自己在洗手台完成，不需要協助。"),
+  items:["b9"],key:{b9:{ans:opt("b9",0),why:"自行完成。（5 分）"}}},
+ {g:"巴氏量表",title:"洗澡",text:P("媳婦說：「她自己洗會怕滑倒，所以每個禮拜二、六我下班後幫她洗。我幫她洗背、洗腳，頭髮也是我幫她洗，她自己只洗前面。其他天就用毛巾擦一擦。」"),
+  items:["b10"],key:{b10:{ans:opt("b10",1),why:"需他人協助。（0 分）"}}},
+ {g:"巴氏量表",title:"巴氏量表總分",text:P("把十個項目的分數加總，對照分級。"),
+  items:["b_note","b_final"],key:{b_final:{ans:"顯著依賴",why:"總分 75 分，落在 61–90 分（中度依賴）。「最後級分」的四個選項名稱和上方五個級距不同，依分數對應 75 分應勾「顯著依賴」。"}}},
+ {g:"衰弱 SOF",title:"體重減輕",text:P("學生問：「跟一年前比起來，您的體重差不多還是有減少？」阿嬤說：「有瘦，衣服都變鬆了。」","媳婦拿出去年 10 月社區老人健檢的單子，上面體重是 52.0 公斤。今天量的體重是 48.5 公斤。阿嬤沒有刻意減重。"),
+  items:["s1"],key:{s1:{ans:"是(1分)",why:"52.0 → 48.5 公斤，一年內減少 3.5 公斤（6.7%），非刻意減重。"}}},
+ {g:"衰弱 SOF",title:"從椅子站起",text:P("學生請阿嬤雙手交叉放在胸前，從椅子站起來五次。阿嬤試了一次，身體往前傾但站不起來，只好放開手撐扶手，說：「不用手撐，我站不起來。」"),
+  items:["s2"],key:{s2:{ans:"是(1分)",why:"不用手撐無法從椅子站起。"}}},
+ {g:"衰弱 SOF",title:"精力",text:P("學生問：「過去一個禮拜，您會不會覺得提不起勁做事？」阿嬤說：「會啊，這個禮拜幾乎每天都懶懶的，什麼都不想做，只想坐著看電視。」"),
+  items:["s3","s_note"],key:{s3:{ans:"是(1分)",why:"過去一週幾乎每天提不起勁。SOF 總分 3 分，屬於衰弱（0 分健壯、1 分衰弱前期、2 分以上衰弱）。"}}},
+ {g:"IADL",title:"購物",text:P("住院前阿嬤自己走路去黃昏市場買菜。阿嬤說：「現在都是媳婦買，我想吃什麼就跟她講。上禮拜天她帶我去便利商店，我自己挑了一包蘇打餅乾，自己付錢。」問她能不能自己去買東西，她說：「不行，一定要有人陪我。」"),
+  items:["i1"],key:{i1:{ans:opt("i1",2),why:"每次購物都需有人陪同。（1 分）"}}},
+ {g:"IADL",title:"外出",text:P("阿嬤從來沒有騎過機車或開過車。以前會自己搭公車去大里區公所和市場，現在不敢。她說：「去看醫生都是兒子或媳婦開車載我，我自己不會叫計程車，也不敢一個人坐。」"),
+  items:["i2"],key:{i2:{ans:opt("i2",3),why:"只能在有人陪同下搭車。（1 分）"}}},
+ {g:"IADL",title:"烹調",text:P("媳婦每天早上出門前把早餐和午餐煮好，午餐放在大同電鍋裡。阿嬤說：「中午我自己按電鍋熱一下就可以吃了。以前我很會煮，現在站久腳會痠，也沒力氣拿鍋子，就沒再煮了。」"),
+  items:["i3"],key:{i3:{ans:opt("i3",2),why:"只會加熱已做好的飯菜。（1 分）"}}},
+ {g:"IADL",title:"家務",text:P("阿嬤吃完飯會自己把碗洗好，早上會自己把棉被摺好。她說：「拖地、擦窗戶那些都是媳婦在做，我彎不下去。」"),
+  items:["i4"],key:{i4:{ans:opt("i4",1),why:"能洗碗、摺棉被等簡單家事。（3 分）"}}},
+ {g:"IADL",title:"洗衣",text:P("阿嬤自己在浴室用手洗內衣褲和襪子，晾在浴室裡。其他衣服和床單都是媳婦用洗衣機洗。"),
+  items:["i5"],key:{i5:{ans:opt("i5",1),why:"只洗小件衣物。（1 分）"}}},
+ {g:"IADL",title:"電話",text:P("阿嬤用的是按鍵很大的老人手機，媳婦和女兒的號碼都存好了，她可以自己找到、撥出去。","學生請她撥一個沒存的號碼（社區據點電話，寫在紙上），阿嬤看了很久，說：「這個我不會，按錯好幾次了。」查電話簿這件事她從來不做。來電時她聽得到鈴聲，可以接聽。"),
+  items:["i6"],key:{i6:{ans:opt("i6",1),why:"只能撥熟悉（已儲存）的號碼。（2 分）",disc:"電話項目要實際測試撥打未儲存的號碼，才能區分 2 分和 3 分。"}}},
+ {g:"IADL",title:"服藥",text:P("媳婦每個禮拜日晚上把一週的藥分裝到早、午、晚、睡前的藥盒裡。阿嬤會按時從藥盒拿藥吃，這個月只有一次忘了吃晚上的糖尿病藥。","學生問：「如果沒有分好藥盒，您知道每一包藥什麼時候吃嗎？」阿嬤說：「藥袋上的字太小，我分不清楚，都是媳婦幫我分。」"),
+  items:["i7"],key:{i7:{ans:opt("i7",2),why:"事先分好藥量可自行服用。（1 分）",disc:"服藥要分辨「需要提醒」（2 分）和「需要事先分好藥」（1 分）。"}}},
+ {g:"IADL",title:"財務",text:P("阿嬤身上帶著一些零用錢，去廟裡添香油錢、買小東西都是自己付。她說：「老人年金和銀行的事情都是兒子在處理，我不會用提款機。」"),
+  items:["i8"],key:{i8:{ans:opt("i8",1),why:"能處理日常購買，銀行事務需他人協助。（1 分）"}}},
+ {g:"IADL",title:"IADL 評估結果及意義",text:P("看看 IADL 總分與五項（購物、外出、烹調、家務、洗衣）需協助的項目數，寫下評估結果及意義。"),
+  items:["i_note","i_mean"],key:{i_mean:{ref:"IADL 總分 11 分。長照常用判定以購物、外出、烹調、家務、洗衣五項為主，三項以上需要協助即視為 IADL 失能。阿嬤五項都需要協助，屬於 IADL 失能。主要原因是體能下降、害怕跌倒、膝關節退化和視力問題，不是認知障礙。"}}},
+ {g:"IPAQ",title:"與三個月前比較、費力活動",text:P("阿嬤已退休，沒有工作日、休假日之分，學生改問她「平常的一天」。","<b>與三個月前比較</b>：阿嬤說：「三個月前（7 月）我還會走去據點、去廟裡幫忙，現在幾乎都待在家。」","<b>費力活動</b>：過去七天都沒有做過。"),
+  items:["p0","pv_d"],key:{p0:{ans:"(2)比較少"},pv_d:{ans:{none:true},why:"過去七天沒有費力活動，勾「沒有做費力的身體活動」並跳問題三。"}}},
+ {g:"IPAQ",title:"中等費力活動",text:P("過去七天沒有做到連續 10 分鐘以上的中等費力活動。初一那天上下樓梯去神明廳，上下樓總共不到 5 分鐘。手洗內衣褲大約 5 分鐘。"),
+  items:["pm_d"],key:{pm_d:{ans:{none:true},why:"上下樓梯、手洗衣物都沒有連續 10 分鐘，不算；勾「沒有做中等費力的活動」。"}}},
+ {g:"IPAQ",title:"走路",text:P("在家中走動每次都只有一兩分鐘。過去七天只有上禮拜天和媳婦一起走去便利商店，來回大約 20 分鐘，中間休息過一次（走路時間合計約 15 分鐘）。"),
+  items:["pw_d","pw_t"],key:{pw_d:{ans:{d:"1"},why:"家中走動每次只有一兩分鐘，未達 10 分鐘不算；只有上禮拜天那一天。"},pw_t:{ans:{h:"0",m:"15"},why:"扣掉休息，走路時間合計約 15 分鐘。"}}},
+ {g:"IPAQ",title:"坐著的時間",text:P("阿嬤早上 5:30 起床、晚上 9:00 睡覺。媳婦說：「她除了吃飯、上廁所、洗碗，其他時間幾乎都坐在客廳看電視，我估計一天坐 11 個小時左右。」"),
+  items:["ps_t","p_note"],key:{ps_t:{ans:{h:"11",m:"0"},why:"身體活動量 3.3 MET × 15 分鐘 × 1 天 = 49.5 MET-分鐘／週，遠低於 600，屬於低度身體活動，而且久坐時間長。"}}},
+ {g:"建議",title:"健康問題評估及建議",text:P("綜合 ADL、衰弱、IADL、身體活動與居家環境，寫下阿嬤的主要健康問題與照護建議。"),
+  items:["g_sum","g_problem","g_advice"],
+  key:{g_problem:{ref:"1. 衰弱，合併肌力與耐力下降，有肌少症風險（呼應營養評估的小腿圍 30 公分、MNA 15 分）。\n2. 跌倒高風險：夜尿、走廊沒有夜燈、浴室門檻高、沒有扶手、床太低、下肢無力，加上上個月已有一次差點跌倒。\n3. ADL 中度依賴、IADL 失能，身體活動量低、久坐。\n4. 夜間偶發尿失禁。\n5. 社會參與減少，不想麻煩家人。"},
+   g_advice:{ref:"居家環境：走廊和臥室加裝感應式夜燈；浴室門檻加斜坡或移除，馬桶旁和淋浴區加裝扶手、鋪止滑墊；塑膠板凳換成有靠背的洗澡椅；床墊墊高或改用可調高度的床；可申請長照居家無障礙環境改善與輔具補助。\n輔具：夜間床邊放便盆椅；穿襪輔助器、長柄鞋拔；外出可評估助行器或輪椅。\n運動與活動：轉介物理治療，做漸進式下肢肌力與平衡訓練（扶椅坐站、踮腳、側抬腿）；每天分次走動，逐步增加到每次連續 10 分鐘，減少久坐；搭配營養師建議的高蛋白飲食。\n失禁與夜尿：白天補足水分、傍晚後減量、睡前排尿；泌尿道感染後新發失禁建議回診；教導骨盆底肌運動。\n長照與社會資源：申請長照 2.0 評估，使用居家服務（協助洗澡）、交通接送、日間照顧；由家人或交通車陪同逐步恢復據點共餐；藥盒持續由媳婦分裝，請藥師提供大字藥袋。\n照顧者支持：媳婦負荷大，評估照顧負荷，介紹喘息服務與家庭照顧者支持據點。"}}},
+ ]}];
+let G={practice:false,sc:null,step:0,reveal:{}};
+function guideMode(){const h=location.hash.slice(1);return h==="practice";}
+function curSc(){return SCENARIOS.find(x=>x.id===S.scenarioId)||null;}
+function dmin(v){return (+(v&&v.h||0))*60+(+(v&&v.m||0));}
+function judge(i,k){const v=S[i.id];if(k.ans===undefined)return null;if(!answered(i))return null;
+  switch(i.type){
+   case "radio":return v===k.ans;
+   case "checks":case "checklist":{const a=(v||[]).slice().sort().join("|"),b=k.ans.slice().sort().join("|");return a===b;}
+   case "days":return k.ans.none?!!v.none:(!v.none&&+v.d===+k.ans.d);
+   case "dur":return !v.unk&&dmin(v)===dmin(k.ans);
+   case "number":return +v===+k.ans;
+   default:return String(v).trim()===String(k.ans);}}
+function ansText(i,k){const a=k.ans;
+  if(i.type==="days")return a.none?i.none:a.d+" 天";
+  if(i.type==="dur")return `一天 ${a.h} 小時 ${a.m} 分鐘`;
+  if(Array.isArray(a))return a.join("、");
+  return a;}
+function fbHTML(i,k){
+  if(!G.practice)return "";
+  if(k.ref!==undefined){
+    if(!G.reveal[i.id])return answered(i)?`<button type="button" class="btn small" data-reveal="${i.id}">看參考重點</button>`:"";
+    return `<div class="fb ref"><b>參考重點</b><div class="why" style="white-space:pre-line">${esc(k.ref)}</div></div>`;}
+  const r=judge(i,k);if(r===null)return "";
+  return `<div class="fb ${r?"right":"wrong"}"><b>${r?"答對了":"再想想"}</b>${r?"":`<div class="why">參考答案：${esc(ansText(i,k))}</div>`}${k.why?`<div class="why">${esc(k.why)}</div>`:""}${k.disc?`<div class="disc">討論重點：${esc(k.disc)}</div>`:""}</div>`;}
+function stepDone(st){return st.items.map(id=>BY[id]).filter(i=>i.type!=="note"&&vis(i)).every(answered);}
+function stepWrong(st){return G.practice&&st.items.some(id=>{const k=st.key&&st.key[id];return k&&k.ans!==undefined&&judge(BY[id],k)===false;});}
+function sayify(h){return h.replace(/「([^」]{2,})」/g,'<span class="say">「$1」</span>');}
+function renderGuide(){
+  G.practice=guideMode();const sc=curSc();const v=$("#view-guide");
+  const pill=`<span class="mode-pill ${G.practice?"on":""}">${G.practice?"練習模式：作答後顯示參考答案":"作業模式：不顯示答案"}</span>`;
+  if(!sc||G.list){
+    v.innerHTML=`<div style="padding-block:24px 60px;display:grid;gap:16px;max-width:760px">
+     <div class="unit-head"><h2>情境實作</h2>${pill}</div>
+     <p class="msg" style="font-size:15px;margin:0">選一個情境，跟著訪視過程一段一段閱讀並勾選。全部走完，評估單就完成了，可以到「評估單」檢查並匯出 PDF。</p>
+     ${SCENARIOS.map(s=>`<div class="sc-card"><h3 style="font-size:20px">${esc(s.title)}</h3><p class="msg" style="margin:0">${esc(s.sub)}・共 ${s.steps.length} 段</p>
+       <div class="inline">${S.scenarioId===s.id?`<button type="button" class="btn primary" data-resume="${s.id}">繼續作答（第 ${(S.scenarioStep||0)+1} 段）</button><button type="button" class="btn" data-start="${s.id}">重新開始（清除作答）</button>`:`<button type="button" class="btn primary" data-start="${s.id}">${Object.keys(S).length?"開始這個情境（會清除目前作答）":"開始這個情境"}</button>`}</div></div>`).join("")}
+    </div>`;return;}
+  G.step=Math.min(Math.max(0,S.scenarioStep||0),sc.steps.length-1);
+  const st=sc.steps[G.step];const groups=[...new Set(sc.steps.map(x=>x.g))];
+  v.innerHTML=`<div class="guide">
+   <nav class="steps" aria-label="情境段落" id="gsteps"></nav>
+   <div style="min-width:0">
+    <div class="unit-head"><div><span class="msg">${esc(sc.title)}・${st.g}・第 ${G.step+1} / ${sc.steps.length} 段</span><h2>${esc(st.title)}</h2></div>${pill}</div>
+    <div class="story">${sayify(st.text)}</div>
+    <div class="items">${st.items.map(id=>itemHTML(BY[id],{key:st.key||{}})).join("")}</div>
+    <div class="gnav"><div class="grow" style="display:flex;gap:8px;flex-wrap:wrap">${G.step>0?`<button type="button" class="btn" data-gstep="${G.step-1}">← 上一段</button>`:""}<button type="button" class="btn ghost small" id="g-quit">換情境</button></div>
+     <div style="display:flex;gap:8px;flex-wrap:wrap">${G.step<sc.steps.length-1?`<button type="button" class="btn primary" data-gstep="${G.step+1}">下一段：${esc(sc.steps[G.step+1].title)} →</button>`:`<button type="button" class="btn" data-mode="form">到評估單檢查</button><button type="button" class="btn primary" id="btn-export3">匯出完整評估單 PDF</button>`}</div></div>
+    <p class="msg" id="g-score" style="margin-top:10px"></p>
+   </div></div>`;
+  refresh();
+}
+function refreshGuide(){const sc=curSc();if(!sc||!$("#gsteps"))return;
+  const st=sc.steps[G.step];
+  st.items.forEach(id=>{const slot=$(`[data-fb="${id}"]`);if(slot)slot.innerHTML=fbHTML(BY[id],st.key[id]);});
+  const groups=[...new Set(sc.steps.map(x=>x.g))];
+  $("#gsteps").innerHTML=groups.map(g=>`<h4>${g}</h4>`+sc.steps.map((x,n)=>x.g!==g?"":`<button type="button" class="stepbtn ${stepWrong(x)?"wrong":stepDone(x)?"done":""}" data-gstep="${n}" aria-current="${n===G.step}"><i></i>${esc(x.title)}</button>`).join("")).join("");
+  if(G.practice){let ok=0,n=0;sc.steps.forEach(x=>x.items.forEach(id=>{const k=x.key&&x.key[id];if(!k||k.ans===undefined)return;const r=judge(BY[id],k);if(r!==null){n++;if(r)ok++;}}));
+    $("#g-score").textContent=n?`目前答對 ${ok} / ${n} 題（只計有標準答案的題目）`:"";}
+}
+function nextOpenGuide(fromId){const sc=curSc();if(!sc)return null;const its=sc.steps[G.step].items.map(id=>BY[id]).filter(countable);
+  const s=its.findIndex(i=>i.id===fromId)+1;return its.slice(s).find(i=>!answered(i))||null;}
+function startScenario(id){const sc=SCENARIOS.find(x=>x.id===id);S={scenarioId:id,scenarioStep:0,scenario:sc.summary};G.reveal={};save();renderGuide();window.scrollTo(0,0);}
 
 /* ============ PDF ============ */
 const E='<span class="empty">（未填）</span>';
@@ -782,9 +973,10 @@ async function saveJSON(btn){const msg=$("#x-msg");
   try{await saveFile(`ADL_IADL評估單作答檔_${S.assessor||"學生"}.json`,new Blob([JSON.stringify(S)],{type:"application/json"}));msg.textContent="已下載作答檔";msg.className="msg ok";}
   catch(err){msg.textContent=err&&err.code==="declined"?"已取消下載":err&&err.code==="nodl"?"這個檢視無法下載檔案。":"下載失敗，請再試一次";msg.className="msg bad";}}
 
-renderForm();
-setMode(UI.mode==="learn"?"learn":"form");
-const hh=location.hash.slice(1);if(T[hh]){setMode("learn");setTimeout(()=>{const el=document.getElementById(hh);if(el)el.scrollIntoView();},50);}
+const hh=location.hash.slice(1);
+if(T[hh]){setMode("learn");setTimeout(()=>{const el=document.getElementById(hh);if(el)el.scrollIntoView();},50);}
+else if(hh==="practice"||hh==="homework")setMode("guide");
+else setMode(["learn","guide","form"].includes(UI.mode)?UI.mode:"form");
 </script>
 
 </body>
