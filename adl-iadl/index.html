@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="亞洲大學長期照護學系 高齡周全性健康評估與實作 第7週：日常生活活動功能（ADL）與工具式日常生活活動功能（IADL）教材與評估單實作">
+<title>ADL與IADL評估實作</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+<style>
+html{color-scheme:light}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
+/* Layout: sticky header with two modes (學習 / 評估單); 評估單 = unit rail on the left + item cards, one item answered after another. */
+:root{
+  --paper:#F3F6F6; --surface:#FFFFFF; --sunk:#E9EFEF; --ink:#14232B; --muted:#56676E; --line:#D3DDDF;
+  --accent:#0E6767; --accent-ink:#FFFFFF; --accent-soft:#DDEFEE;
+  --vision:#A84C0A; --vision-soft:#FBEADB; --hearing:#2A5BA6; --hearing-soft:#E2EBF8;
+  --ok:#2C7A47; --ok-soft:#E1F1E6; --warn:#B3261E; --warn-soft:#FBE4E1;
+  --f-display:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E1618; --surface:#162125; --sunk:#1C2A2F; --ink:#E3ECEE; --muted:#93A6AC; --line:#2B3B40;
+  --accent:#5EC3BE; --accent-ink:#06201F; --accent-soft:#163533;
+  --vision:#F0A262; --vision-soft:#3A2617; --hearing:#91B5F2; --hearing-soft:#1A2A43;
+  --ok:#73C98F; --ok-soft:#173225; --warn:#F28B82; --warn-soft:#3B1C1A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1618; --surface:#162125; --sunk:#1C2A2F; --ink:#E3ECEE; --muted:#93A6AC; --line:#2B3B40;
+  --accent:#5EC3BE; --accent-ink:#06201F; --accent-soft:#163533;
+  --vision:#F0A262; --vision-soft:#3A2617; --hearing:#91B5F2; --hearing-soft:#1A2A43;
+  --ok:#73C98F; --ok-soft:#173225; --warn:#F28B82; --warn-soft:#3B1C1A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.35}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding-block:10px}
+.brand{display:flex;flex-direction:column;min-width:0;flex:1 1 260px}
+.brand small{font-size:12px;color:var(--muted);letter-spacing:.04em}
+.brand h1{font-size:19px}
+.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:999px}
+.tabs button{border:0;background:transparent;padding:6px 16px;border-radius:999px;cursor:pointer;font-weight:500;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.top-actions{display:flex;gap:8px;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:progress}
+.progress{height:3px;background:var(--sunk)}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* learn */
+.learn{display:grid;grid-template-columns:240px minmax(0,1fr);gap:28px;padding-block:24px 60px}
+.toc{position:sticky;top:90px;align-self:start;display:flex;flex-direction:column;gap:2px;font-size:14px}
+.toc h4{margin:14px 0 4px;font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+.toc a{color:var(--ink);text-decoration:none;padding:4px 10px;border-radius:6px;border-left:3px solid transparent}
+.toc a:hover{background:var(--sunk)}
+.toc a.v{border-left-color:var(--vision)} .toc a.h{border-left-color:var(--hearing)} .toc a.a{border-left-color:var(--accent)}
+.intro{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;display:grid;gap:12px}
+.intro h2{font-size:24px}
+.facts{display:flex;flex-wrap:wrap;gap:10px}
+.fact{background:var(--sunk);border-radius:8px;padding:8px 14px;min-width:150px}
+.fact b{font-family:var(--f-mono);font-size:22px;display:block}
+.fact span{font-size:13px;color:var(--muted)}
+.topic{padding-block:28px 8px;border-bottom:1px solid var(--line);display:grid;gap:12px;scroll-margin-top:90px}
+.topic .tag{font-size:12px;letter-spacing:.08em;font-weight:500}
+.topic.v .tag{color:var(--vision)} .topic.h .tag{color:var(--hearing)} .topic.a .tag{color:var(--accent)}
+.topic h3{font-size:21px}
+.prose{max-width:68ch}
+.prose p{margin:0 0 .6em}
+.prose ul,.prose ol{margin:0 0 .6em;padding-left:1.3em}
+.prose li{margin:.15em 0}
+.prose b{font-weight:700}
+.prose .flow{font-size:14px;background:var(--sunk);padding:10px 14px;border-radius:8px}
+.figs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+figure img{display:block;width:100%;height:auto;cursor:zoom-in;background:#fff}
+figure figcaption{font-size:12px;color:var(--muted);padding:6px 10px}
+table.mini{border-collapse:collapse;font-size:14px;width:100%}
+table.mini th,table.mini td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+table.mini th{background:var(--sunk);font-weight:500}
+.tbl{overflow-x:auto}
+.amsler{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.amsler svg{width:220px;max-width:100%;height:auto;background:var(--surface);border:1px solid var(--line)}
+.amsler .prose{flex:1 1 240px}
+
+/* form */
+.form{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;padding-block:22px 80px}
+.rail{position:sticky;top:90px;align-self:start;display:flex;flex-direction:column;gap:6px}
+.unit-btn{display:grid;grid-template-columns:28px 1fr;gap:2px 10px;text-align:left;border:1px solid transparent;background:transparent;padding:9px 10px;border-radius:8px;cursor:pointer}
+.unit-btn:hover{background:var(--sunk)}
+.unit-btn[aria-current="true"]{background:var(--surface);border-color:var(--line)}
+.unit-btn .k{grid-row:span 2;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;background:var(--sunk);color:var(--muted)}
+.unit-btn[data-dom="v"] .k{background:var(--vision-soft);color:var(--vision)}
+.unit-btn[data-dom="h"] .k{background:var(--hearing-soft);color:var(--hearing)}
+.unit-btn .t{font-weight:500;font-size:14px}
+.unit-btn .c{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.unit-btn.done .c{color:var(--ok)}
+.rail .opt{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:10px;padding:0 10px}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;display:grid;gap:4px;margin-bottom:18px}
+.case b{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500}
+.unit-head{display:flex;flex-wrap:wrap;gap:10px;align-items:end;justify-content:space-between;margin-bottom:6px}
+.unit-head h2{font-size:24px}
+.unit-head .meta{font-size:13px;color:var(--muted)}
+.sec{margin-top:26px}
+.sec>h3{font-size:16px;font-family:var(--f-body);font-weight:700;padding-bottom:6px;border-bottom:2px solid var(--line);margin-bottom:12px;display:flex;gap:10px;align-items:baseline}
+.sec>h3 span{font-size:12px;color:var(--muted);font-weight:400}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 14px 16px;display:grid;grid-template-columns:44px minmax(0,1fr);gap:4px 12px;scroll-margin-top:110px;transition:border-color .2s}
+.item.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.item .no{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:3px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.item .dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center}
+.item.ok .dot{background:var(--ok);border-color:var(--ok)}
+.item.ok .dot::after{content:"";width:8px;height:4px;border-left:2px solid var(--surface);border-bottom:2px solid var(--surface);transform:rotate(-45deg) translate(1px,-1px)}
+.item .body{display:grid;gap:8px;min-width:0}
+.item .lbl{font-weight:500}
+.item .lbl em{font-style:normal;font-size:12px;color:var(--muted);font-weight:400;margin-left:6px}
+.hint{font-size:13.5px;color:var(--muted);background:var(--sunk);border-radius:8px;padding:8px 12px}
+.hint ol,.hint ul{margin:0;padding-left:1.3em}
+.learnlink{justify-self:start;border:0;background:transparent;color:var(--accent);font-size:13px;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px}
+input[type=text],input[type=number],input[type=date],input[type=datetime-local],textarea,select{width:100%;border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 10px}
+textarea{min-height:76px;resize:vertical;line-height:1.6}
+input:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choice{position:relative}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 14px;cursor:pointer;background:var(--paper);font-size:14px}
+.choice input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.choice input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.choice.sq span{border-radius:6px}
+.inline{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.inline input[type=text]{flex:1 1 180px;width:auto}
+.quick{display:flex;gap:6px}
+.subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.ear{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:8px;background:var(--paper)}
+.ear h5{margin:0;font-size:14px}
+.ear .row{display:grid;gap:4px}
+.ear .row small{color:var(--muted)}
+.res{font-size:13.5px;border-radius:8px;padding:8px 12px;background:var(--sunk)}
+.res.ok{background:var(--ok-soft);color:var(--ok)}
+.res.bad{background:var(--warn-soft);color:var(--warn)}
+.note{border-radius:var(--r);padding:12px 16px;font-size:14px;border:1px solid var(--line);background:var(--surface)}
+.note.bad{border-color:var(--warn);background:var(--warn-soft)}
+.note.ok{border-color:var(--ok);background:var(--ok-soft)}
+.note.info{border-color:var(--accent);background:var(--accent-soft)}
+.note>b{display:block;margin-bottom:2px}
+.note ol{margin:4px 0 0;padding-left:1.3em}
+.icope{display:grid;gap:10px}
+.icope .grp{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;gap:8px}
+.icope .grp>b{font-size:13px;letter-spacing:.06em}
+.icope .grp.bad>b{color:var(--warn)} .icope .grp.ok>b{color:var(--ok)}
+.icope .r{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;align-items:start;font-size:14px}
+@media (max-width:520px){.icope .r{grid-template-columns:1fr}}
+.tree-img{max-width:100%;border:1px solid var(--line);border-radius:8px;display:block}
+.unit-foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:28px;padding-top:16px;border-top:1px solid var(--line)}
+.unit-foot .grow{display:flex;gap:8px;flex-wrap:wrap}
+.nextfab{position:fixed;right:max(18px,calc(env(safe-area-inset-right,0px) + 18px));bottom:calc(env(safe-area-inset-bottom,0px) + 18px);z-index:15;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.mob-units{display:none}
+
+/* drawer + modal + lightbox */
+.scrim{position:fixed;inset:0;background:rgba(10,20,24,.45);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--paper);z-index:41;overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 16px) max(20px,calc(env(safe-area-inset-right,0px) + 20px)) calc(env(safe-area-inset-bottom,0px) + 30px) 20px;box-shadow:-6px 0 24px rgba(0,0,0,.2)}
+.drawer .close{position:sticky;top:0;float:right}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(480px,calc(100% - 32px));max-height:calc(100% - 40px);overflow:auto;background:var(--surface);border-radius:12px;z-index:41;padding:20px 22px;display:grid;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.modal h3{font-size:19px}
+.modal label.row{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.modal .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.msg{font-size:13.5px;color:var(--muted)}
+.msg.bad{color:var(--warn)} .msg.ok{color:var(--ok)}
+.lightbox{position:fixed;inset:0;z-index:50;background:rgba(5,10,12,.88);display:grid;place-items:center;padding:20px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;background:#fff;border-radius:4px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 24px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:8px;z-index:60;font-size:14px}
+
+#report{position:fixed;left:-12000px;top:0;width:760px}
+
+@media (max-width:900px){
+  .learn,.form{grid-template-columns:minmax(0,1fr)}
+  .toc,.rail{display:none}
+  .mob-units{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px}
+  .mob-units .unit-btn{flex:0 0 auto;grid-template-columns:24px auto;background:var(--surface);border-color:var(--line)}
+  .mob-units .unit-btn .k{width:24px;height:24px;font-size:12px}
+  .mob-units .unit-btn[aria-current="true"]{border-color:var(--accent)}
+  .item{grid-template-columns:1fr}
+  .item .no{flex-direction:row;align-items:center}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* report (PDF) - fixed light print palette */
+.rp{font-family:var(--f-body);color:#111;background:#fff;font-size:13px;line-height:1.6;padding:0}
+.rp-block{background:#fff;padding:4px 0}
+.rp h1{font-family:var(--f-display);font-size:20px;text-align:center;margin:0 0 2px}
+.rp .sub{text-align:center;font-size:12px;color:#444;margin-bottom:8px}
+.rp h2{font-family:var(--f-display);font-size:16px;margin:6px 0 4px;padding:4px 8px;background:#E8EEEE;border-left:4px solid #0E6767}
+.rp h2.v{border-left-color:#A84C0A} .rp h2.h{border-left-color:#2A5BA6}
+.rp table{width:100%;border-collapse:collapse;table-layout:fixed}
+.rp td,.rp th{border:1px solid #888;padding:5px 7px;vertical-align:top;word-break:break-word;white-space:pre-wrap}
+.rp th{background:#F1F4F4;font-weight:700;text-align:left}
+.rp td.k{width:30%;background:#FAFBFB}
+.rp .empty{color:#999}
+.rp .sect{font-weight:700;background:#F1F4F4}
+.rp img{max-width:100%;max-height:420px}
+</style>
+<style>
+.score{font-family:var(--f-mono);font-size:12px;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--muted);margin-left:8px;white-space:nowrap}
+.item.ok .score{background:var(--accent-soft);color:var(--accent)}
+.choices.stack{flex-direction:column;align-items:stretch}
+.choices.stack .choice span{border-radius:8px;display:block}
+.tally{display:flex;flex-wrap:wrap;gap:10px;margin:2px 0}
+.tally div{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 12px;min-width:120px}
+.tally b{font-family:var(--f-mono);font-size:20px;display:block;line-height:1.3}
+.tally span{font-size:12px;color:var(--muted)}
+.dd{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.dd input[type=number]{width:96px}
+.dd label{display:flex;gap:6px;align-items:center;font-size:14px}
+details.quiz{background:var(--sunk);border-radius:8px;padding:8px 12px;font-size:14px}
+details.quiz summary{cursor:pointer;color:var(--accent)}
+.sticky-score{position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px);z-index:5;margin-top:10px}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <small>亞洲大學長期照護學系｜高齡周全性健康評估與實作｜第 7 週</small>
+      <h1>日常生活活動功能評估</h1>
+    </div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-learn" aria-selected="false" data-mode="learn">課堂教材</button>
+      <button role="tab" id="tab-form" aria-selected="true" data-mode="form">評估單實作</button>
+    </div>
+    <div class="top-actions">
+      <button class="btn primary" id="btn-export" type="button">匯出 PDF</button>
+    </div>
+  </div>
+  <div class="progress" title="評估單完成度"><i id="prog"></i></div>
+</header>
+
+<main class="wrap">
+  <section id="view-learn" hidden></section>
+  <section id="view-form"></section>
+</main>
+
+<button class="btn primary nextfab" id="btn-next" type="button">下一個未完成項目 ↓</button>
+<div id="report" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+"use strict";
+/* ============ 各項評分定義（取自課堂簡報） ============ */
+const H = {
+ b1:`<ol><li><b>可自行維持坐姿平衡，移至椅子或用輪椅</b>：可獨立完成整個移位過程，包括自行維持坐姿平衡、由床移至椅子或輪椅、使用輪椅的煞車和移動腳踏板，都不需他人協助、監督或持續敦促，且沒有安全上顧慮。</li><li><b>移位時需少部分協助或提醒</b>：需少許協助或提醒方能完成；或移位過程有安全上顧慮，需有人在旁監督或持續敦促。</li><li><b>可自行維持坐姿平衡，離床需大部分協助</b>：能自行維持坐姿平衡，但移位過程需他人大部分協助。</li><li><b>需完全協助（完全依賴）</b>：完全需他人協助才能維持坐姿平衡或幫忙移位。</li></ol>`,
+ b2:`<ol><li><b>獨立走 50 公尺以上（可用輔具）</b>：可獨立或使用輔具（拐杖、支架、義肢、助行器）行走 50 公尺以上（指一口氣走完），過程無安全顧慮，不需他人協助、監督或持續敦促。</li><li><b>需協助扶持走 50 公尺以上</b>：需他人稍微扶持（一手攙扶）或口頭指導才可行走 50 公尺（一口氣走完或中間需休息一次以內）；或不需扶持但行走時間明顯過長或走不到 50 公尺；或行走時搖擺不定、有跌倒危險。</li><li><b>不能步行 50 公尺，但能操縱輪椅 50 公尺</b>：可獨立操作輪椅（轉彎、進門、接近桌子、床沿等）推行 50 公尺以上；或可行走但需他人大量扶持，且距離在 50 公尺內。</li><li><b>不能步行 50 公尺，且無法操縱輪椅</b>。</li></ol>`,
+ b3:`<p>不包含自行準備食物、餐具或盛裝食物等。</p><ol><li><b>在合理時間（一小時）內自行或用輔具進食</b>：不需他人協助、監督或持續敦促，可自行用餐具取用眼前的食物、切割食物、將餐盤內食物吃完；能自行取用穿脫進食輔具。</li><li><b>需要一些協助</b>：需他人幫忙夾菜、切肉、弄碎食物或穿脫輔具；或可自行吃但超過一小時、食物灑落一地；或勉強完成、過程非常辛苦；或需他人提醒飲食量、避免哽噎。</li><li><b>需完全協助</b>：只能嚼動，手不會舀，完全由他人餵食。</li></ol>`,
+ b4:`<ol><li><b>可自行上下馬桶、整理衣褲、使用衛生紙、沖馬桶或清理便盆</b>：不弄髒衣物、自行用衛生紙擦拭清潔，不需他人協助、監督或持續敦促；可使用輔具（如馬桶專用起身扶手）；腸造口者可完全自理；插導尿管者可自行清理尿袋。</li><li><b>需協助整理衣物或使用衛生紙，或需協助清理便盆</b>：使用馬桶、便盆時需他人扶持或協助；或可自行完成但需有人監督或持續敦促以確保安全及衛生。</li><li><b>需完全協助</b>：整個過程完全需要他人協助。</li></ol>`,
+ b5:`<ol><li><b>安全上下樓梯，可用扶手、拐杖</b>：可自行上下一層樓梯，不需他人扶持、監督或持續敦促，且無安全上顧慮。</li><li><b>需協助、監督或持續敦促</b>：抓扶手、使用拐杖，仍需他人稍微扶持（一手輕扶）、口頭指導、監督或敦促；或只能上樓梯但無法下樓梯。</li><li><b>無法上下樓</b>：需他人大量協助（如一人雙手費力扶持或兩人共同扶持），或完全無法上下樓梯、需他人用背的。</li></ol>`,
+ b6:`<ol><li><b>自行穿脫衣褲及鞋襪</b>：包括穿脫衣褲、解開釦子或拉拉鍊、穿脫鞋襪、綁鞋帶及穿脫輔具（義肢、支架），都不需他人協助、監督或持續敦促，每項動作分別於十分鐘內完成；若衣褲鞋襪都沒有釦子或鞋帶（如功夫鞋、魔鬼氈），個案也能自行完成。</li><li><b>需協助</b>：在他人協助下，能在合理時間（十分鐘內）自行完成一半以上的動作；細微動作需他人協助，如拉好襪子、繫鞋帶、扣好釦子。</li><li><b>需完全協助</b>：穿脫過程中至少一半以上需要別人幫忙。</li></ol>`,
+ b7:`<ol><li><b>無失禁，或便秘時能自行用塞劑、甘油球</b>：可完全自我控制大便；便秘時可自行使用塞劑、甘油球、腹部按摩或用手指挖大便，不需他人協助、監督或敦促。</li><li><b>偶爾失禁，或便秘時需協助用塞劑</b>：大便失禁每週不超過 1 次；或偶爾（每週 1 次以下）便秘時需他人協助。</li><li><b>需完全協助</b>：大便失禁每週 2 次（含）以上。</li></ol>`,
+ b8:`<ol><li><b>無失禁</b>：可完全自我控制，日夜皆不會尿失禁；腹膜透析者可自行處理透析程序。</li><li><b>偶爾失禁</b>：尿失禁或尿急（無法等放好尿壺、便盆或無法即時趕到廁所）每週不超過 1 次；或需他人協助處理腹膜透析。</li><li><b>需完全協助</b>：尿失禁每週 2 次（含）以上，或使用導尿管。</li></ol>`,
+ b9:`<ol><li><b>可自行洗臉、洗手、刷牙、梳頭、刮鬍子</b>：不需他人協助、監督或持續敦促，可使用輔具。</li><li><b>需協助</b>：需協助、監督或持續敦促才能完成所有項目；需他人準備用物（牙膏、牙刷、漱口杯）才能完成，也屬需協助。</li></ol>`,
+ b10:`<ol><li><b>能自行完成</b>：可自行完成盆浴、淋浴或擦澡，不需他人協助、監督或持續敦促。</li><li><b>協助下完成</b>：需他人協助、監督或持續敦促才能完成；或可自行完成但過程困難、清潔度不佳。</li></ol>`,
+ i1:`<p>問法：請問您當需要聯絡他人時，您能不能自己打電話？</p><ul><li>僅能撥熟悉的電話號碼：只能撥少於 5 組的常用電話。</li><li>僅會接電話：只能接聽電話，並聽懂對方所說的內容。</li></ul><p><b>聽覺障礙者</b>：此題評估與外界溝通（聯絡）的能力，若會使用傳真機、通訊軟體、具視頻字幕擴音功能電話機或其他溝通媒介，可視為有此能力。</p>`,
+ i2:`<p>問法：請問您能不能自己一個人購物（買東西）？</p><p>評估個案是否有購物的能力，以及購買的複雜程度；<b>使用何種交通工具去購物不是本題評估範圍</b>。</p><ul><li>獨立購買日常生活用品：僅能在附近商店購買簡單日常必需品（如便當、衛生紙），較複雜的品項需要有人陪。</li><li>每一次上街購物都需要有人陪：只要有人陪伴就可以完成購物。</li><li>完全不會上街購物：因身體、精神或智能因素完全不能購物，例如長期臥床、昏迷或心智功能障礙者。</li></ul>`,
+ i3:`<p>問法：請問您能不能自己一個人準備餐食？包括備食材及佐料、清洗、煮食、配菜、食具擺設，各式工具及方法皆可使用。</p><ul><li>如果準備好一切佐料會做一頓飯菜：備餐完成後不會遺漏需使用的主要食材。</li><li>會將已做好的飯菜加熱：可正確使用電器用品（電鍋、微波爐等）加熱。</li></ul><p><b>評估技巧</b>：若個案平時不需自己煮，可問「如果家人都不在家或商家都沒有營業（如過年）時，您能不能自己加熱飯菜？或自己煮一頓飯菜？」</p>`,
+ i4:`<p>問法：請問您能不能自己一個人做家事？（整理房間、掃地、拖地、洗碗、擦桌子；清潔程度如何？需要別人幫忙看碗是否洗乾淨嗎？）</p><ul><li><b>獨居個案</b>：以自己住所之家務清潔整理為範圍。</li><li><b>非獨居個案</b>：以個案活動區域為範圍，如房間和客廳之整理，以及飲食用餐具的洗滌。</li></ul>`,
+ i5:`<p>問法：請問您能不能自己一個人洗衣服（含晾曬衣服）？<b>洗衣和晾曬兩者皆能自行完成，才算獨立完成</b>。</p><ul><li>原本沒有洗衣習慣：問「若家人不在家，必須自己洗衣時，能不能自己清洗小件衣物或所有衣物？」</li><li>使用洗衣機：是否會把衣服丟進洗衣機、倒入適量清潔劑並按鈕開始清洗。</li><li>機構住民：看的是能力，而非環境的限制和機構的制度。</li></ul>`,
+ i6:`<p>問法：請問您能不能自己一個人外出活動？</p><p>評估個案在<b>無人陪同</b>下，能否使用交通工具（不限種類）獨立外出到較遠的地方（不是只到住家附近公園散步），且安全到達目的地並安全回來。</p><ul><li>搭乘大眾運輸工具需要較高的能力：規劃路線、知道到哪裡搭車、哪一站下車、到站後如何走到目的地。</li><li>搭乘計程車需要的能力較低：路邊招車或電話叫車即可到目的地。</li></ul>`,
+ i7:`<p>問法：請問您能不能自己一個人服用藥物？</p><ul><li>需要提醒或少許協助／事先準備好份量可自行服用：有時會忘記吃藥，需提醒時間或份量，或需他人準備好份量、依時間排好放進藥盒、在藥包上做記號，個案再自行服用。</li><li>不能自己服用藥物：包含亂吃、拒吃、藏藥、無法自行服藥。</li></ul><p><b>評估技巧</b>：若個案目前不用吃藥，詢問感冒時可否自行依照時間服用藥物。</p>`,
+ i8:`<p>問法：請問您能不能自己一個人處理財務？</p><ul><li>可以獨立處理財務：到郵局（銀行）提存款、支付房租、帳單、給錢、找錢等。</li><li>可以處理日常的購買：只能處理日常購買（給錢、找錢），無法處理與銀行往來或金額較大的財務往來。</li></ul>`,
+};
+
+/* ============ 教材 ============ */
+const T_ = (id,dom,group,title,imgs,html,extra)=>Object.assign({id,dom,group,title,imgs,html},extra||{});
+const TOPICS = [
+ T_("c-aging","a","基本概念","人口老化、失能與長照",[["a2","人口老化，衰弱與失能人口逐年增加"],["a3","長期照顧服務法"]],`
+  <p>依國發會（2025）推估，長者中約 <b>17.5%</b> 有衰弱風險、<b>12.7%</b> 失能。</p>
+  <p><b>長期照顧服務法第三條</b></p>
+  <ul><li><b>身心失能者</b>：指身體或心智功能部分或全部喪失，致其日常生活需他人協助者。</li>
+  <li><b>長期照顧</b>：指身心失能持續已達或預期達 <b>＿＿</b> 個月以上者，依其個人或其照顧者之需要，所提供之生活支持、協助、社會參與、照顧及相關之醫護服務。</li></ul>
+  <details class="quiz"><summary>想一想：空格是幾個月？（點開看答案）</summary>6 個月。</details>`),
+ T_("c-levels","a","基本概念","生活功能評估的三個層次",[["a4","生活功能評估的三個層次"],["a5","退化的歷程"],["a6","功能發展與退化的階層順序"]],`
+  <ul><li><b>基本日常生活活動功能（BADL／ADL）</b>：評估個人日常生活的自我照顧能力。常用工具：Katz ADL、巴氏量表（Barthel Index）。</li>
+  <li><b>工具性日常生活活動功能（IADL）</b>：評估個人於社區獨立生活的能力，常用 Lawton IADL 量表。</li>
+  <li><b>高階性日常生活活動功能（AADL）</b>：完成社會角色的能力，內容尚無共識，如複雜休閒活動、終身學習、志願服務、使用現代科技（網路銀行、遠距醫療）。</li></ul>
+  <p><b>退化的歷程不是一次全部失去，而是由複雜到基本</b>：社交參與（AADL）→ 獨立生活（IADL）→ 基本生活自理（ADL）。</p>
+  <p class="flow">功能階層（Katz &amp; Akpom, 1976）：進食 → 排便控制 → 移動 → 如廁 → 穿衣 → 洗澡。進食是最基本、最早習得的能力，在老化過程中保留最久；洗澡則最早喪失獨立性。</p>`),
+ T_("c-cms","a","基本概念","照顧管理評估量表（129 題）",[["a8","照顧管理評估量表 A–F"],["a9","照顧管理評估量表 G–K"],["a10","E 大題 ADLs 與 F 大題 IADLs"]],`
+  <p>長照 2.0 由照顧管理專員以「照顧管理評估量表」評估失能等級，共 129 題：</p>
+  <div class="tbl"><table class="mini"><tr><th>大題</th><th>內容</th></tr>
+  <tr><td>A 基本資料表（8）</td><td>婚姻狀況、教育程度、身分別、年齡</td></tr>
+  <tr><td>B 主要及次要照顧者（8）</td><td>是否有主要照顧者、性別、年齡、次要照顧者與個案關係</td></tr>
+  <tr><td>C 溝通能力（6）</td><td>意識狀態、視力、聽力、表達及理解能力</td></tr>
+  <tr><td>D 短期記憶（5）</td><td>重複三個詞：襪子、藍色、床</td></tr>
+  <tr><td>E 日常活動功能 ADLs（11）</td><td>吃飯、洗澡、個人修飾、穿脫衣物、大便控制、小便控制、上廁所、移位、走路、上下樓梯、目前行動能力（E11）</td></tr>
+  <tr><td>F 工具性日常活動 IADLs（8）</td><td>使用電話、購物、備餐、處理家務、洗衣服、外出、服用藥物、處理財務</td></tr>
+  <tr><td>G 特殊複雜照護需要（32）</td><td>疼痛、皮膚、關節活動度、疾病史與營養、特殊照護、吞嚥、失智照護、跌倒平衡及安全</td></tr>
+  <tr><td>H 居家環境與社會參與（10）</td><td>居家環境與居住狀況、社會參與</td></tr>
+  <tr><td>I 情緒及行為型態（28）</td><td>遊走、日夜顛倒、攻擊、干擾、抗拒照護、幻覺、焦慮、自傷等</td></tr>
+  <tr><td>J 主要照顧者負荷（5）</td><td>睡眠受干擾、體力負荷、照顧時間分配、困擾、壓力</td></tr>
+  <tr><td>K 照顧者工作與支持（8）</td><td>同住、可否單獨留置、照顧其他失能者、照顧時長、健康與生活品質、工作等</td></tr></table></div>`),
+ T_("c-barthel","a","基本概念","巴氏量表與照管量表 E 大題",[["a11","巴氏量表與外籍看護申請"],["a30","巴氏量表與照管量表 E 大題比較"],["a31","巴氏量表分級"]],`
+  <div class="tbl"><table class="mini"><tr><th>面向</th><th>巴氏量表（ADL）</th><th>照管量表 E 大題（ADLs）</th></tr>
+  <tr><td>核心用途</td><td>臨床常用標準化工具，量化「功能獨立程度」；用於復健、護理、急性醫療追蹤</td><td>長照服務資格與需求評估；決定照顧管理等級、服務額度與輔具需求</td></tr>
+  <tr><td>題目</td><td>10 項基本日常活動，敘述簡短、國際通用</td><td>同 10 項，另附「協助定義」說明</td></tr>
+  <tr><td>計分</td><td>加權分數，總分 0–100</td><td>帶入系統自動轉換為 CMS 等級與服務額度建議</td></tr></table></div>
+  <p><b>巴氏量表分級</b>（以最近一個月能力為主）：完全獨立 100 分；輕度依賴 91–99；中度依賴 61–90；重度依賴 21–60；完全依賴 0–20。</p>
+  <p><b>外籍看護申請新制</b>（勞動部 2025 年 7 月公告）：年滿 80 歲以上不用巴氏量表，持身分證明即可申請；70～79 歲癌症二期以上者持診斷證明書即可申請。仍須完成文件檢核。</p>`),
+ T_("c-stats","a","基本概念","長者自述日常生活活動困難",[["a13","自述日常生活活動困難"],["a36","自述工具性日常生活活動困難"],["a37","生活需要協助情形"]],`
+  <p>衛福部《111 年老人狀況調查》：65 歲以上長者自述 ADL 困難以洗澡（約 23%）與穿脫衣物（約 19%）最多，吃飯最少；IADL 困難項目中，4 項至少有 1 項困難者約 37%，以處理家務、備餐、獨自外出、洗（晾）衣服為主。</p>`),
+ T_("a-principle","v","ADL 評估","評估原則與回答對象",[["a15","評估目的與範圍"],["a16","評估安全考量原則"],["a17","回答對象的優先順序"],["a18","代答者選擇原則"]],`
+  <ul><li><b>評估目標</b>：個案在社區中獨立生活所需具備的日常生活活動功能。</li>
+  <li><b>評估時間</b>：以<b>最近一個月</b>的能力為主，必要時輔以觀察個案實際表現。</li>
+  <li><b>失能定義</b>：因健康或老衰導致無能力執行；「沒有做過」、「沒讓他做」或「不願意做」不算失能。評的是<b>能力</b>，不是表現。</li>
+  <li><b>安全原則</b>：基於安全考量需他人監督或敦促，不能任其獨自一人執行時，仍評為「需他人協助」。</li></ul>
+  <p><b>回答對象</b>：優先詢問個案本人；失智症、智能障礙、溝通障礙、重病或體力不支者可由他人代答。</p>
+  <p><b>代答者順位</b>：① 提供生活照顧或最清楚個案生活狀況的家人；② 未與家人同住且聘僱看護者，由看護代答；③ 長住機構、親友探視少者，由機構工作人員代答。</p>`),
+ T_("a-e8","v","ADL 評估","移位（E8）",[["a19","移位評分定義"]],H.b1),
+ T_("a-e9","v","ADL 評估","走路（E9）",[["a20","走路評分定義"]],H.b2),
+ T_("a-e1","v","ADL 評估","吃飯（E1）",[["a21","吃飯評分定義"]],H.b3),
+ T_("a-e7","v","ADL 評估","上廁所（E7）",[["a22","上廁所評分定義"]],H.b4),
+ T_("a-e10","v","ADL 評估","上下樓梯（E10）",[["a23","上下樓梯評分定義"]],H.b5),
+ T_("a-e4","v","ADL 評估","穿脫衣物（E4）",[["a24","穿脫衣物評分定義"]],H.b6),
+ T_("a-e5","v","ADL 評估","大便控制（E5）",[["a25","大便控制評分定義"]],H.b7),
+ T_("a-e6","v","ADL 評估","小便控制（E6）",[["a26","小便控制評分定義"]],H.b8),
+ T_("a-e3","v","ADL 評估","個人修飾（E3）",[["a27","個人修飾評分定義"]],H.b9),
+ T_("a-e2","v","ADL 評估","洗澡（E2）",[["a28","洗澡評分定義"]],H.b10),
+ T_("a-e11","v","ADL 評估","目前行動能力（E11）",[["a29","E11 目前行動能力"]],`
+  <p>照管量表中，若 E1～E10 皆不需協助，跳答 F 大題；<b>有任一項需協助，續答 E11</b>。個案無法回答時可由主要照顧者代答。</p>
+  <ol><li>可以在平坦地面上跑跳</li><li>可在平坦地面上輕鬆行走，但在不平坦地面上行走相當吃力</li><li>自己行走需扶持穩定物或需透過他人扶持才能行走</li><li>無法跨步行走，坐在一般靠背高度有扶手的椅子上可保持坐姿穩定與平衡</li><li>坐在一般靠背高度有扶手的椅子上無法維持坐姿</li></ol>`),
+ T_("a-case","v","ADL 評估","案例評估：張非",[["a32","案例評估"]],`
+  <p><b>張非</b>，80 歲男性，已婚與妻子同住，國小畢業。中風右側輕癱（罹病 1 個月），高血壓、糖尿病。住電梯大樓 4 樓，但通往電梯前有四階樓梯。主要照顧者：妻子。</p>
+  <p>張先生慣用右手，中風後需特殊輔具才能自己進食，但需協助切小塊。因右側無力，需家屬協助洗澡與擦乾；可自行刷牙、洗臉和梳頭；上半身可自行穿衣，但扣鈕扣需協助；下半身穿鬆緊帶褲子可自行拉起，須協助穿襪，鞋子改成布希鞋直接穿。</p>
+  <p>排尿排便皆能自我控制，沒有滲尿或失禁；太太怕他來不及走到廁所希望他用看護墊，張先生覺得有辱自尊。走路較慢但能自己走到廁所，只有大便後清潔需要幫忙。外出可用四腳拐到公園散步或走到醫院；一樓的 4 個階梯扶著欄杆慢慢下還可以，回來也是。</p>
+  <p><b>請評估張先生的 ADL 分數，並至少提出 1 個問題。</b></p>`),
+ T_("i-f1","h","IADL 評估","使用電話（F1）",[["a38","使用電話"],["a39","聽覺障礙者特殊說明"]],H.i1),
+ T_("i-f2","h","IADL 評估","購物（F2）",[["a40","購物"]],H.i2),
+ T_("i-f3","h","IADL 評估","備餐（F3）",[["a41","備餐"]],H.i3),
+ T_("i-f4","h","IADL 評估","處理家務（F4）",[["a42","處理家務"],["a43","家務範圍定義"]],H.i4),
+ T_("i-f5","h","IADL 評估","洗衣服（F5）",[["a44","洗衣服"],["a45","洗衣服評估技巧"]],H.i5),
+ T_("i-f6","h","IADL 評估","外出（F6）",[["a46","外出"],["a47","外出能力程度差異"]],H.i6),
+ T_("i-f7","h","IADL 評估","服用藥物（F7）",[["a48","服用藥物"]],H.i7),
+ T_("i-f8","h","IADL 評估","處理財務（F8）",[["a49","處理財務"]],H.i8),
+ T_("i-score","h","IADL 評估","IADL 計分與判讀",[["a50","IADL 計分"]],`
+  <ul><li>分數越高表示獨立性越好。（簡報寫總分 32 分；本評估單 8 題滿分合計為 24 分。）</li>
+  <li><b>上街購物、外出活動、食物烹調、家務維持、洗衣服</b>等五項中，<b>有三項以上需要協助者即為輕度失能</b>。</li></ul>`),
+ T_("i-apply","h","IADL 評估","評估挑戰、結果應用與再評估",[["a51","評估時的常見挑戰"],["a52","評估結果的應用"],["a53","持續追蹤與再評估"]],`
+  <p><b>常見挑戰</b>：個案過度自信（透過具體問題確認實際表現）；家屬過度保護（區分「不會做」與「沒機會做」）；環境限制（評的是能力，排除制度或設備因素）；文化差異（性別角色、家庭分工）。</p>
+  <p><b>結果應用</b>：照顧計畫擬定（針對失能項目提供介入）、復健目標設定（找出可改善的項目，設定具體目標）、家屬衛教（提供適當協助而非過度保護）。</p>
+  <p><b>再評估時機</b>：定期每 3–6 個月完整評估一次；健康狀況或生活環境有重大改變時立即重新評估；提供照顧服務或復健介入後評估成效並調整計畫。</p>`),
+ T_("x-sof","a","補充說明","衰弱評估（SOF 法）",[],`
+  <p>SOF（Study of Osteoporotic Fractures）衰弱指標以三題快速篩檢：體重減輕、下肢功能（無法不用手支撐從椅子站起 5 次）、精力降低。</p>
+  <p><b>判讀</b>：0 分為健壯（robust）；1 分為衰弱前期（pre-frail）；2 分以上為衰弱（frail）。</p>
+  <p style="font-size:13px;color:var(--muted)">此段為補充說明，課堂簡報未涵蓋 SOF 判讀，請以授課內容為準。</p>`),
+ T_("x-ipaq","a","補充說明","IPAQ 台灣活動量調查短版",[],`
+  <p>詢問過去七天的費力活動、中等費力活動、走路（皆只計一次持續 10 分鐘以上）與坐著時間。</p>
+  <p><b>身體活動量（MET-分鐘／週）</b> ＝ 費力 8.0 × 分鐘 × 天數 ＋ 中等 4.0 × 分鐘 × 天數 ＋ 走路 3.3 × 分鐘 × 天數。依 IPAQ 計分原則，每日超過 180 分鐘以 180 分鐘計。</p>
+  <ul><li><b>高度</b>：費力活動 ≥3 天且 ≥1,500 MET-分鐘／週；或三類合計 ≥7 天且 ≥3,000 MET-分鐘／週。</li>
+  <li><b>中度</b>：費力活動 ≥3 天且每天 ≥20 分鐘；或中等活動／走路 ≥5 天且每天 ≥30 分鐘；或三類合計 ≥5 天且 ≥600 MET-分鐘／週。</li>
+  <li><b>低度</b>：未達上述標準。</li></ul>
+  <p style="font-size:13px;color:var(--muted)">此段為補充說明，課堂簡報未涵蓋 IPAQ 計分，請以授課內容為準。</p>`),
+ T_("x-practice","a","補充說明","實作課任務",[["a54","實作課"]],`
+  <ol><li>各組透過生成式 AI 擬出可評估 ADL 及 IADL 的案例，抽組別示範一問一答（手上無手機）。</li>
+  <li>額外抽出組別提問，該組每位同學皆須提問。</li>
+  <li>依各組虛擬案例，判斷其 ADL／IADL 分數並提供建議。</li></ol>`),
+];
+const T = Object.fromEntries(TOPICS.map(t=>[t.id,t]));
+
+/* ============ 評估單結構（依「高齡周全性健康評估問卷－ADL/IADL」） ============ */
+const CASE_ZHANG = TOPICS.find(t=>t.id==="a-case").html.replace(/<\/p>/g,"\n").replace(/<[^>]+>/g,"").replace(/\s+\n/g,"\n").trim().replace(/\n\s*/g,"\n");
+const YN1=["是(1分)","否(0分)"];
+const UNITS = [
+ {id:"basic",key:"A",dom:"a",title:"基本資料與家族樹",secs:[
+  {title:"評估資訊",items:[
+   {id:"group",type:"text",label:"組別"},
+   {id:"datetime",type:"datetime-local",label:"評估日期及時間"},
+   {id:"scenario",type:"textarea",label:"受評者角色及情境設定",rows:5,hint:"實作課：請各組透過生成式 AI 擬出可評估 ADL 及 IADL 的案例，寫下受評者的角色與情境。",caseBtn:true,learn:"x-practice"},
+   {id:"assessor",type:"text",label:"評估者姓名"},
+   {id:"client",type:"text",label:"受評者姓名"},
+  ]},
+  {title:"個案基本資料",items:[
+   {id:"sex",type:"radio",label:"個案性別",opts:["生理男","生理女"]},
+   {id:"birth",type:"date",label:"個案生日"},
+   {id:"age",type:"number",label:"個案年齡（歲）",em:"填入生日與評估日期後自動計算"},
+   {id:"marital",type:"radio",label:"個案婚姻狀況",opts:["離婚","分居","喪偶","同居","未婚","已婚","不知道"]},
+   {id:"edu",type:"radio",label:"個案教育程度",opts:["不識字","識字，未受正規教育（含私塾）","國小","國中","高中（職）","特教班（國小）","特教班（國中）","特教班（高中職）","五專","大學（二三專）","研究所以上","其他"],other:"其他"},
+   {id:"identity",type:"checks",label:"個案身分別",em:"可複選",opts:["一般戶","社會救助法低收入戶（未達1倍）","長照低收（1-1.5倍）","長照中低收（1.5-2.5倍）","榮民","原住民","領有身心障礙證明（手冊）"]},
+  ]},
+  {title:"主要及次要照顧者",items:[
+   {id:"cg",type:"radio",label:"是否有主要照顧者？",opts:["無","有"],hint:"以照顧失能者最多的家人或親友為主要照顧者；若無上述主要照顧者，才含聘僱關係之照顧者。"},
+   {id:"cg_sex",type:"radio",label:"主要照顧者性別",opts:["生理男","生理女"],show:S=>S.cg==="有"},
+   {id:"cg_rel",type:"text",label:"與個案之關係",show:S=>S.cg==="有"},
+   {id:"cg2",type:"text",label:"次要照顧者（關係／說明）",opt:true},
+  ]},
+  {title:"受評者家族樹",items:[
+   {id:"tree",type:"family",label:"受評者家族樹",hint:"常用符號：□ 男性、○ 女性、■● 塗黑代表個案或罹病者、╳ 已歿；手足由左至右依出生序排列；以虛線圈出同住者。可文字描述，或上傳手繪家族樹照片。"},
+  ]},
+ ]},
+ {id:"prep",key:"B",dom:"a",title:"評估準備與病史收集",secs:[
+  {title:"評估準備",learn:"a-principle",items:[
+   {id:"prep_steps",type:"checklist",label:"評估前準備",opts:["洗手","核對個案","自我介紹","解釋評估項目及過程","環境安排"]},
+   {id:"respondent",type:"radio",label:"回答者",opts:["個案本人","家人代答","聘僱看護代答","機構工作人員代答"],hint:"優先詢問個案本人；失智症、智能障礙、溝通障礙、重病或體力不支者可由他人代答，依家人 → 聘僱看護 → 機構工作人員的順位選擇代答者。",learn:"a-principle",opt:true},
+   {id:"prep_note",type:"textarea",label:"評估準備紀錄",opt:true,rows:2},
+  ]},
+  {title:"病史收集",items:[
+   {id:"hpi",type:"textarea",label:"現在病史／個案主訴",hint:"目前主要健康問題、症狀、發生時間與對日常生活的影響；目前用藥與使用的輔具（拐杖、助行器、輪椅等）。"},
+   {id:"pmh",type:"textarea",label:"過去病史",hint:"慢性病（高血壓、糖尿病、中風、骨關節疾病等）、住院與手術史、跌倒史。"},
+   {id:"fh",type:"textarea",label:"家族史",hint:"家族中是否有中風、失智、心血管疾病、糖尿病等。"},
+   {id:"psy",type:"textarea",label:"心理社會史",hint:"過去職業、居住狀況與同住者、社會支持與參與、經濟狀況、情緒。"},
+   {id:"life",type:"textarea",label:"日常生活型態",hint:"一天的作息、飲食、運動、睡眠、休閒；吸菸、飲酒；居家環境（樓層、樓梯、浴廁設備）。"},
+  ]},
+  {title:"T.O.C.C.",items:[
+   {id:"t_travel",type:"text",label:"旅遊史（Travel history）"},
+   {id:"t_occ",type:"text",label:"職業別（Occupation）"},
+   {id:"t_contact",type:"text",label:"接觸史（Contact history）"},
+   {id:"t_cluster",type:"text",label:"群聚情形（Cluster）"},
+  ]},
+ ]},
+ {id:"adl",key:"C",dom:"v",title:"巴氏量表（ADL）",note:"註：不可空白",secs:[
+  {title:"日常生活活動功能",learn:"a-principle",items:[
+   {id:"b1",type:"radio",score:"paren",stack:true,label:"1. 移位",learn:"a-e8",opts:["可自行做起，安全地移位至椅子或使用輪椅，無安全之顧慮。(15)","在移位過程中，仍需一點點協助或提醒，或有安全之顧慮。(10)","可自行坐起，但離床仍需要幫助。(5)","完全依賴。(0)"]},
+   {id:"b2",type:"radio",score:"paren",stack:true,label:"2. 走路",learn:"a-e9",opts:["不協助走50公尺以上，可用輔助器。(15)","需要協助扶持走50公尺以上。(10)","不能步行，但能獨立操縱輪椅，並可推行50公尺以上。(5)","無法步行或操縱輪椅。(0)"]},
+   {id:"b3",type:"radio",score:"paren",stack:true,label:"3. 吃飯",learn:"a-e1",opts:["食物置於桌前餐盤可在合理的時間內自行（或使用輔具）進食。(10)","需要一些協助。(5)","完全依賴。(0)"]},
+   {id:"b4",type:"radio",score:"paren",stack:true,label:"4. 上廁所",learn:"a-e7",opts:["可自行上下馬桶整理衣褲、沖馬桶，使用便盆者可自行清理。(10)","協助整理衣物或使用衛生紙，使用便盆者可自行取放便盆，但需要他人清理。(5)","完全依賴。(0)"]},
+   {id:"b5",type:"radio",score:"paren",stack:true,label:"5. 上下樓梯",learn:"a-e10",opts:["安全上下樓梯，可用扶手、柺杖。(10)","需要別人給予幫助或監督。(5)","無法上下樓。(0)"]},
+   {id:"b6",type:"radio",score:"paren",stack:true,label:"6. 穿脫衣物",learn:"a-e4",opts:["能自行穿脫衣褲及鞋襪。(10)","需協助但自己至少可以執行一半以上。(5)","完全依賴。(0)"]},
+   {id:"b7",type:"radio",score:"paren",stack:true,label:"7. 大便",learn:"a-e5",opts:["不會失禁，便秘可自用栓劑、甘油球。(10)","偶爾失禁，用栓劑需要別人協助。(5)","依賴別人協助處理。(0)"]},
+   {id:"b8",type:"radio",score:"paren",stack:true,label:"8. 小便",learn:"a-e6",opts:["不會失禁，脊椎損傷者能自行使用小腿尿袋。(10)","偶爾失禁，使用尿布或尿套需要別人協助。(5)","依賴別人協助處理。(0)"]},
+   {id:"b9",type:"radio",score:"paren",stack:true,label:"9. 個人修飾",learn:"a-e3",opts:["可自行洗手、洗臉、刷牙、梳頭、刮鬍子。(5)","需要別人協助。(0)"]},
+   {id:"b10",type:"radio",score:"paren",stack:true,label:"10. 洗澡",learn:"a-e2",opts:["能自行完成。(5)","協助下完成。(0)"]},
+  ]},
+  {title:"總分與分級",learn:"c-barthel",items:[
+   {id:"b_note",type:"note",fn:S=>barthelNote(S)},
+   {id:"b_final",type:"radio",label:"最後級分",opts:["完全依賴","嚴重依賴","顯著依賴","功能獨立"],learn:"c-barthel"},
+   {id:"b_refuse",type:"checks",label:"拒絕回答",opts:["長輩因個人因素拒絕回答"],opt:true},
+   {id:"b_e11",type:"radio",stack:true,label:"（照管量表 E11）請問您目前行動能力如何？",em:"選填；E1～E10 有任一項需協助時續答",opt:true,show:S=>barthelNeedHelp(S),learn:"a-e11",opts:["可以在平坦地面上跑跳","可在平坦地面上輕鬆行走，但在不平坦地面上行走相當吃力","自己行走需扶持穩定物或需透過他人扶持才能行走","無法跨步行走，坐在一般靠背高度有扶手的椅子上可保持坐姿穩定與平衡","坐在一般靠背高度有扶手的椅子上無法維持坐姿"]},
+  ]},
+ ]},
+ {id:"sof",key:"D",dom:"a",title:"衰弱評估（SOF 法）",note:"註：不可空白",secs:[
+  {title:"衰弱評估詢問內容",learn:"x-sof",items:[
+   {id:"s1",type:"radio",score:"yn",label:"體重減輕：未刻意減重狀況下，過去一年體重減少了 3 公斤或 5% 以上？",opts:YN1,hint:"先問個案體重和一年前相較差不多還是減少？如果減少，再問大約減少幾公斤？",withNote:true,notePh:"記錄體重變化（選填），如：一年前 58 公斤，現在 54 公斤",learn:"x-sof"},
+   {id:"s2",type:"radio",score:"yn",label:"下肢功能：無法在不用手支撐的情況下，從椅子上站起來五次",opts:YN1,hint:"請個案雙手交叉抱胸，從椅子上連續站起坐下五次；注意安全，旁邊有人防護。"},
+   {id:"s3",type:"radio",score:"yn",label:"精力降低：過去一週內，是否覺得提不起勁來做事？（一個禮拜三天以上有這個感覺）",opts:YN1},
+   {id:"s_note",type:"note",fn:S=>sofNote(S)},
+  ]},
+ ]},
+ {id:"iadl",key:"E",dom:"h",title:"工具式日常生活活動功能（IADL）",secs:[
+  {title:"Lawton IADL 量表",learn:"i-score",items:[
+   {id:"i1",type:"radio",score:"lead",stack:true,label:"上街購物",learn:"i-f2",opts:["3.獨立完成所有購物需求","2.獨立購買日常生活用品","1.每一次上街購物都需要有人陪","0.完全不會上街購物"]},
+   {id:"i2",type:"radio",score:"lead",stack:true,label:"外出活動",learn:"i-f6",opts:["4.能夠自己開車、騎車","3.能夠自己搭乘大眾運輸工具","2.能夠自己搭乘計程車但不會搭乘大眾運輸工具","1.當有人陪同可搭計程車或大眾運輸工具","0.完全不能出門"]},
+   {id:"i3",type:"radio",score:"lead",stack:true,label:"食物烹調",learn:"i-f3",opts:["3.能獨立計畫、烹煮和擺設一頓適當的飯菜","2.如果準備好一切佐料，會做一頓適當的飯菜","1.會將已做好的飯菜加熱","0.需要別人把飯菜煮好、擺好"]},
+   {id:"i4",type:"radio",score:"lead",stack:true,label:"家務維持",learn:"i-f4",opts:["4.能做較繁重的家事或需偶爾家事協助（如搬動沙發、擦地板、洗窗戶）","3.能做較簡單的家事，如洗碗、鋪床、疊被","2.能做家事，但不能達到可被接受的整潔程度","1.所有的家事都需要別人協助","0.完全不會做家事"]},
+   {id:"i5",type:"radio",score:"lead",stack:true,label:"洗衣服",learn:"i-f5",opts:["2.自己清洗所有衣物","1.只清洗小件衣物","0.完全依賴他人"]},
+   {id:"i6",type:"radio",score:"lead",stack:true,label:"使用電話的能力",learn:"i-f1",opts:["3.獨立使用電話，含查電話簿、撥號等","2.僅可撥熟悉的電話號碼","1.僅會接電話，不會撥電話","0.完全不會使用電話"]},
+   {id:"i7",type:"radio",score:"lead",stack:true,label:"服用藥物",learn:"i-f7",opts:["3.能自己負責在正確的時間用正確的藥物","2.需要提醒或少許協助","1.如果事先準備好服用的藥物份量，可自行服用","0.不能自己服用藥物"]},
+   {id:"i8",type:"radio",score:"lead",stack:true,label:"處理財務能力",learn:"i-f8",opts:["2.可以獨立處理財務","1.可以處理日常的購買，但需要別人協助與銀行往來或大宗買賣","0.不能處理錢財"]},
+   {id:"i_note",type:"note",fn:S=>iadlNote(S)},
+   {id:"i_mean",type:"textarea",label:"評估結果及意義",rows:4,hint:"說明 IADL 總分代表的獨立程度、哪些項目需要協助、是否符合輕度失能，以及對社區獨立生活的影響。",learn:"i-score"},
+  ]},
+ ]},
+ {id:"ipaq",key:"F",dom:"a",title:"IPAQ 台灣活動量調查短版",note:"註：不可空白",secs:[
+  {title:"一、整體比較",learn:"x-ipaq",items:[
+   {id:"p0",type:"radio",label:"您過去七天的身體活動與過去 3 個月的身體活動比較起來",opts:["(1)比較多","(2)比較少","(3)差不多"],hint:"過去七天中花在身體活動的時間，包括工作、做家事、整理庭院／陽台、交通，及娛樂、運動等。就算認為自己不愛動，也請回答每一個問題。"},
+  ]},
+  {title:"二、費力的身體活動",items:[
+   {id:"pv_d",type:"days",label:"1. 過去七天中，您有多少天有做費力的身體活動？",none:"沒有做費力的身體活動（跳問題三）",hint:"費力活動會讓身體感覺費力、呼吸比平常喘很多，只計一次持續 10 分鐘以上。例如跑步、上山爬坡、持續快速游泳、上樓梯、有氧舞蹈、快速騎腳踏車、打球（網球單打、籃球、足球）、跳繩、重量訓練、搬運重物（大於 17 台斤／10 公斤）、鏟土。"},
+   {id:"pv_t",type:"dur",label:"2. 您通常一天花多少時間在費力的身體活動上？",show:S=>daysOn(S.pv_d)},
+  ]},
+  {title:"三、中等費力的活動",items:[
+   {id:"pm_d",type:"days",label:"1. 過去七天中，您有多少天有做中等費力的活動？",none:"沒有做中等費力的活動（跳問題四）",hint:"中等費力會讓身體有點費力、呼吸比平常喘些，只計一次持續 10 分鐘以上。例如下山健走、一般速度游泳、下樓梯、跳舞（不含有氧舞蹈、慢舞、國際標準舞、元極舞）、太極（不含外丹功）、一般速度騎腳踏車、攜帶有點重（7.5–15 台斤／4.5–9 公斤）的東西走路、整理庭院、費力家務（擦窗、用手擦地、鋪床、手洗衣服、手工洗車）、網球雙打、羽毛球、桌球、排球、棒球。提輕物的走路不算。"},
+   {id:"pm_t",type:"dur",label:"2. 您通常一天花多少時間在中等費力的活動上？",show:S=>daysOn(S.pm_d)},
+  ]},
+  {title:"四、走路",items:[
+   {id:"pw_d",type:"days",label:"1. 過去七天中，您有多少天曾經走路持續 10 分鐘以上？",none:"沒有走路持續 10 分鐘以上（跳問題五）",hint:"包括工作、居家、外出交通時的走路，以及純粹為了娛樂、運動及休閒而走路（不含上下樓梯、爬山）。"},
+   {id:"pw_t",type:"dur",label:"2. 您通常一天花在走路上的時間有多久？",show:S=>daysOn(S.pw_d)},
+  ]},
+  {title:"五、坐著的時間",items:[
+   {id:"ps_t",type:"dur",nounk:true,label:"1. 過去七天的工作天中，您一天坐著的時間有多久？",hint:"包括工作、居家、做功課及休閒時坐在桌前、打電腦、拜訪朋友、吃飯、閱讀、坐著或斜躺著看電視；不含睡著的時間。"},
+   {id:"p_note",type:"note",fn:S=>ipaqNote(S)},
+  ]},
+ ]},
+ {id:"plan",key:"G",dom:"a",title:"健康問題評估及建議",secs:[
+  {title:"評估結果整理",items:[
+   {id:"g_sum",type:"note",fn:S=>overall(S)},
+  ]},
+  {title:"健康問題評估及建議",learn:"i-apply",items:[
+   {id:"g_problem",type:"textarea",label:"健康問題評估",rows:4,hint:"依 ADL、衰弱、IADL、活動量結果，列出個案主要的功能問題與可能原因（疾病、環境、心理社會因素）。"},
+   {id:"g_advice",type:"textarea",label:"照護建議",rows:6,hint:"可從三方面撰寫：照顧計畫擬定（針對失能項目的介入、長照服務或輔具）；復健目標設定（可改善的功能項目與具體目標）；家屬衛教（提供適當協助而非過度保護）。並註明再評估時機：定期 3–6 個月、狀況改變時、介入後。",learn:"i-apply"},
+  ]},
+ ]},
+];
+UNITS.forEach(u=>{let n=0;u.secs.forEach(s=>s.items.forEach(it=>{it.unit=u.id;if(it.type!=="note"){n++;it.no=u.key+"-"+n;}}));});
+const ALL = UNITS.flatMap(u=>u.secs.flatMap(s=>s.items));
+const BY = Object.fromEntries(ALL.map(i=>[i.id,i]));
+
+/* ============ 計分與判讀 ============ */
+function scoreOf(i,v){ if(!v) return null;
+  if(i.score==="paren"){const m=v.match(/\((\d+)\)\s*$/);return m?+m[1]:null;}
+  if(i.score==="lead"){const m=v.match(/^(\d)/);return m?+m[1]:null;}
+  if(i.score==="yn") return v.startsWith("是")?1:0;
+  return null;}
+const maxOf=i=>Math.max(...i.opts.map(o=>scoreOf(i,o)));
+const BIDS=["b1","b2","b3","b4","b5","b6","b7","b8","b9","b10"];
+const IIDS=["i1","i2","i3","i4","i5","i6","i7","i8"];
+function sumOf(ids){let t=0,n=0;ids.forEach(id=>{const s=scoreOf(BY[id],S[id]);if(s!==null){t+=s;n++;}});return [t,n];}
+function barthelLevel(t){return t===100?"完全獨立（100）":t>=91?"輕度依賴（91–99）":t>=61?"中度依賴（61–90）":t>=21?"嚴重依賴（21–60）":"完全依賴（0–20）";}
+function barthelNeedHelp(S){return BIDS.some(id=>{const s=scoreOf(BY[id],S[id]);return s!==null&&s<maxOf(BY[id]);});}
+function barthelNote(S){const [t,n]=sumOf(BIDS);
+  const dep=BIDS.filter(id=>{const s=scoreOf(BY[id],S[id]);return s!==null&&s<maxOf(BY[id]);}).map(id=>BY[id].label.replace(/^\d+\.\s*/,""));
+  const tally=`<div class="tally"><div><b>${t}</b><span>總分（已填 ${n}/10 項）</span></div>${n===10?`<div><b style="font-size:16px">${barthelLevel(t)}</b><span>說明（依總分）</span></div>`:""}</div>`;
+  const kind=n<10?"info":t===100?"ok":"bad";
+  return [kind,"巴氏量表總分",tally+(n<10?"評估單註明「不可空白」，請完成全部 10 項。":"")+(dep.length?`需協助項目：${dep.join("、")}`:"")];}
+function sofNote(S){const ids=["s1","s2","s3"];const [t,n]=sumOf(ids);if(!n)return null;
+  const lv=t>=2?"衰弱":t===1?"衰弱前期":"健壯";
+  return [n<3?"info":t>=2?"bad":t===1?"info":"ok","SOF 總分："+t+" 分"+(n<3?`（已填 ${n}/3）`:""),n<3?"請完成三題。":`判讀參考：${lv}（0 分健壯、1 分衰弱前期、≥2 分衰弱）。`];}
+const HELP5={i1:s=>s<=1,i2:s=>s<=1,i3:s=>s===0,i4:s=>s<=1,i5:s=>s===0};
+function iadlHelp(S){return Object.keys(HELP5).filter(id=>{const s=scoreOf(BY[id],S[id]);return s!==null&&HELP5[id](s);});}
+function iadlNote(S){const [t,n]=sumOf(IIDS);if(!n)return null;
+  const h=iadlHelp(S),names=h.map(id=>BY[id].label);
+  const done5=Object.keys(HELP5).every(id=>S[id]);
+  let msg=`<div class="tally"><div><b>${t} / 24</b><span>IADL 總分（已填 ${n}/8 項）</span></div><div><b>${h.length} / 5</b><span>五項中需協助項目</span></div></div>`;
+  if(names.length)msg+="需協助："+names.join("、")+"。";
+  if(done5)msg+=h.length>=3?"<br><b>五項中有三項以上需要協助，符合輕度失能。</b>":"<br>五項中需協助未達三項，未達輕度失能。";
+  msg+=`<br><span style="font-size:12.5px;opacity:.8">「需協助」判定：購物、外出為 1 或 0 分；烹調、洗衣為 0 分；家務為 1 或 0 分。</span>`;
+  return [h.length>=3?"bad":"info","IADL 計分",msg];}
+const daysOn=v=>!!v&&!v.none&&+v.d>0;
+function mins(v){if(!v||v.unk)return null;const h=+(v.h||0),m=+(v.m||0);if(!v.h&&!v.m)return null;return Math.min(180,h*60+m);}
+function ipaq(S){const part=(d,t,met)=>{if(!S[d])return null;if(!daysOn(S[d]))return {days:0,min:0,met:0};const mm=mins(S[t]);if(mm===null)return {days:+S[d].d,min:null,met:null};return {days:+S[d].d,min:mm,met:met*mm*(+S[d].d)};};
+  const V=part("pv_d","pv_t",8),M=part("pm_d","pm_t",4),W=part("pw_d","pw_t",3.3);
+  if(!V||!M||!W||V.met===null||M.met===null||W.met===null) return null;
+  const tot=Math.round(V.met+M.met+W.met), days=V.days+M.days+W.days;
+  let lv="低度";
+  if((V.days>=3&&V.met>=1500)||(days>=7&&tot>=3000)) lv="高度";
+  else if((V.days>=3&&V.min>=20)||(M.days+W.days>=5&&(Math.max(M.min,W.min)>=30))||(days>=5&&tot>=600)) lv="中度";
+  return {V,M,W,tot,lv};}
+function ipaqNote(S){const r=ipaq(S);const sit=mins(S.ps_t);
+  if(!r) return ["info","身體活動量","完成二～四題後，這裡會計算每週 MET-分鐘與活動量等級（依 IPAQ 計分原則，供參考）。"];
+  return ["info","身體活動量（判讀參考）",`<div class="tally"><div><b>${r.tot.toLocaleString()}</b><span>MET-分鐘／週</span></div><div><b style="font-size:16px">${r.lv}身體活動量</b><span>等級</span></div>${sit!==null?`<div><b>${(S.ps_t.h||0)}時${(S.ps_t.m||0)}分</b><span>工作天每日坐著</span></div>`:""}</div>費力 ${Math.round(r.V.met)}・中等 ${Math.round(r.M.met)}・走路 ${Math.round(r.W.met)} MET-分鐘／週。`];}
+function overall(S){const rows=[];
+  const [bt,bn]=sumOf(BIDS);if(bn)rows.push(`巴氏量表：${bt} 分${bn===10?"，"+barthelLevel(bt):`（已填 ${bn}/10）`}${S.b_final?"；最後級分："+S.b_final:""}`);
+  const dep=BIDS.filter(id=>{const s=scoreOf(BY[id],S[id]);return s!==null&&s<maxOf(BY[id]);}).map(id=>BY[id].label.replace(/^\d+\.\s*/,""));if(dep.length)rows.push("ADL 需協助：" + dep.join("、"));
+  const [st,sn]=sumOf(["s1","s2","s3"]);if(sn===3)rows.push(`SOF 衰弱評估：${st} 分（${st>=2?"衰弱":st===1?"衰弱前期":"健壯"}）`);
+  const [it,inn]=sumOf(IIDS);if(inn){const h=iadlHelp(S);rows.push(`IADL：${it}/24 分；五項中需協助 ${h.length} 項${h.length>=3?"，符合輕度失能":""}`);}
+  const r=ipaq(S);if(r)rows.push(`IPAQ：${r.tot.toLocaleString()} MET-分鐘／週，${r.lv}身體活動量`);
+  if(!rows.length) return ["info","評估結果整理","完成前面各單元後，這裡會整理 ADL、衰弱、IADL 與活動量結果，幫你撰寫健康問題與建議。"];
+  return ["info","評估結果整理","<ol>"+rows.map(x=>"<li>"+x+"</li>").join("")+"</ol>"];}
+
+/* ============ 狀態 ============ */
+const KEY="cga-adl-v1";
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||"{}")||{};}catch(e){S={};}
+let saveT;
+function save(){clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}},250);}
+let UI={mode:"form",unit:"basic",auto:true};
+try{Object.assign(UI,JSON.parse(localStorage.getItem(KEY+"-ui")||"{}"));}catch(e){}
+function saveUI(){try{localStorage.setItem(KEY+"-ui",JSON.stringify(UI));}catch(e){}}
+const vis=i=>!i.show||i.show(S);
+function answered(i){const v=S[i.id];
+  switch(i.type){
+    case "note":return true;
+    case "checks":return Array.isArray(v)&&v.length>0;
+    case "checklist":return Array.isArray(v)&&v.length===i.opts.length;
+    case "family":return !!(v&&String(v).trim())||!!S.tree_img;
+    case "radio":return !!v&&(!i.other||v!==i.other||!!(S[i.id+"_o"]||"").trim());
+    case "days":return !!v&&(v.none||(v.d!==undefined&&v.d!==""));
+    case "dur":return !!v&&(v.unk||!!v.h||!!v.m);
+    default:return v!==undefined&&String(v).trim()!=="";
+  }}
+const countable=i=>i.type!=="note"&&!i.opt&&vis(i);
+function unitStat(u){const its=u.secs.flatMap(s=>s.items).filter(countable);return [its.filter(answered).length,its.length];}
+
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2400);}
+
+/* ============ 學習頁 ============ */
+function topicHTML(t){
+  const figs=t.imgs.length?`<div class="figs">${t.imgs.map(([f,c])=>`<figure><img src="img/${f}.jpg" alt="${esc(c)}" loading="lazy" data-zoom><figcaption>${esc(c)}（課堂簡報）</figcaption></figure>`).join("")}</div>`:"";
+  return `<span class="tag">${t.group}</span><h3>${t.title}</h3><div class="prose">${t.html}</div>${figs}`;}
+function renderLearn(){
+  const groups=[["基本概念","a"],["ADL 評估","v"],["IADL 評估","h"],["補充說明","a"]];
+  $("#view-learn").innerHTML=`<div class="learn"><nav class="toc" aria-label="教材目錄">${groups.map(([g,c])=>`<h4>${g}</h4>`+TOPICS.filter(t=>t.group===g).map(t=>`<a class="${c}" href="#${t.id}">${t.title}</a>`).join("")).join("")}</nav>
+  <div><div class="intro"><h2>功能退化不是一次失去，而是由複雜到基本</h2>
+  <p class="prose" style="margin:0">ADL 看長者能不能照顧自己，IADL 看長者能不能在社區獨立生活。本單元整理課堂簡報，包含巴氏量表與 Lawton IADL 每一項的評分定義。讀完後切換到「評估單實作」，依你們組擬定的案例逐項評估。</p>
+  <div class="facts"><div class="fact"><b>17.5%</b><span>長者衰弱風險</span></div><div class="fact"><b>12.7%</b><span>長者失能</span></div><div class="fact"><b>0–100</b><span>巴氏量表總分</span></div><div class="fact"><b>10/19・10/20</b><span>講述（A206）・技術實作（M121）</span></div></div>
+  <p style="margin:0;font-size:13.5px;color:var(--muted)">實作學習評估單請於下週課前繳交至創課。</p></div>
+  ${TOPICS.map(t=>`<section class="topic ${t.dom}" id="${t.id}">${topicHTML(t)}</section>`).join("")}
+  <p style="text-align:center;margin-top:30px"><button class="btn primary" type="button" data-go="form">開始評估單實作 →</button></p></div></div>`;
+}
+
+/* ============ 評估單 ============ */
+function inputHTML(i){const v=S[i.id];const name=i.id;
+  switch(i.type){
+   case "text":return `<input type="text" id="f-${name}" data-k="${name}" value="${esc(v)}">`;
+   case "number":return `<input type="number" id="f-${name}" data-k="${name}" value="${esc(v)}" min="0" max="130" style="max-width:160px">`;
+   case "date":case "datetime-local":return `<input type="${i.type}" id="f-${name}" data-k="${name}" value="${esc(v)}" style="max-width:260px">`;
+   case "textarea":return `<textarea id="f-${name}" data-k="${name}" rows="${i.rows||3}">${esc(v)}</textarea>${i.caseBtn?`<div class="inline"><button type="button" class="btn small" id="use-case">帶入課堂案例（張非）</button></div>`:""}`;
+   case "radio":return `<div class="choices${i.stack?" stack":""}" role="radiogroup">${i.opts.map((o,k)=>`<label class="choice"><input type="radio" name="r-${name}" id="f-${name}-${k}" data-k="${name}" value="${esc(o)}" ${v===o?"checked":""}><span>${esc(o)}</span></label>`).join("")}</div>${i.other?`<input type="text" id="f-${name}_o" data-k="${name}_o" value="${esc(S[name+"_o"])}" placeholder="其他（請說明）" ${v===i.other?"":"hidden"}>`:""}${i.withNote?`<input type="text" id="f-${name}_n" data-k="${name}_n" value="${esc(S[name+"_n"])}" placeholder="${esc(i.notePh||"補充說明（選填）")}">`:""}`;
+   case "checks":case "checklist":{const a=Array.isArray(v)?v:[];return `<div class="choices">${i.opts.map((o,k)=>`<label class="choice sq"><input type="checkbox" id="f-${name}-${k}" data-k="${name}" value="${esc(o)}" ${a.includes(o)?"checked":""}><span>${i.type==="checklist"?"✓ ":""}${esc(o)}</span></label>`).join("")}</div>`;}
+   case "family":return `<textarea id="f-${name}" data-k="${name}" rows="4" placeholder="例：個案為長子，配偶同住；育有一子一女，長女住台中……">${esc(v)}</textarea>
+     <div class="inline"><label class="btn small" for="f-tree-file">上傳手繪家族樹照片</label><input type="file" id="f-tree-file" accept="image/*" hidden>${S.tree_img?`<button type="button" class="btn small ghost" id="tree-del">移除照片</button>`:""}</div>
+     ${S.tree_img?`<img class="tree-img" src="${S.tree_img}" alt="家族樹照片">`:""}`;
+   case "days":{const o=v||{};return `<div class="dd"><label><input type="number" min="0" max="7" step="1" id="f-${name}-d" data-obj="${name}" data-f="d" value="${esc(o.d)}" ${o.none?"disabled":""}> 天</label><label class="choice sq"><input type="checkbox" id="f-${name}-none" data-obj="${name}" data-f="none" ${o.none?"checked":""}><span>${esc(i.none)}</span></label></div>`;}
+   case "dur":{const o=v||{};return `<div class="dd"><label>一天 <input type="number" min="0" max="24" id="f-${name}-h" data-obj="${name}" data-f="h" value="${esc(o.h)}" ${o.unk?"disabled":""}> 小時</label><label><input type="number" min="0" max="59" id="f-${name}-m" data-obj="${name}" data-f="m" value="${esc(o.m)}" ${o.unk?"disabled":""}> 分鐘</label>${i.nounk?"":`<label class="choice sq"><input type="checkbox" id="f-${name}-unk" data-obj="${name}" data-f="unk" ${o.unk?"checked":""}><span>不知道／不確定</span></label>`}</div>`;}
+  }}
+function itemHTML(i){
+  if(i.type==="note") return `<div class="note-slot" data-note="${i.id}"></div>`;
+  return `<div class="item" id="it-${i.id}" data-id="${i.id}" ${vis(i)?"":"hidden"}>
+   <div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div>
+   <div class="body"><div class="lbl">${esc(i.label)}${i.score&&i.score!=="yn"?`<span class="score" data-score="${i.id}"></span>`:""}${i.em?`<em>${esc(i.em)}</em>`:""}${i.opt&&!i.em?`<em>選填</em>`:""}</div>
+   ${i.hint?`<div class="hint">${i.hint}</div>`:""}
+   ${inputHTML(i)}
+   ${i.learn?`<button type="button" class="learnlink" data-learn="${i.learn}">${i.score==="paren"||i.score==="lead"?"評分定義：":"教材："}${T[i.learn].title}</button>`:""}
+   </div></div>`;}
+function railHTML(){return UNITS.map(u=>{const [a,b]=unitStat(u);return `<button type="button" class="unit-btn ${a===b?"done":""}" data-unit="${u.id}" data-dom="${u.dom}" aria-current="${UI.unit===u.id}"><span class="k">${u.key}</span><span class="t">${u.title}</span><span class="c">${a}/${b}${a===b?" 完成":""}</span></button>`;}).join("");}
+function renderForm(){
+  const u=UNITS.find(x=>x.id===UI.unit)||UNITS[0];UI.unit=u.id;const idx=UNITS.indexOf(u);
+  $("#view-form").innerHTML=`<div class="form">
+   <aside class="rail" aria-label="評估單單元"><div id="rail">${railHTML()}</div>
+    <label class="opt"><input type="checkbox" id="opt-auto" ${UI.auto?"checked":""}> 作答後自動前往下一項</label>
+    <button type="button" class="btn small ghost" id="btn-reset" style="margin:10px 0 0 4px;justify-self:start">清除全部作答</button></aside>
+   <div style="min-width:0">
+    <div class="mob-units" id="mrail">${railHTML()}</div>
+    <div class="case"><b>受評者角色及情境設定</b><div id="case-text"></div></div>
+    <div class="unit-head"><h2>${u.key}. ${u.title}</h2><span class="meta"><span id="unit-meta"></span>${u.note?`　<b style="color:var(--warn)">${u.note}</b>`:""}</span></div>
+    ${u.secs.map(s=>`<div class="sec"><h3>${s.title}${s.learn?`<button type="button" class="learnlink" data-learn="${s.learn}" style="margin-left:auto">看教材</button>`:""}</h3><div class="items">${s.items.map(itemHTML).join("")}</div></div>`).join("")}
+    <div class="unit-foot"><div class="grow">${idx>0?`<button type="button" class="btn" data-unit="${UNITS[idx-1].id}">← ${UNITS[idx-1].key}. ${UNITS[idx-1].title}</button>`:""}</div>
+     <div class="grow"><button type="button" class="btn" data-export-unit="${u.id}">匯出本單元 PDF</button>${idx<UNITS.length-1?`<button type="button" class="btn primary" data-unit="${UNITS[idx+1].id}">下一單元：${UNITS[idx+1].key}. ${UNITS[idx+1].title} →</button>`:`<button type="button" class="btn primary" id="btn-export2">匯出完整評估單 PDF</button>`}</div></div>
+   </div></div>`;
+  refresh();
+}
+function refresh(){
+  const u=UNITS.find(x=>x.id===UI.unit);
+  u.secs.forEach(s=>s.items.forEach(i=>{
+    if(i.type==="note"){const slot=$(`[data-note="${i.id}"]`);if(!slot)return;const r=i.fn(S);slot.innerHTML=r?`<div class="note ${r[0]}"><b>${r[1]}</b>${r[2]}</div>`:"";return;}
+    const el=$("#it-"+i.id);if(!el)return;el.hidden=!vis(i);el.classList.toggle("ok",answered(i));
+    if(i.other){const o=$("#f-"+i.id+"_o");if(o)o.hidden=S[i.id]!==i.other;}
+    const sc=$(`[data-score="${i.id}"]`);if(sc){const s=scoreOf(i,S[i.id]);sc.textContent=(s===null?"—":s)+" / "+maxOf(i)+" 分";}
+    if(i.type==="days"){const o=S[i.id]||{};const d=$(`#f-${i.id}-d`);if(d)d.disabled=!!o.none;}
+    if(i.type==="dur"){const o=S[i.id]||{};["h","m"].forEach(f=>{const x=$(`#f-${i.id}-${f}`);if(x)x.disabled=!!o.unk;});}
+  }));
+  const [a,b]=unitStat(u);$("#unit-meta").textContent=`已完成 ${a} / ${b} 項`;
+  $("#rail").innerHTML=railHTML();$("#mrail").innerHTML=railHTML();
+  let A=0,B=0;UNITS.forEach(x=>{const [p,q]=unitStat(x);A+=p;B+=q;});$("#prog").style.width=(B?A/B*100:0)+"%";
+  const ct=$("#case-text");ct.textContent=S.scenario||"尚未填寫。請在 A 單元寫下你們組擬定的受評者角色與情境，或帶入課堂案例（張非）。";ct.style.color=S.scenario?"":"var(--muted)";ct.style.whiteSpace="pre-line";
+}
+function nextOpen(fromId){
+  const u=UNITS.find(x=>x.id===UI.unit);const its=u.secs.flatMap(s=>s.items).filter(countable);
+  const start=fromId?its.findIndex(i=>i.id===fromId)+1:0;
+  return [...its.slice(start),...its.slice(0,start)].find(i=>!answered(i));
+}
+function focusItem(i){const el=$("#it-"+i.id);if(!el)return;$$(".item.focus").forEach(x=>x.classList.remove("focus"));el.classList.add("focus");el.scrollIntoView({behavior:"smooth",block:"center"});setTimeout(()=>el.classList.remove("focus"),1600);}
+function derive(k){
+  if((k==="birth"||k==="datetime")&&S.birth){const ref=S.datetime?new Date(S.datetime):new Date(),b=new Date(S.birth);if(!isNaN(b)){let a=ref.getFullYear()-b.getFullYear();const m=ref.getMonth()-b.getMonth();if(m<0||(m===0&&ref.getDate()<b.getDate()))a--;if(a>=0&&a<130){S.age=String(a);const f=$("#f-age");if(f)f.value=a;}}}
+}
+document.addEventListener("input",e=>{const t=e.target;
+  if(t.dataset.k){const k=t.dataset.k,i=BY[k];
+    if(t.type==="checkbox"){const a=Array.isArray(S[k])?S[k]:[];S[k]=t.checked?[...new Set([...a,t.value])]:a.filter(x=>x!==t.value);}
+    else S[k]=t.value;
+    derive(k);save();refresh();
+    if(UI.auto&&t.type==="radio"&&i&&answered(i)){const n=nextOpen(k);if(n)setTimeout(()=>focusItem(n),260);}
+  }
+  if(t.dataset.obj){const k=t.dataset.obj,f=t.dataset.f;const o={...(S[k]||{})};
+    if(t.type==="checkbox"){o[f]=t.checked;}else{let val=t.value;if(f==="d"&&val!==""){val=String(Math.max(0,Math.min(7,Math.round(+val))));}o[f]=val;}
+    if(f==="d"&&o.d==="0"){o.none=true;o.d="";const cb=$(`#f-${k}-none`);if(cb)cb.checked=true;t.value="";}
+    S[k]=o;save();refresh();
+    if(UI.auto&&t.type==="checkbox"&&t.checked){const n=nextOpen(k);if(n)setTimeout(()=>focusItem(n),260);}
+  }
+});
+document.addEventListener("change",async e=>{const t=e.target;
+  if(t.id==="opt-auto"){UI.auto=t.checked;saveUI();}
+  if(t.id==="f-tree-file"&&t.files[0]){try{S.tree_img=await shrink(t.files[0],1400);save();renderForm();toast("已加入家族樹照片");}catch(err){toast("無法讀取這張圖片，請改用 JPG 或 PNG");}}
+  if(t.id==="f-import"&&t.files[0]){try{const d=JSON.parse(await t.files[0].text());if(typeof d!=="object"||!d)throw 0;S=d;save();renderForm();toast("已載入作答檔");}catch(err){toast("檔案格式不正確，請選擇先前下載的作答檔（.json）");}closeModal();}
+});
+function shrink(file,max){return new Promise((res,rej)=>{const r=new FileReader();r.onerror=rej;r.onload=()=>{const im=new Image();im.onerror=rej;im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement("canvas");c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.82));};im.src=r.result;};r.readAsDataURL(file);});}
+
+function setMode(m){UI.mode=m;saveUI();$("#view-learn").hidden=m!=="learn";$("#view-form").hidden=m!=="form";$("#btn-next").hidden=m!=="form";
+  $$(".tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.mode===m));if(m==="learn"&&!$("#view-learn").innerHTML)renderLearn();window.scrollTo(0,0);}
+function openDrawer(id){closeModal();const t=T[id];const sc=document.createElement("div");sc.className="scrim";sc.dataset.close="";const d=document.createElement("aside");d.className="drawer";d.setAttribute("role","dialog");d.setAttribute("aria-label",t.title);
+  d.innerHTML=`<button type="button" class="btn small close" data-close>關閉</button><div class="topic ${t.dom}" style="border:0;padding-top:4px">${topicHTML(t)}</div>`;document.body.append(sc,d);$(".close",d).focus();}
+function closeModal(){$$(".scrim,.drawer,.modal").forEach(x=>x.remove());}
+document.addEventListener("click",e=>{const t=e.target.closest("button,img[data-zoom],.scrim,.lightbox");if(!t)return;
+  if(t.matches(".lightbox")){t.remove();return;}
+  if(t.matches("img[data-zoom]")){const l=document.createElement("div");l.className="lightbox";l.innerHTML=`<img src="${t.src}" alt="${esc(t.alt)}">`;document.body.appendChild(l);return;}
+  if(t.dataset.mode){setMode(t.dataset.mode);return;}
+  if(t.dataset.go){setMode(t.dataset.go);return;}
+  if(t.dataset.close!==undefined){closeModal();return;}
+  if(t.dataset.learn){openDrawer(t.dataset.learn);return;}
+  if(t.dataset.unit){UI.unit=t.dataset.unit;saveUI();renderForm();window.scrollTo(0,0);return;}
+  if(t.id==="use-case"){S.scenario=CASE_ZHANG;if(!S.client)S.client="張非";if(!S.sex)S.sex="生理男";if(!S.age)S.age="80";if(!S.marital)S.marital="已婚";if(!S.edu)S.edu="國小";if(!S.cg){S.cg="有";S.cg_sex="生理女";S.cg_rel="妻子";}save();renderForm();toast("已帶入張非案例");return;}
+  if(t.id==="tree-del"){delete S.tree_img;save();renderForm();return;}
+  if(t.id==="btn-next"){const n=nextOpen();if(n)focusItem(n);else{const u=UNITS.findIndex(x=>x.id===UI.unit);const nx=UNITS.slice(u+1).find(x=>{const[a,b]=unitStat(x);return a<b;});if(nx){UI.unit=nx.id;saveUI();renderForm();toast("本單元已完成，前往 "+nx.key+". "+nx.title);}else toast("所有項目都已完成，可以匯出 PDF");}return;}
+  if(t.id==="btn-export"||t.id==="btn-export2"){openExport();return;}
+  if(t.dataset.exportUnit){exportPDF([t.dataset.exportUnit],t);return;}
+  if(t.id==="btn-reset"){if(t.dataset.arm){S={};save();renderForm();toast("已清除全部作答");}else{t.dataset.arm="1";t.textContent="再按一次確認清除";t.style.color="var(--warn)";setTimeout(()=>{if(t.isConnected){delete t.dataset.arm;t.textContent="清除全部作答";t.style.color="";}},3500);}return;}
+  if(t.id==="do-export"){const sel=$$(".modal input[name=xu]:checked").map(x=>x.value);if(!sel.length){$("#x-msg").textContent="請至少勾選一個單元";$("#x-msg").className="msg bad";return;}exportPDF(sel,t);return;}
+  if(t.id==="do-json"){saveJSON(t);return;}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();$$(".lightbox").forEach(x=>x.remove());}});
+function openExport(){closeModal();const sc=document.createElement("div");sc.className="scrim";sc.dataset.close="";const m=document.createElement("div");m.className="modal";m.setAttribute("role","dialog");
+  m.innerHTML=`<h3>匯出評估單</h3><p class="msg">勾選要匯出的單元，產生一份 PDF。未填寫的欄位會標示「未填」。</p>
+  ${UNITS.map(u=>{const[a,b]=unitStat(u);return `<label class="row"><input type="checkbox" name="xu" value="${u.id}" checked> <span style="flex:1">${u.key}. ${u.title}</span><span class="msg" style="font-family:var(--f-mono)">${a}/${b}</span></label>`;}).join("")}
+  <p class="msg" id="x-msg"></p>
+  <div class="acts"><button type="button" class="btn ghost" data-close>取消</button><button type="button" class="btn primary" id="do-export">產生 PDF</button></div>
+  <hr style="border:0;border-top:1px solid var(--line);width:100%;margin:4px 0">
+  <p class="msg">換電腦或手機繼續作答：先下載作答檔，在另一台裝置載入。</p>
+  <div class="acts" style="justify-content:flex-start"><button type="button" class="btn small" id="do-json">下載作答檔</button><label class="btn small" for="f-import">載入作答檔</label><input type="file" id="f-import" accept="application/json,.json" hidden></div>`;
+  document.body.append(sc,m);}
+
+/* ============ PDF ============ */
+const E='<span class="empty">（未填）</span>';
+function fmt(i){const v=S[i.id];
+  switch(i.type){
+   case "checks":case "checklist":{const a=Array.isArray(v)?v:[];if(!a.length)return E;let s=a.map(x=>"☑ "+esc(x)).join("\n");if(i.type==="checklist"){const miss=i.opts.filter(o=>!a.includes(o));if(miss.length)s+="\n☐ "+miss.map(esc).join("　☐ ");}return s;}
+   case "radio":{if(!v)return E;let s="☑ "+esc(v);if(i.other&&v===i.other&&S[i.id+"_o"])s+="："+esc(S[i.id+"_o"]);if(i.withNote&&S[i.id+"_n"])s+="\n補充："+esc(S[i.id+"_n"]);return s;}
+   case "family":{let s=v?esc(v):"";if(S.tree_img)s+=(s?"\n":"")+`<img src="${S.tree_img}">`;return s||E;}
+   case "days":{if(!v)return E;return v.none?"☑ "+esc(i.none):(v.d!==undefined&&v.d!==""?esc(v.d)+" 天":E);}
+   case "dur":{if(!v)return E;if(v.unk)return "☑ 不知道／不確定";if(!v.h&&!v.m)return E;return `一天 ${esc(v.h||0)} 小時 ${esc(v.m||0)} 分鐘`;}
+   default:return v!==undefined&&String(v).trim()!==""?esc(v):E;}}
+const plain=h=>h.replace(/<br>/g,"\n").replace(/<\/li>/g,"\n").replace(/<\/div>/g," ").replace(/<\/span>/g," ").replace(/<[^>]+>/g,"").replace(/[ \t]+/g," ").replace(/\n\s+/g,"\n").trim();
+function reportBlocks(ids){const out=[];
+  const head=document.createElement("div");head.className="rp-block";
+  head.innerHTML=`<h1>高齡周全性健康評估問卷－ADL/IADL</h1><div class="sub">亞洲大學長期照護學系｜高齡周全性健康評估與實作｜匯出內容：${ids.map(id=>{const u=UNITS.find(x=>x.id===id);return u.key+". "+u.title;}).join("、")}</div>
+  <table><tr><th style="width:16%">組別</th><td>${esc(S.group)||E}</td><th style="width:20%">評估日期及時間</th><td>${esc((S.datetime||"").replace("T"," "))||E}</td></tr>
+  <tr><th>評估者</th><td>${esc(S.assessor)||E}</td><th>受評者</th><td>${esc(S.client)||E}</td></tr>
+  <tr><th>受評者角色及情境設定</th><td colspan="3">${esc(S.scenario)||E}</td></tr></table>`;
+  out.push(head);
+  ids.forEach(id=>{const u=UNITS.find(x=>x.id===id);
+    let headHTML=`<h2 class="${u.dom}">${u.key}. ${u.title}</h2>`;
+    u.secs.forEach(s=>{const rows=[];
+      s.items.forEach(i=>{
+        if(i.type==="note"){const r=i.fn(S);if(r&&!(r[0]==="info"&&/這裡會/.test(r[2])))rows.push(`<tr><td class="k">${esc(r[1])}</td><td>${esc(plain(r[2]))}</td></tr>`);return;}
+        if(!vis(i))return;if(["scenario","group","datetime","assessor","client"].includes(i.id))return;
+        const sc=i.score&&i.score!=="yn"?`（${scoreOf(i,S[i.id])??"—"} / ${maxOf(i)} 分）`:"";
+        rows.push(`<tr><td class="k">${esc(i.label)}${sc}</td><td>${fmt(i)}</td></tr>`);});
+      if(!rows.length)return;
+      const b=document.createElement("div");b.className="rp-block";b.innerHTML=headHTML+`<table><tr><td colspan="2" class="sect">${s.title}</td></tr>${rows.join("")}</table>`;headHTML="";out.push(b);});
+  });
+  return out;}
+async function exportPDF(ids,btn){
+  const msg=$("#x-msg");const say=(m,c)=>{if(msg){msg.textContent=m;msg.className="msg "+(c||"");}else toast(m);};
+  if(!window.html2canvas||!window.jspdf){say("PDF 元件尚未載入，請稍候再試","bad");return;}
+  const old=btn.textContent;btn.disabled=true;btn.textContent="產生中…";
+  try{
+    await document.fonts.ready;
+    const host=$("#report");host.innerHTML="";const wrap=document.createElement("div");wrap.className="rp";host.appendChild(wrap);
+    const blocks=reportBlocks(ids);blocks.forEach(b=>wrap.appendChild(b));
+    await Promise.all($$("img",wrap).map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;})));
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:"mm",format:"a4"});
+    const M=12,W=210-2*M,Hh=297-2*M-6;let y=M,page=1;
+    const footer=()=>{pdf.setFontSize(8);pdf.setTextColor(140);pdf.text(String(page),105,297-7,{align:"center"});};
+    for(const b of blocks){
+      const c=await html2canvas(b,{scale:2,backgroundColor:"#ffffff",useCORS:true,logging:false});
+      const mmPerPx=W/c.width;const hmm=c.height*mmPerPx;
+      if(hmm<=Hh){if(y+hmm>M+Hh){footer();pdf.addPage();page++;y=M;}pdf.addImage(c.toDataURL("image/jpeg",.92),"JPEG",M,y,W,hmm);y+=hmm+2;}
+      else{let sy=0;while(sy<c.height){let avail=M+Hh-y;if(avail<20){footer();pdf.addPage();page++;y=M;avail=Hh;}const sliceH=Math.min(c.height-sy,Math.floor(avail/mmPerPx));const sc=document.createElement("canvas");sc.width=c.width;sc.height=sliceH;const x=sc.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,sc.width,sc.height);x.drawImage(c,0,sy,c.width,sliceH,0,0,c.width,sliceH);pdf.addImage(sc.toDataURL("image/jpeg",.92),"JPEG",M,y,W,sliceH*mmPerPx);y+=sliceH*mmPerPx+2;sy+=sliceH;}}
+    }
+    footer();host.innerHTML="";
+    const blob=pdf.output("blob");
+    const part=ids.length===UNITS.length?"完整":ids.map(id=>UNITS.find(u=>u.id===id).title.replace(/（.*?）/g,"")).join("+");
+    const fname=`ADL_IADL評估單_${S.group?S.group+"組_":""}${S.assessor||"學生"}_${part}.pdf`.replace(/[\\/:*?"<>|]/g,"");
+    await saveFile(fname,blob);say("已產生 PDF："+fname,"ok");
+  }catch(err){const c=err&&err.code;say(c==="declined"?"已取消下載":c==="rate_limited"?"已有一個下載視窗開啟，請先處理後再試":c==="nodl"?"這個檢視無法下載檔案。請在 claude.ai 中開啟此頁再匯出。":"產生 PDF 時發生問題，請再試一次","bad");}
+  finally{btn.disabled=false;btn.textContent=old;}
+}
+/* 下載：在 claude.ai 用 downloads 能力，其他網站（GitHub Pages）用一般下載 */
+async function saveFile(name,blob){
+  if(window.claude&&window.claude.use){const dl=await window.claude.use("downloads");if(!dl)throw {code:"nodl"};return dl.save({filename:name,data:blob});}
+  const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+}
+async function saveJSON(btn){const msg=$("#x-msg");
+  try{await saveFile(`ADL_IADL評估單作答檔_${S.assessor||"學生"}.json`,new Blob([JSON.stringify(S)],{type:"application/json"}));msg.textContent="已下載作答檔";msg.className="msg ok";}
+  catch(err){msg.textContent=err&&err.code==="declined"?"已取消下載":err&&err.code==="nodl"?"這個檢視無法下載檔案。":"下載失敗，請再試一次";msg.className="msg bad";}}
+
+renderForm();
+setMode(UI.mode==="learn"?"learn":"form");
+const hh=location.hash.slice(1);if(T[hh]){setMode("learn");setTimeout(()=>{const el=document.getElementById(hh);if(el)el.scrollIntoView();},50);}
+</script>
+
+</body>
+</html>
