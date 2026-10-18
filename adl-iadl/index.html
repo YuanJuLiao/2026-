@@ -1081,6 +1081,8 @@ const PROBES=[
  ["meds","藥","沒分|自己分|藥袋|分得清|看得懂|字",[[E_,"藥袋上的字太小，我分不清楚，都是媳婦幫我分。"]]],
  ["meds","藥","誰分|藥盒|分裝",[[D_,"我每個禮拜日晚上把一週的藥分到早、午、晚、睡前的藥盒裡。"]]],
  ["money",null,"提款|ATM|銀行|存款|年金|領錢",[[E_,"老人年金跟銀行的事情都是兒子在處理，我不會用提款機。"]]],
+ ["compare","活動|運動","最近|現在|這陣子|這幾天|這禮拜",[[E_,"最近幾乎都待在家，除了吃飯、上廁所、洗碗，大部分時間都坐著看電視；這禮拜只有禮拜天跟媳婦走去便利商店一次。"]]],
+ ["compare","活動|運動","以前|之前|三個月前|住院前",[[E_,"以前每個禮拜兩次自己走去社區據點，也常常去廟裡幫忙。"]],{fs:true}],
  ["money",null,"零用錢|找錢|香油錢|算錢|給錢",[[E_,"身上有一點零用錢，添香油錢、買小東西都我自己付，找錢我也會算。"]]],
 ];
 PROBES.forEach(([of,t,pr,msgs,o],n)=>{const ofs=Array.isArray(of)?of:[of];
@@ -1124,7 +1126,9 @@ function matchQ(q){const s=norm(q);const out=[];
   out.sort((a,b)=>b[1]-a[1]);
   /* 很短、沒有提到新話題的追問（例如「晚上呢？」）沿用上一個話題 */
   const ctx=S.lastTopic;
-  if(ctx&&s.length<=12&&!out.some(([t,sc])=>(!t.of&&sc>=3)||t.of)){const cps=INTENTS.filter(t=>t.of&&t.of.includes(ctx)&&new RegExp(t.pr,"i").test(s));if(cps.length)return cps.slice(0,2);}
+  if(ctx&&s.length<=12&&!out.some(([t,sc])=>(!t.of&&sc>=3)||t.of)){const cps=INTENTS.filter(t=>t.of&&t.of.includes(ctx)&&new RegExp(t.pr,"i").test(s));if(cps.length)return cps.slice(0,2);
+    /* 「那最近呢？」「現在呢？」「然後呢？」這類接續問句：針對剛才的話題，用聊天口氣說重點 */
+    if(/呢$|^那|然後|還有|現在|最近|後來|這陣子|目前/.test(s)&&CF[ctx]){const m=CF[ctx];return [{id:"ctx_"+ctx,of:[ctx],unlock:[],msgs:[[m[0],m[1].replace(/^(對啊|對啦|對)，/,"")]]}];}}
   if(!out.length)return [];
   const asked=new Set(S.asked||[]);const probes=out.filter(([t])=>t.of);
   if(probes.length){const drop=new Set();probes.forEach(([t])=>t.of.forEach(o=>drop.add(o)));const chosen=[];
@@ -1228,7 +1232,7 @@ function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked|
   setTimeout(()=>{busy=false;
     const lab=m=>m[0]===D_?[m[0],m[1],(S.asked.includes("relation")||S.asked.includes("caregiver"))?"媳婦":"家屬"]:m;
     if(!hits.length){S.miss=(S.miss||0)+1;S.chat.push(lab(MISS[(S.miss-1)%MISS.length]));}
-    else{hits.forEach(t=>{const again=S.asked.includes(t.id)&&!NO_AGAIN.has(t.id);if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
+    else{hits.forEach(t=>{const again=S.asked.includes(t.id)&&!NO_AGAIN.has(t.id)&&!t.id.startsWith("ctx_");if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
     const after=unlocked();const fresh=[...after].filter(x=>!before.has(x)&&BY[x]&&!START_UNLOCK.includes(x));
     if(fresh.length)S.chat.push(["sys","評估單已打開："+fresh.map(id=>`<button type="button" class="chip" data-jump="${id}">${BY[id].no} ${esc(BY[id].label.replace(/^\d+\.\s*/,"").slice(0,18))}</button>`).join("")]);
     save();drawLog();if(fresh.length){drawPanel();refresh();fresh.forEach(id=>{const el=$("#it-"+id);if(el){el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1800);}});}
