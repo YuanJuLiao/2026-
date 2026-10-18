@@ -995,6 +995,7 @@ const INTENTS=[
  {id:"energy",kk:"提不起勁|沒精神|精神|懶|精力|沒勁|疲倦|很累|累",x:"走一下",unlock:["s3"],ex:"過去一個禮拜，您會不會覺得提不起勁做事？",msgs:[[E_,"會啊，這個禮拜幾乎每天都懶懶的，什麼都不想做，只想坐著看電視。"]]},
  /* IADL */
  {id:"shop",kk:"買東西|購物|買菜|市場|超市|採買|買",x:"付錢|錢|藥",unlock:["i1"],ex:"阿嬤現在可以自己去買東西嗎？",msgs:[[O_,"住院前阿嬤自己走路去黃昏市場買菜。"],[E_,"現在都是媳婦買，我想吃什麼就跟她講。上禮拜天她帶我去便利商店，我自己挑了一包蘇打餅乾，自己付錢。"],[E_,"（問她能不能自己去買）不行，一定要有人陪我。"]]},
+ {id:"helper",kk:"外勞|外籍|看護|移工|幫傭|請人|聘|長照|居家服務|照服員|申請過|有沒有申請|日照|日間照顧",x:"走路|洗澡|長照系|系的|學生|我是",unlock:["cg2"],ex:"家裡有聘外勞或看護嗎？有申請長照服務嗎？",msgs:[[E_,"沒有啦，家裡沒有請外勞。"],[E_,"因為我腳不方便，想說是不是要請長照，但是我們又不懂要怎麼申請……"]]},
  {id:"outwith",kk:["(陪|陪同|陪伴|一起|帶).*(計程車|公車|搭車|坐車|搭乘|大眾運輸|捷運|客運|火車)","(計程車|公車|搭車|坐車|搭乘|大眾運輸|捷運|客運|火車).*(陪|陪同|陪伴|一起)"],unlock:["i2"],ex:"如果有人陪同，您能搭計程車嗎？",msgs:[[E_,"對啊，有人陪我就可以坐，但是要認識的人一起喔，因為我自己不會叫計程車。"]]},
  {id:"out",kk:"出門|外出|坐車|公車|計程車|搭車|開車|騎車|機車|交通|看醫生|去醫院|自己出去",x:"據點|陪|一起",unlock:["i2"],ex:"阿嬤出門都怎麼去？可以自己搭公車或計程車嗎？",msgs:[[O_,"阿嬤從來沒有騎過機車或開過車。以前會自己搭公車去大里區公所和市場，現在不敢。"],[E_,"去看醫生都是兒子或媳婦開車載我，我自己不會叫計程車，也不敢一個人坐。"]]},
  {id:"cook",kk:"煮飯|煮菜|做飯|烹調|下廚|電鍋|煮|三餐|午餐|早餐|準備飯",x:"切成",unlock:["i3"],ex:"阿嬤現在還會自己煮飯嗎？",msgs:[[O_,"媳婦每天早上出門前把早餐和午餐煮好，午餐放在大同電鍋裡。"],[E_,"中午我自己按電鍋熱一下就可以吃了。以前我很會煮，現在站久腳會痠，也沒力氣拿鍋子，就沒再煮了。"]]},
@@ -1011,20 +1012,101 @@ const INTENTS=[
  {id:"sit",kk:"坐多久|坐著|坐的時間|久坐|看電視多久|都坐",unlock:["ps_t"],ex:"阿嬤一天大概坐著多久？",msgs:[[E_,"我早上 5 點半起床，晚上 9 點就睡了，白天大多坐著。"],[D_,"她除了吃飯、上廁所、洗碗，其他時間幾乎都坐在客廳看電視，我估計一天坐 11 個小時左右。"]]},
 ];
 const IN=Object.fromEntries(INTENTS.map(t=>[t.id,t]));
+/* ============ 情境對話：追問 ============ */
+/* of：所屬主題；t：主題詞；pr：追問詞。主題已問過時只回答追問；還沒問過時先講主題再回答追問 */
+const PROBES=[
+ ["transfer","起床|站起|坐起|下床|移位|椅子|床","扶(?!手)|幫忙|協助|需要人|有人",[[D_,"她起床、從椅子站起來都是自己來，我沒有扶她。"]]],
+ ["transfer","起床|站起|坐起|下床|移位|椅子|床","輪椅",[[E_,"我沒有用輪椅啦。"]]],
+ ["transfer","起床|站起|坐起|下床|移位|椅子|床","跌倒|站不穩|晃|危險|安全",[[E_,"站起來要撐一下，第一次有時候起不來，再撐一次就好，不用人家扶。"]]],
+ [["walk","walkfar"],"走","扶|牽|協助|幫忙|需要人",[[D_,"在家裡她拿拐杖自己走，不用扶；出門走遠一點我一定要扶著她的手臂。"]]],
+ [["walk","walkfar"],"走","休息|一口氣|中間|停下",[[E_,"在家走一下就會喘、腳酸；走到便利商店中間要坐下來休息一次。"]]],
+ [["walk","walkfar"],"走","跌倒|晃|危險|安全|穩",[[D_,"家裡走還好，走遠一點她會晃，所以我一定扶著。"]]],
+ [["walk","walkfar"],"走|拐杖","輪椅|助行器",[[E_,"我只有用四腳拐杖，沒有用輪椅。"]]],
+ ["eat","吃飯|吃東西|用餐|進食|吃","多久|時間|吃完",[[E_,"一餐大概吃三十分鐘。"]]],
+ ["eat","吃飯|吃東西|用餐|進食|吃","掉|灑|嗆|噎",[[E_,"不太會掉，也不會嗆到。"]]],
+ ["eat","吃飯|吃東西|用餐|進食|吃","提醒|看著|陪",[[D_,"不用提醒，她自己會吃。"]]],
+ ["eat","吃飯|吃東西|用餐|進食|吃|肉|菜","切|夾|弄碎|剪",[[D_,"肉我煮的時候就切成小丁了，端上桌她自己夾、自己吃。"]]],
+ ["eat",null,"餵",[[E_,"不用餵啦，我自己吃。"]]],
+ ["toilet","廁所|馬桶|如廁","擦|衛生紙|褲子|整理|沖水",[[E_,"擦屁股、穿褲子、沖水都我自己來。"]]],
+ ["toilet","廁所|馬桶|如廁","扶(?!手)|幫忙|協助|陪|看著",[[E_,"不用人家幫忙，起來的時候扶洗手台就可以。"]]],
+ ["toilet","廁所|馬桶|如廁","晚上|半夜|夜裡",[[E_,"半夜也是我自己去，只是走廊比較暗。"]]],
+ ["stairs","樓梯|上樓|下樓|二樓|樓","自己|一個人|單獨",[[E_,"媳婦不在，我自己不敢上去。"]]],
+ ["stairs","樓梯|上樓|下樓|二樓|樓","扶(?!手)|牽|幫忙|協助|看著",[[D_,"我沒有扶她，她自己抓扶手，我是跟在旁邊看著，怕她往後倒。"]]],
+ ["stairs","樓梯|上樓|下樓|二樓|樓","扶手|拐杖",[[E_,"要抓著扶手，一階一階慢慢上。"]]],
+ ["dress",null,"扣子|釦子|拉鍊",[[E_,"扣子扣得比較慢，但是我自己扣得起來。"]]],
+ ["dress",null,"襪子",[[E_,"襪子我穿不起來，膝蓋彎不下去，都媳婦早上幫我穿。"]]],
+ ["dress",null,"鞋",[[E_,"鞋子穿魔鬼氈的，我自己可以。"]]],
+ ["dress","穿|衣|褲","多久|時間",[[E_,"慢慢穿，上衣褲子十分鐘內可以穿好。"]]],
+ ["bowel","大便|便秘|排便|解便|大號","幾天|多久一次|次數",[[E_,"大概兩三天解一次。"]]],
+ ["bowel","大便|排便|大號","失禁|來不及|弄髒",[[D_,"沒有，大便不會失禁。"]]],
+ ["bowel","大便|便秘|排便","藥|塞劑|甘油",[[E_,"便秘的時候我自己吃藥袋裡的軟便藥，不用人家幫忙。"]]],
+ ["bladder","尿|小便|漏|失禁|小號","白天",[[E_,"白天不會漏。"]]],
+ ["bladder","尿|小便|漏|失禁|小號","晚上|半夜|夜裡",[[D_,"這個月有兩次半夜來不及走到廁所就尿出來，是我起來幫她換、幫她洗的。"]]],
+ ["bladder","尿|小便|漏|失禁|小號","幾次|多常|頻率|一週|禮拜",[[D_,"出院以後這個月兩次，都是半夜。"]]],
+ ["bladder","尿|小便|漏|失禁|護墊|尿布","誰換|換洗|處理|誰洗",[[D_,"濕了是我幫她換、幫她洗；她現在晚上墊一片護墊。"]]],
+ ["bladder",null,"導尿|尿管",[[D_,"沒有用導尿管。"]]],
+ ["groom","刷牙|洗臉|梳頭|洗手","牙膏|準備|擠",[[E_,"牙膏我自己擠，不用人家準備。"]]],
+ ["groom","刷牙|洗臉|梳頭|洗手","幫忙|協助|看著",[[E_,"不用啦，我自己在洗手台弄。"]]],
+ ["bath","洗澡|沐浴|淋浴|澡","自己洗|一個人洗|自己來",[[E_,"我自己洗怕滑倒，所以都等媳婦下班幫我洗。"]]],
+ ["bath",null,"洗頭|頭髮",[[D_,"頭髮是我幫她洗的。"]]],
+ ["bath","洗澡|洗","背|腳|哪裡|哪些",[[E_,"前面我自己洗，背跟腳是媳婦幫我洗。"]]],
+ ["bath",null,"擦澡|毛巾|其他天|沒洗澡",[[D_,"沒洗澡的日子就用毛巾擦一擦。"]]],
+ ["bath","洗澡|浴室","椅|板凳|扶手",[[O_,"洗澡時阿嬤坐矮的塑膠板凳，淋浴區沒有扶手。"]]],
+ ["weight","瘦|體重|輕","幾公斤|多少公斤|多少|多重",[[D_,"去年 10 月健檢是 52.0 公斤，今天量 48.5 公斤。"]]],
+ ["weight","瘦|體重|輕","減肥|減重|刻意|故意",[[E_,"沒有減肥啦，是吃不下。"]]],
+ ["chair5","站","再試|扶手|用手",[[O_,"阿嬤放開手撐住扶手才站得起來。"],[E_,"不用手真的站不起來。"]]],
+ ["energy","提不起勁|精神|懶|累|精力","幾天|每天|多久|常常",[[E_,"這個禮拜幾乎每天都這樣。"]]],
+ ["shop","買","陪|一起",[[E_,"有人陪就可以，我會自己挑、自己付錢。"]]],
+ ["shop","買","附近|日用品|便利商店|小東西|自己去",[[E_,"附近的也不敢自己去，一定要有人陪。"]]],
+ ["out",null,"公車",[[E_,"以前會自己坐公車去區公所和市場，現在不敢了。"]]],
+ ["out",null,"機車|開車|騎車",[[E_,"我從來沒騎過機車，也不會開車。"]]],
+ ["out",null,"叫車|叫計程車",[[E_,"我不會叫計程車，也不敢一個人坐。"]]],
+ ["cook","煮|做飯|做菜|下廚|料理","備好|準備好|備齊|佐料|食材|材料|切好|洗好",[[E_,"不行啦，就算菜都準備好，我站久了腳會痠，鍋子也拿不動，現在只能把媳婦煮好的用電鍋熱一熱。"]]],
+ ["cook",null,"電鍋|加熱|熱一熱|熱飯",[[E_,"電鍋按一下我會，中午都自己熱來吃。"]]],
+ ["cook","煮","以前",[[E_,"以前我很會煮，一家人的飯都是我煮的。"]]],
+ ["cook",null,"微波",[[E_,"微波爐我比較少用，都用電鍋。"]]],
+ ["house",null,"洗碗|碗",[[E_,"吃完飯碗我自己洗。"],[D_,"她洗的碗還算乾淨。"]]],
+ ["house",null,"掃地|拖地|擦窗|打掃|擦地",[[E_,"拖地、擦窗戶那些彎不下去，都媳婦在做。"]]],
+ ["house",null,"棉被|鋪床|疊被|摺被|摺棉被",[[E_,"棉被我每天早上自己摺。"]]],
+ ["house","家事|家務","幫忙|協助|乾淨|整潔",[[D_,"簡單的她自己做，也做得算乾淨；比較重的都是我在做。"]]],
+ ["laundry",null,"洗衣機",[[E_,"洗衣機都是媳婦在用，我只用手洗小件的。"]]],
+ ["laundry",null,"晾|曬",[[E_,"我自己晾在浴室裡。"]]],
+ ["laundry",null,"大件|床單|外套|其他衣服|被單",[[D_,"其他衣服和床單是我用洗衣機洗。"]]],
+ ["laundry",null,"內衣|小件|手洗",[[E_,"內衣褲和襪子我自己用手洗。"]]],
+ ["phone","電話|手機","接",[[E_,"鈴聲聽得到，我可以接。"]]],
+ ["phone",null,"電話簿|通訊錄|查號碼|查電話",[[E_,"查電話簿我從來不做。"]]],
+ ["phone","電話|號碼|撥|打","沒存|陌生|新號碼|紙上|不認識",[[O_,"阿嬤看著紙上的號碼按了好幾次，都按錯。"],[E_,"這個我不會。"]]],
+ ["phone","電話|號碼|撥|打","存|熟悉|家人|女兒|媳婦",[[E_,"媳婦跟女兒的電話存在手機裡，我自己找得到、撥得出去。"]]],
+ ["meds","藥","提醒|忘記|會忘",[[E_,"藥盒分好我就會自己吃，這個月只有一次忘了吃晚上的糖尿病藥。"]]],
+ ["meds","藥","沒分|自己分|藥袋|分得清|看得懂|字",[[E_,"藥袋上的字太小，我分不清楚，都是媳婦幫我分。"]]],
+ ["meds","藥","誰分|藥盒|分裝",[[D_,"我每個禮拜日晚上把一週的藥分到早、午、晚、睡前的藥盒裡。"]]],
+ ["money",null,"提款|ATM|銀行|存款|年金|領錢",[[E_,"老人年金跟銀行的事情都是兒子在處理，我不會用提款機。"]]],
+ ["money",null,"零用錢|找錢|香油錢|算錢|給錢",[[E_,"身上有一點零用錢，添香油錢、買小東西都我自己付，找錢我也會算。"]]],
+];
+PROBES.forEach(([of,t,pr,msgs],n)=>{const ofs=Array.isArray(of)?of:[of];
+  INTENTS.push({id:"pb"+n,of:ofs,pr,x:ofs[0]==="out"?"陪|一起":undefined,kk:t?[`(${t}).*(${pr})`,`(${pr}).*(${t})`]:[pr],unlock:(IN[ofs[0]]&&IN[ofs[0]].unlock)||[],msgs});
+  IN["pb"+n]=INTENTS[INTENTS.length-1];});
+const NO_AGAIN=new Set(["greet","intro","explain","prep","relation"]);
+function againMsgs(t){const m=t.msgs.find(x=>x[0]!==O_)||t.msgs[0];return [[m[0]===O_?E_:m[0],"我剛剛有講喔。"],m];}
 const START_UNLOCK=["scenario","group","datetime","assessor","sex","g_problem","g_advice"];
 const NO_ASK=new Set(["scenario","group","datetime","assessor","prep_steps","respondent","prep_note","g_problem","g_advice","b_final","i_mean","sex"]);
 const MISS=[[E_,"蛤？你說什麼？大聲一點、慢一點啦，我左耳聽不太到。"],[E_,"這個我聽不太懂耶，你可以換個方式問嗎？"],[D_,"你是想問她哪一方面？吃飯、走路、洗澡、上廁所，還是買東西、出門、吃藥這些？"]];
 const norm=s=>s.replace(/[\s，。、？?！!「」『』：:；;,.（）()…~～]/g,"");
 function matchQ(q){const s=norm(q);const out=[];
+  /* 很短的追問（例如「晚上呢？」）沿用上一個話題 */
+  const ctx=S.lastTopic;if(ctx&&s.length<=12){const cps=INTENTS.filter(t=>t.of&&t.of.includes(ctx)&&new RegExp(t.pr,"i").test(s));if(cps.length)return cps.slice(0,2);}
   INTENTS.forEach(t=>{if(t.x&&new RegExp(t.x).test(s))return;let sc=0;
     if(t.kk)(Array.isArray(t.kk)?t.kk:t.kk.split("|")).forEach(w=>{if(new RegExp(w,"i").test(s))sc+=3;});
     if(t.k)t.k.split("|").forEach(w=>{if(new RegExp(w,"i").test(s))sc+=1;});
     if(sc>0)out.push([t,sc]);});
   out.sort((a,b)=>b[1]-a[1]);if(!out.length)return [];
+  const asked=new Set(S.asked||[]);const probes=out.filter(([t])=>t.of);
+  if(probes.length){const drop=new Set();probes.forEach(([t])=>t.of.forEach(o=>drop.add(o)));const chosen=[];
+    probes.slice(0,2).forEach(([t])=>{if(!t.of.some(o=>asked.has(o))){const b=IN[t.of[0]];if(!chosen.includes(b))chosen.push(b);}chosen.push(t);});
+    out.forEach(([t,sc])=>{if(!t.of&&!drop.has(t.id)&&sc>=3&&chosen.length<4&&!["greet","explain"].includes(t.id)&&!chosen.includes(t))chosen.push(t);});
+    return chosen;}
   const top=out[0][1];
-  /* 主要話題，加上其他分數也很高（≥3）的話題，最多 3 個 */
   const pick=out.filter(([t,sc],n)=>n===0||sc>=3).slice(0,3).map(x=>x[0]);
-  /* 一般寒暄只在沒有其他話題時回應 */
   const real=pick.filter(t=>t.id!=="greet"&&t.id!=="explain");
   return real.length?real:pick.slice(0,1);}
 
@@ -1119,7 +1201,7 @@ function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked|
   setTimeout(()=>{busy=false;
     const lab=m=>m[0]===D_?[m[0],m[1],(S.asked.includes("relation")||S.asked.includes("caregiver"))?"媳婦":"家屬"]:m;
     if(!hits.length){S.miss=(S.miss||0)+1;S.chat.push(lab(MISS[(S.miss-1)%MISS.length]));}
-    else{hits.forEach(t=>{if(!S.asked.includes(t.id))S.asked.push(t.id);t.msgs.forEach(m=>S.chat.push(lab(m)));});}
+    else{hits.forEach(t=>{const again=!t.of&&S.asked.includes(t.id)&&!NO_AGAIN.has(t.id);if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
     const after=unlocked();const fresh=[...after].filter(x=>!before.has(x)&&BY[x]&&!START_UNLOCK.includes(x));
     if(fresh.length)S.chat.push(["sys","評估單已打開："+fresh.map(id=>`<button type="button" class="chip" data-jump="${id}">${BY[id].no} ${esc(BY[id].label.replace(/^\d+\.\s*/,"").slice(0,18))}</button>`).join("")]);
     save();drawLog();if(fresh.length){drawPanel();refresh();fresh.forEach(id=>{const el=$("#it-"+id);if(el){el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1800);}});}
