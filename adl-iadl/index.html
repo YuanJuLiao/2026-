@@ -250,6 +250,9 @@ details.quiz summary{cursor:pointer;color:var(--accent)}
 .sc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:grid;gap:10px}
 .gnav{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
 @media (max-width:900px){.guide{grid-template-columns:minmax(0,1fr)}.steps{display:none}}
+.wguide{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:14px;line-height:1.7}
+.wguide summary{cursor:pointer;color:var(--accent);font-weight:500}
+.wguide ol{margin:6px 0;padding-left:1.3em}.wguide ul{margin:2px 0;padding-left:1.2em}.wguide li{margin:3px 0}.wguide p{margin:6px 0 0}
 /* 情境對話 */
 .chatlayout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding-block:18px 80px;align-items:start}
 .chatpane{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);height:calc(100vh - 104px);display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
@@ -434,6 +437,18 @@ const TOPICS = [
 ];
 const T = Object.fromEntries(TOPICS.map(t=>[t.id,t]));
 
+const GUIDE_PROBLEM=`<ol>
+<li><b>先整理異常結果</b>：看上方「評估結果整理」（巴氏量表總分與需協助項目、SOF、IADL、身體活動量），再加上病史、用藥、居家環境，以及訪談中聽到、看到的風險。</li>
+<li><b>寫成「健康問題」，不是寫分數</b>：用一個短語說出問題本身，例如「跌倒高風險」「營養攝取不足」「疼痛影響活動」「照顧者負荷過重」（這些只是寫法示範，請依你的個案判斷）。</li>
+<li><b>每個問題都要有依據</b>：
+ <ul><li>主觀資料：個案或家屬說的話，直接引用原話。</li>
+ <li>客觀資料：評估分數、需協助的項目、你觀察到的表現、量測值（如體重變化）。</li></ul></li>
+<li><b>寫出相關因素</b>：可以從疾病（慢性病、急性病後）、身體功能（肌力、平衡、關節）、環境（照明、扶手、門檻、床高）、心理社會（害怕跌倒、情緒、照顧者時間）四方面去找。</li>
+<li><b>排優先順序</b>：先寫威脅安全的問題（例如跌倒），再寫影響日常功能的問題，最後寫社會參與與照顧者負荷。</li>
+<li><b>一個問題寫一段</b>，建議列 3～5 個主要問題。</li>
+</ol>
+<p><b>常見錯誤</b>：只抄分數沒說明代表什麼；把照護建議寫進問題裡；沒有引用訪談內容；只看白天、只看家中表現；忘了主要照顧者的負荷。</p>`;
+const TPL_PROBLEM="問題一：（健康問題名稱）\n依據：主觀資料－個案／家屬表示「……」；客觀資料－（評估分數、需協助項目、觀察到的表現）\n相關因素：（疾病／身體功能／環境／心理社會）\n\n問題二：\n依據：\n相關因素：\n\n問題三：\n依據：\n相關因素：";
 /* ============ 評估單結構（依「高齡周全性健康評估問卷－ADL/IADL」） ============ */
 const CASE_ZHANG = TOPICS.find(t=>t.id==="a-case").html.replace(/<\/p>/g,"\n").replace(/<[^>]+>/g,"").replace(/\s+\n/g,"\n").trim().replace(/\n\s*/g,"\n");
 const YN1=["是(1分)","否(0分)"];
@@ -552,7 +567,7 @@ const UNITS = [
    {id:"g_sum",type:"note",fn:S=>overall(S)},
   ]},
   {title:"健康問題評估及建議",learn:"i-apply",items:[
-   {id:"g_problem",type:"textarea",label:"健康問題評估",rows:4,hint:"依 ADL、衰弱、IADL、活動量結果，列出個案主要的功能問題與可能原因（疾病、環境、心理社會因素）。"},
+   {id:"g_problem",type:"textarea",label:"健康問題評估",rows:10,hint:"依 ADL、衰弱、IADL、活動量結果與訪談內容，列出個案主要的健康問題，每個問題寫出依據與相關因素。",guide:"GUIDE_PROBLEM",tpl:"TPL_PROBLEM"},
    {id:"g_advice",type:"textarea",label:"照護建議",rows:6,hint:"可從三方面撰寫：照顧計畫擬定（針對失能項目的介入、長照服務或輔具）；復健目標設定（可改善的功能項目與具體目標）；家屬衛教（提供適當協助而非過度保護）。並註明再評估時機：定期 3–6 個月、狀況改變時、介入後。",learn:"i-apply"},
   ]},
  ]},
@@ -678,7 +693,9 @@ function itemHTML(i,g){
    <div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div>
    <div class="body"><div class="lbl">${esc(i.label)}${i.score&&i.score!=="yn"?`<span class="score" data-score="${i.id}"></span>`:""}${i.em?`<em>${esc(i.em)}</em>`:""}${i.opt&&!i.em?`<em>選填</em>`:""}</div>
    ${i.hint?`<div class="hint">${i.hint}</div>`:""}
+   ${i.guide?`<details class="wguide"><summary>撰寫指引（點開）</summary>${GUIDE_PROBLEM}</details>`:""}
    ${inputHTML(i)}
+   ${i.tpl?`<div class="inline"><button type="button" class="btn small" data-tpl="${i.id}">插入撰寫格式</button><span class="msg">已有內容時會加在最後面</span></div>`:""}
    ${fb}
    ${i.learn?`<button type="button" class="learnlink" data-learn="${i.learn}">${i.score==="paren"||i.score==="lead"?"評分定義：":"教材："}${T[i.learn].title}</button>`:""}
    </div></div>`;}
@@ -765,6 +782,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,img[data-
   if(t.dataset.ask!==undefined){const ta=$("#chat-in");if(ta){ta.value=t.dataset.ask;ta.focus();}return;}
   if(t.dataset.jump){const el=$("#it-"+t.dataset.jump);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1600);}return;}
   if(t.id==="g-tip"){S.chat.push(["sys","提問小技巧：先自我介紹；面對阿嬤、說話慢一點、音量大一點；一次問一件事，多用是非題或選擇題；需要時請阿嬤實際做給你看；評的是最近一個月的「能力」，要問清楚需不需要別人幫忙或在旁看著。"]);save();drawLog();return;}
+  if(t.dataset.tpl){const id=t.dataset.tpl,ta=$("#f-"+id);const cur=(S[id]||"").trim();S[id]=cur?cur+"\n\n"+TPL_PROBLEM:TPL_PROBLEM;if(ta){ta.value=S[id];ta.focus();}save();refresh();return;}
   if(t.dataset.start){G.list=false;startScenario(t.dataset.start);return;}
   if(t.dataset.resume){G.list=false;renderGuide();window.scrollTo(0,0);return;}
   if(t.dataset.gstep!==undefined){S.scenarioStep=+t.dataset.gstep;save();renderGuide();window.scrollTo(0,0);return;}
@@ -884,9 +902,10 @@ const SCENARIOS=[{
 /* who: e=阿嬤 d=媳婦 o=觀察  k=關鍵詞（每個 1 分） kk=強關鍵詞（每個 3 分） x=排除詞 */
 const E_="e",D_="d",O_="o";
 const INTENTS=[
- {id:"greet",k:"你好|您好|阿嬤好|我是|自我介紹|學生|打擾|午安|來看",ex:"阿嬤您好，我是長照系的學生，今天來跟您聊聊日常生活的情形。",msgs:[[E_,"你好你好，來坐。你講話大聲一點、慢一點喔，我左耳聽不太到。"],[D_,"你們要問什麼就問，我在旁邊幫忙補充。"]]},
- {id:"explain",k:"評估|說明|目的|等一下|大概|多久時間|同意|可以嗎|方便",ex:"等一下會問您一些生活上的問題，大約 30 分鐘，可以嗎？",msgs:[[E_,"好啊，你問，我知道的都跟你講。"]]},
- {id:"prep",kk:["(我|我們)(已經|先|有|剛剛|剛|都|會)?(用)?(洗|消毒|擦)(好|過|完|了|個|一下)?(乾淨)?(的)?(雙)?手","乾洗手","手部衛生","核對","自我介紹","解釋(評估|今天|一下|過程|項目)","評估(的)?(項目|過程|流程|內容|目的)","環境安排|安排環境|關掉電視|調整座位|調整位置"],unlock:[],ex:"我已經洗好手了。阿嬤，我先核對一下您的資料，再跟您說明今天要評估的項目和過程。",msgs:[[E_,"好啦好啦，你這麼仔細。你問吧，講大聲一點我比較聽得到。"],[D_,"我在旁邊，她聽不清楚的我幫忙講。"],["sys",'請記得在評估單勾選完成的評估前準備：<button type="button" class="chip" data-jump="prep_steps">B-1 評估前準備</button>']]},
+ {id:"intro",kk:"我是|學生|自我介紹|長照系|系的|實習|我叫|來自",unlock:["prep_steps","prep_note"],ex:"阿嬤您好，我是長照系的學生，我叫小明。",msgs:[[E_,"你好你好，來坐。你講話大聲一點、慢一點喔，我左耳聽不太到。"],[D_,"你們要問什麼就問，我在旁邊幫忙補充。"]]},
+ {id:"greet",k:"你好|您好|阿嬤好|打擾|午安|來看",ex:"阿嬤您好，我是長照系的學生，今天來跟您聊聊日常生活的情形。",msgs:[[E_,"你好你好，來坐。你講話大聲一點、慢一點喔，我左耳聽不太到。"],[D_,"你們要問什麼就問，我在旁邊幫忙補充。"]]},
+ {id:"explain",k:"評估|說明|目的|等一下|大概|多久時間|同意|可以嗎|方便|來意|今天來|拜訪|想了解|想跟您聊|聊聊|了解一下",unlock:["prep_steps","prep_note"],ex:"等一下會問您一些生活上的問題，大約 30 分鐘，可以嗎？",msgs:[[E_,"好啊，你問，我知道的都跟你講。"]]},
+ {id:"prep",kk:["(我|我們)(已經|先|有|剛剛|剛|都|會)?(用)?(洗|消毒|擦)(好|過|完|了|個|一下)?(乾淨)?(的)?(雙)?手","乾洗手","手部衛生","核對","自我介紹","解釋(評估|今天|一下|過程|項目)","評估(的)?(項目|過程|流程|內容|目的)","環境安排|安排環境|關掉電視|調整座位|調整位置"],unlock:["prep_steps","prep_note"],ex:"我已經洗好手了。阿嬤，我先核對一下您的資料，再跟您說明今天要評估的項目和過程。",msgs:[[E_,"好啦好啦，你這麼仔細。你問吧，講大聲一點我比較聽得到。"],[D_,"我在旁邊，她聽不清楚的我幫忙講。"]]},
  {id:"relation",kk:["是(她|他|阿嬤|阿媽|奶奶)的$","是(她|他|阿嬤|阿媽|奶奶)的(什麼|誰|哪位|哪一位)","(您|你|妳)是(她|他|阿嬤|阿媽|奶奶)的?(女兒|媳婦|兒子|孫女|孫子|看護|家人|親戚)","(您|你|妳)是$","(您|你|妳)是誰","(您|你|妳)是哪位","什麼關係","的關係","旁邊這位","這位是","請問這位"],unlock:[],ex:"請問您是阿嬤的什麼人？",msgs:[[D_,"我是她媳婦，她小兒子的太太。"]]},
  {id:"name",kk:"名字|姓名|大名|尊姓|貴姓|芳名|名諱|怎麼稱呼|如何稱呼|稱呼您|稱呼妳|稱呼你|叫什麼|叫做什麼",unlock:["client"],ex:"請問阿嬤怎麼稱呼？",msgs:[[E_,"我叫林陳翠琴。"]]},
  {id:"age",kk:"幾歲|年齡|歲數|生日|出生|幾年次|哪一年生",x:"兒子|女兒|孫|媳婦|老大|長子|子女|小孩|孩子|女婿|先生|丈夫|阿公",unlock:["birth","age"],ex:"阿嬤今年幾歲？生日是什麼時候？",msgs:[[E_,"我民國 30 年 3 月 15 號生的，今年 85 歲了。"]]},
@@ -958,7 +977,7 @@ const INTENTS=[
  {id:"sit",kk:"坐多久|坐著|坐的時間|久坐|看電視多久|都坐",unlock:["ps_t"],ex:"阿嬤一天大概坐著多久？",msgs:[[E_,"我早上 5 點半起床，晚上 9 點就睡了，白天大多坐著。"],[D_,"她除了吃飯、上廁所、洗碗，其他時間幾乎都坐在客廳看電視，我估計一天坐 11 個小時左右。"]]},
 ];
 const IN=Object.fromEntries(INTENTS.map(t=>[t.id,t]));
-const START_UNLOCK=["scenario","group","datetime","assessor","sex","prep_steps","prep_note","g_problem","g_advice"];
+const START_UNLOCK=["scenario","group","datetime","assessor","sex","g_problem","g_advice"];
 const NO_ASK=new Set(["scenario","group","datetime","assessor","prep_steps","respondent","prep_note","g_problem","g_advice","b_final","i_mean","sex"]);
 const MISS=[[E_,"蛤？你說什麼？大聲一點、慢一點啦，我左耳聽不太到。"],[E_,"這個我聽不太懂耶，你可以換個方式問嗎？"],[D_,"你是想問她哪一方面？吃飯、走路、洗澡、上廁所，還是買東西、出門、吃藥這些？"]];
 const norm=s=>s.replace(/[\s，。、？?！!「」『』：:；;,.（）()…~～]/g,"");
@@ -1044,7 +1063,7 @@ function drawPanel(){const P_=$("#gpanel");if(!P_)return;const U=unlocked();cons
         if(i.type==="note")return s.items.some(x=>x.type!=="note"&&U.has(x.id))?itemHTML(i):"";
         if(U.has(i.id))return itemHTML(i,{key:K});
         const ex=exFor(i.id);
-        return `<div class="item locked" data-lock="${i.id}"><div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div><div class="body"><div class="lbl">${esc(i.label)}<em>${i.id==="respondent"?"阿嬤開口回答後開放":NO_ASK.has(i.id)?"問完相關項目後開放":"尚未問到"}</em></div>${G.practice&&ex?`<button type="button" class="learnlink" data-ask="${esc(ex)}">提示：可以怎麼問？</button>`:""}</div></div>`;}).join("");
+        return `<div class="item locked" data-lock="${i.id}"><div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div><div class="body"><div class="lbl">${esc(i.label)}<em>${i.id==="respondent"?"阿嬤開口回答後開放":(i.id==="prep_steps"||i.id==="prep_note")?"自我介紹、說明來意後開放":NO_ASK.has(i.id)?"問完相關項目後開放":"尚未問到"}</em></div>${G.practice&&ex?`<button type="button" class="learnlink" data-ask="${esc(ex)}">提示：可以怎麼問？</button>`:""}</div></div>`;}).join("");
       return `<div class="sec"><h3>${s.title}</h3><div class="items">${body}</div></div>`;}).join("");
     return `<div class="punit"><h2 class="ph ${u.dom}">${u.key}. ${u.title}</h2>${secs}</div>`;}).join("");
 }
