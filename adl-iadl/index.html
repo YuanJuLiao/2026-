@@ -873,7 +873,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,img[data-
   if(t.dataset.start){G.list=false;startScenario(t.dataset.start);return;}
   if(t.dataset.resume){G.list=false;renderGuide();window.scrollTo(0,0);return;}
   if(t.dataset.gstep!==undefined){S.scenarioStep=+t.dataset.gstep;save();renderGuide();window.scrollTo(0,0);return;}
-  if(t.id==="g-score"){openScore();return;}
+  if(t.id==="g-score"||t.dataset.score!==undefined){openScore();return;}
   if(t.id==="do-score"){exportPDF(null,t,"conv");return;}
   if(t.id==="g-quit"){G.list=true;renderGuide();window.scrollTo(0,0);return;}
   if(t.dataset.reveal){G.reveal[t.dataset.reveal]=true;refresh();return;}
@@ -991,6 +991,12 @@ const SCENARIOS=[{
 const E_="e",D_="d",O_="o";
 const INTENTS=[
  {id:"intro",kk:"我是|學生|自我介紹|長照系|系的|實習|我叫|來自",unlock:["prep_steps","prep_note"],ex:"阿嬤您好，我是長照系的學生，我叫小明。",msgs:[[E_,"你好你好，來坐。你講話大聲一點、慢一點喔，我左耳聽不太到。"],[D_,"你們要問什麼就問，我在旁邊幫忙補充。"]]},
+ {id:"bye",kk:["就到這","到這裡","到此","告一段落","再見","拜拜","掰掰","告辭","先走","先離開","先這樣","(評估|訪問|訪視|今天).*結束","評估完","問完了","接受.*(訪問|評估|訪談)","配合.*(訪問|評估|訪談)"],get msgs(){const st=convStats();const m=[[E_,"不會啦，謝謝你們來看我，有空再來坐喔。"]];m.push(st.cov<0.8?[D_,"這樣就問完了嗎？好喔，謝謝你們，辛苦了。"]:[D_,"謝謝你們，問得很仔細。之後長照的事情，再麻煩你們幫忙問看看。"]);m.push(["sys",'訪談結束了嗎？<button type="button" class="chip" data-score>查看成績單、下載 PDF</button>']);return m;}},
+ {id:"thanks",kk:"謝謝|感謝|多謝|辛苦了|辛苦您|麻煩您了",x:"請問|嗎|呢|有沒有|會不會|幾|怎麼|什麼|哪",msgs:[[E_,"不會啦，不用客氣。"]]},
+ {id:"ack",kk:["^(好|好的|好喔|好哦|好唷|了解|瞭解|我知道了|知道了|喔|哦|嗯|嗯嗯|原來如此|原來是這樣|收到|ok|OK|是喔|這樣喔|這樣啊)$"],msgs:[[E_,"嗯嗯，你還有什麼要問的就問。"]]},
+ {id:"sorry",kk:"不好意思|抱歉|對不起",x:"請問|嗎|呢|有沒有|會不會|幾|怎麼|什麼|哪",msgs:[[E_,"沒關係啦，慢慢問。"]]},
+ {id:"care",kk:"保重|身體健康|多休息|早日康復|加油|注意安全|小心一點|慢慢來",x:"請問|嗎|呢|有沒有|會不會|幾|怎麼|什麼|哪",msgs:[[E_,"好啦，謝謝你。"]]},
+ {id:"praise",kk:"好厲害|很厲害|好棒|很棒|真棒|好健康|很健康|氣色|好年輕|很年輕",x:"請問|嗎|呢|有沒有|會不會|幾|怎麼|什麼|哪",msgs:[[E_,"哪有啦，老了，沒什麼用了。"],[D_,"媽媽聽到很開心啦。"]]},
  {id:"greet",k:"你好|您好|阿嬤好|打擾|午安|來看",ex:"阿嬤您好，我是長照系的學生，今天來跟您聊聊日常生活的情形。",msgs:[[E_,"你好你好，來坐。你講話大聲一點、慢一點喔，我左耳聽不太到。"],[D_,"你們要問什麼就問，我在旁邊幫忙補充。"]]},
  {id:"explain",k:"評估|說明|目的|等一下|大概|多久時間|同意|可以嗎|方便|來意|今天來|拜訪|想了解|想跟您聊|聊聊|了解一下",unlock:["prep_steps","prep_note"],ex:"等一下會問您一些生活上的問題，大約 30 分鐘，可以嗎？",msgs:[[E_,"好啊，你問，我知道的都跟你講。"]]},
  {id:"prep",kk:["(我|我們)(已經|先|有|剛剛|剛|都|會)?(用)?(洗|消毒|擦)(好|過|完|了|個|一下)?(乾淨)?(的)?(雙)?手","乾洗手","手部衛生","核對","自我介紹","解釋(評估|今天|一下|過程|項目)","評估(的)?(項目|過程|流程|內容|目的)","環境安排|安排環境|關掉電視|調整座位|調整位置"],unlock:["prep_steps","prep_note"],ex:"我已經洗好手了。阿嬤，我先核對一下您的資料，再跟您說明今天要評估的項目和過程。",msgs:[[E_,"好啦好啦，你這麼仔細。你問吧，講大聲一點我比較聽得到。"],[D_,"我在旁邊，她聽不清楚的我幫忙講。"]]},
@@ -1147,7 +1153,8 @@ const PROBES=[
 PROBES.forEach(([of,t,pr,msgs,o],n)=>{const ofs=Array.isArray(of)?of:[of];
   INTENTS.push({id:"pb"+n,of:ofs,pr,fs:!!(o&&o.fs),x:ofs[0]==="out"?"陪|一起":undefined,kk:t?[`(${t}).*(${pr})`,`(${pr}).*(${t})`]:[pr],unlock:(IN[ofs[0]]&&IN[ofs[0]].unlock)||[],msgs});
   IN["pb"+n]=INTENTS[INTENTS.length-1];});
-const NO_AGAIN=new Set(["greet","intro","explain","prep","relation"]);
+const NO_AGAIN=new Set(["greet","intro","explain","prep","relation","bye","thanks","ack","sorry","care","praise"]);
+const SOCIAL=new Set(["bye","thanks","ack","sorry","care","praise"]);
 /* 再確認時的回答：像聊天一樣肯定，並說出評分需要的重點 */
 const CF={
  name:[E_,"對，我叫林陳翠琴。"],age:[E_,"對啊，民國 30 年生的，85 歲了。"],marital:[E_,"對，我先生走了 8 年了。"],edu:[E_,"對啦，只有國小畢業。"],
@@ -1183,6 +1190,11 @@ function matchQ(q){const s=norm(q);const out=[];
     if(t.k)t.k.split("|").forEach(w=>{if(new RegExp(w,"i").test(s))sc+=1;});
     if(sc>0)out.push([t,sc]);});
   out.sort((a,b)=>b[1]-a[1]);
+  /* 結束、道謝、應答這類寒暄：有「結束訪談」就只回道別；只有寒暄、沒有問到別的事，就只回寒暄 */
+  {const bye=out.find(([t])=>t.id==="bye");if(bye)return [bye[0]];
+   const soc=out.filter(([t])=>SOCIAL.has(t.id)),other=out.filter(([t,sc])=>!SOCIAL.has(t.id)&&sc>=3&&!["greet"].includes(t.id));
+   if(soc.length&&!other.length)return [soc[0][0]];
+   if(soc.length){for(let n=out.length-1;n>=0;n--)if(SOCIAL.has(out[n][0].id))out.splice(n,1);}}
   /* IPAQ 問句裡舉的例子（拖地、搬重物…）不要被當成在問家事 */
   if(/喘|費力|10分鐘|十分鐘/.test(s)&&out.some(([t])=>["vig","mod","walk7"].includes(t.id))){const vm=out.some(([t])=>["vig","mod"].includes(t.id));const keep=out.filter(([t])=>vm?["vig","mod"].includes(t.id):["walk7","sit"].includes(t.id));out.length=0;out.push(...keep);}
   /* 很短、沒有提到新話題的追問（例如「晚上呢？」）沿用上一個話題 */
@@ -1293,7 +1305,7 @@ function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked|
   setTimeout(()=>{busy=false;
     const lab=m=>m[0]===D_?[m[0],m[1],(S.asked.includes("relation")||S.asked.includes("caregiver"))?"媳婦":"家屬"]:m;
     if(!hits.length){S.miss=(S.miss||0)+1;S.chat.push(lab(MISS[(S.miss-1)%MISS.length]));}
-    else{if(hits.some(t=>!S.asked.includes(t.id)))S.hit=(S.hit||0)+1;else S.rep=(S.rep||0)+1;hits.forEach(t=>{const again=S.asked.includes(t.id)&&!NO_AGAIN.has(t.id)&&!t.id.startsWith("ctx_");if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
+    else{if(hits.every(t=>SOCIAL.has(t.id)))S.soc=(S.soc||0)+1;else if(hits.some(t=>!S.asked.includes(t.id)))S.hit=(S.hit||0)+1;else S.rep=(S.rep||0)+1;hits.forEach(t=>{const again=S.asked.includes(t.id)&&!NO_AGAIN.has(t.id)&&!t.id.startsWith("ctx_");if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
     const after=unlocked();const fresh=[...after].filter(x=>!before.has(x)&&BY[x]&&!START_UNLOCK.includes(x));
     if(fresh.length)S.chat.push(["sys","評估單已打開："+fresh.map(id=>`<button type="button" class="chip" data-jump="${id}">${BY[id].no} ${esc(BY[id].label.replace(/^\d+\.\s*/,"").slice(0,18))}</button>`).join("")]);
     save();drawLog();if(fresh.length){drawPanel();refresh();fresh.forEach(id=>{const el=$("#it-"+id);if(el){el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1800);}});}
@@ -1492,20 +1504,20 @@ function convStats(){const K=KEYS(),U=unlocked();
   const qs=(S.chat||[]).filter(m=>m[0]==="me").length;const miss=S.miss||0;
   const valid=S.hit!==undefined?S.hit:Math.max(0,qs-miss);const rep=S.rep!==undefined?S.rep:Math.max(0,qs-miss-valid);
   const t=S.qtimes||[];const dur=t.length>1?t[t.length-1]-t[0]:0;
-  const cov=askable.length?got/askable.length:0,acc=kids.length?ok/kids.length:0,eff=qs?valid/qs:0;
+  const soc=S.soc||0,qn=Math.max(0,qs-soc);const cov=askable.length?got/askable.length:0,acc=kids.length?ok/kids.length:0,eff=qn?Math.min(1,valid/qn):0;
   const score=Math.round((cov*40+acc*40+eff*20)*10)/10;
   const units=UNITS.map(u=>{const its=u.secs.flatMap(x=>x.items);const ak=its.filter(i=>askable.includes(i));const kk=its.filter(i=>K[i.id]&&JT.has(i.type));
     let o=0;kk.forEach(i=>{if(judge(i,K[i.id]))o++;});return {u,got:ak.filter(i=>U.has(i.id)).length,ask:ak.length,ok:o,key:kk.length};}).filter(x=>x.ask||x.key);
-  return {got,askable:askable.length,ok,done,keyed:kids.length,qs,valid,miss,rep,dur,t0:t[0],t1:t[t.length-1],cov,acc,eff,score,units};}
+  return {got,askable:askable.length,ok,done,keyed:kids.length,qs,qn,soc,valid,miss,rep,dur,t0:t[0],t1:t[t.length-1],cov,acc,eff,score,units};}
 function scoreHTML(st,forPdf){
   const cell=(b,l)=>`<div class="sc-stat"><b>${b}</b><span>${l}</span></div>`;
   return `<div class="sc-grid">${cell(st.score.toFixed(1),"綜合分數／100")}${cell(st.dur?fmtDur(st.dur):"—","訪談用時")}${cell(st.qs,"提問句數")}${cell(st.got+" / "+st.askable,"問到的評估項目")}${cell(st.ok+" / "+st.keyed,"勾選正確的項目")}${cell(st.qs?Math.round(st.eff*100)+"%":"—","有效提問比例")}</div>
   <table class="sc-tab"><tr><th>計分項目</th><th>算法</th><th>得分</th></tr>
   <tr><td>問得完整</td><td>問到 ${st.got} / ${st.askable} 項 × 40</td><td>${(st.cov*40).toFixed(1)}</td></tr>
   <tr><td>評得正確</td><td>勾選正確 ${st.ok} / ${st.keyed} 項 × 40（不含文字填寫題）</td><td>${(st.acc*40).toFixed(1)}</td></tr>
-  <tr><td>問得精準</td><td>有效提問 ${st.valid} / ${st.qs} 句 × 20</td><td>${(st.eff*20).toFixed(1)}</td></tr>
+  <tr><td>問得精準</td><td>有效提問 ${st.valid} / ${st.qn} 句 × 20</td><td>${(st.eff*20).toFixed(1)}</td></tr>
   <tr><td colspan="2"><b>綜合分數</b>（同分時，用時較短者勝）</td><td><b>${st.score.toFixed(1)}</b></td></tr></table>
-  <p class="msg" style="margin:0">有效提問：問到新內容的句子。另有重複提問 ${st.rep} 句、阿嬤聽不懂 ${st.miss} 句。用時從第一句提問算到最後一句${st.qs&&st.qs>1?`，平均每句 ${Math.round(st.dur/1000/Math.max(1,st.qs-1))} 秒`:""}。</p>`;}
+  <p class="msg" style="margin:0">有效提問：問到新內容的句子。另有重複提問 ${st.rep} 句、阿嬤聽不懂 ${st.miss} 句；寒暄、道謝 ${st.soc} 句不列入計算。用時從第一句提問算到最後一句${st.qs&&st.qs>1?`，平均每句 ${Math.round(st.dur/1000/Math.max(1,st.qs-1))} 秒`:""}。</p>`;}
 function openScore(){closeModal();const st=convStats();const sc=document.createElement("div");sc.className="scrim";sc.dataset.close="";
   const m=document.createElement("div");m.className="modal";m.setAttribute("role","dialog");m.setAttribute("aria-label","訪談成績單");m.style.width="min(620px,calc(100% - 32px))";
   m.innerHTML=`<h3>訪談成績單</h3>
