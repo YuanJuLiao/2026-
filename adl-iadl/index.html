@@ -266,6 +266,11 @@ details.quiz summary{cursor:pointer;color:var(--accent)}
 .grow2 input[type=text],.grow2 input[type=number],.grow2 select{padding:5px 8px;font-size:14px;color:var(--ink)}
 .grow2 select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px}
 .grow2.chk label:not(.ill){display:flex;flex:0 0 auto;gap:4px;align-items:center;font-size:14px;color:var(--ink)}
+.asktip{background:var(--hearing-soft);border-radius:8px;padding:8px 12px;font-size:13.5px;line-height:1.7;display:grid;gap:4px;justify-items:start}
+.asktip b{color:var(--hearing)}
+.asktip ul{margin:0;padding-left:1.2em}
+.askq{background:var(--surface);border-radius:6px;padding:6px 10px}
+.item.locked .asktip{opacity:1}
 /* 情境對話 */
 .chatlayout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding-block:18px 80px;align-items:start}
 .chatpane{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);height:calc(100vh - 104px);display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
@@ -579,11 +584,11 @@ const UNITS = [
    {id:"p0",type:"radio",label:"您過去七天的身體活動與過去 3 個月的身體活動比較起來",opts:["(1)比較多","(2)比較少","(3)差不多"],hint:"過去七天中花在身體活動的時間，包括工作、做家事、整理庭院／陽台、交通，及娛樂、運動等。就算認為自己不愛動，也請回答每一個問題。"},
   ]},
   {title:"二、費力的身體活動",items:[
-   {id:"pv_d",type:"days",label:"1. 過去七天中，您有多少天有做費力的身體活動？",none:"沒有做費力的身體活動（跳問題三）",hint:"費力活動會讓身體感覺費力、呼吸比平常喘很多，只計一次持續 10 分鐘以上。例如跑步、上山爬坡、持續快速游泳、上樓梯、有氧舞蹈、快速騎腳踏車、打球（網球單打、籃球、足球）、跳繩、重量訓練、搬運重物（大於 17 台斤／10 公斤）、鏟土。"},
+   {id:"pv_d",type:"days",askTip:{q:"阿嬤，這個禮拜七天裡，您有沒有做過會讓您很喘、比平常喘很多的事情？像爬山、走上坡、搬很重的東西、做比較粗重的農事，而且一次做 10 分鐘以上？大概有幾天？",tips:["用長者熟悉的例子說明「費力」：爬山、搬重物（超過 10 公斤）、粗重農事、快騎腳踏車。","強調「一次持續 10 分鐘以上」才算，斷斷續續的不算。","依序問：有沒有 → 幾天 → 一天大概多久；沒有就勾「沒有做費力的身體活動」，跳到下一題。"]},label:"1. 過去七天中，您有多少天有做費力的身體活動？",none:"沒有做費力的身體活動（跳問題三）",hint:"費力活動會讓身體感覺費力、呼吸比平常喘很多，只計一次持續 10 分鐘以上。例如跑步、上山爬坡、持續快速游泳、上樓梯、有氧舞蹈、快速騎腳踏車、打球（網球單打、籃球、足球）、跳繩、重量訓練、搬運重物（大於 17 台斤／10 公斤）、鏟土。"},
    {id:"pv_t",type:"dur",label:"2. 您通常一天花多少時間在費力的身體活動上？",show:S=>daysOn(S.pv_d)},
   ]},
   {title:"三、中等費力的活動",items:[
-   {id:"pm_d",type:"days",label:"1. 過去七天中，您有多少天有做中等費力的活動？",none:"沒有做中等費力的活動（跳問題四）",hint:"中等費力會讓身體有點費力、呼吸比平常喘些，只計一次持續 10 分鐘以上。例如下山健走、一般速度游泳、下樓梯、跳舞（不含有氧舞蹈、慢舞、國際標準舞、元極舞）、太極（不含外丹功）、一般速度騎腳踏車、攜帶有點重（7.5–15 台斤／4.5–9 公斤）的東西走路、整理庭院、費力家務（擦窗、用手擦地、鋪床、手洗衣服、手工洗車）、網球雙打、羽毛球、桌球、排球、棒球。提輕物的走路不算。"},
+   {id:"pm_d",type:"days",askTip:{q:"那會讓您有點喘、但還可以邊做邊講話的活動呢？像打太極、跳舞、騎腳踏車、整理庭院、拖地、擦窗戶、手洗衣服，一次做 10 分鐘以上的，這個禮拜有幾天？",tips:["「中等費力」是有點喘、但還能說話；可以舉太極、跳舞、一般速度騎腳踏車、整理庭院、拖地、手洗衣服、提菜（4.5～9 公斤）走路。","走路不算在這題，後面另外問；提輕的東西走路也不算。","一樣要「一次持續 10 分鐘以上」；把幾次短時間加起來不算。"]},label:"1. 過去七天中，您有多少天有做中等費力的活動？",none:"沒有做中等費力的活動（跳問題四）",hint:"中等費力會讓身體有點費力、呼吸比平常喘些，只計一次持續 10 分鐘以上。例如下山健走、一般速度游泳、下樓梯、跳舞（不含有氧舞蹈、慢舞、國際標準舞、元極舞）、太極（不含外丹功）、一般速度騎腳踏車、攜帶有點重（7.5–15 台斤／4.5–9 公斤）的東西走路、整理庭院、費力家務（擦窗、用手擦地、鋪床、手洗衣服、手工洗車）、網球雙打、羽毛球、桌球、排球、棒球。提輕物的走路不算。"},
    {id:"pm_t",type:"dur",label:"2. 您通常一天花多少時間在中等費力的活動上？",show:S=>daysOn(S.pm_d)},
   ]},
   {title:"四、走路",items:[
@@ -720,6 +725,7 @@ function inputHTML(i){const v=S[i.id];const name=i.id;
    case "days":{const o=v||{};return `<div class="dd"><label><input type="number" min="0" max="7" step="1" id="f-${name}-d" data-obj="${name}" data-f="d" value="${esc(o.d)}" ${o.none?"disabled":""}> 天</label><label class="choice sq"><input type="checkbox" id="f-${name}-none" data-obj="${name}" data-f="none" ${o.none?"checked":""}><span>${esc(i.none)}</span></label></div>`;}
    case "dur":{const o=v||{};return `<div class="dd"><label>一天 <input type="number" min="0" max="24" id="f-${name}-h" data-obj="${name}" data-f="h" value="${esc(o.h)}" ${o.unk?"disabled":""}> 小時</label><label><input type="number" min="0" max="59" id="f-${name}-m" data-obj="${name}" data-f="m" value="${esc(o.m)}" ${o.unk?"disabled":""}> 分鐘</label>${i.nounk?"":`<label class="choice sq"><input type="checkbox" id="f-${name}-unk" data-obj="${name}" data-f="unk" ${o.unk?"checked":""}><span>不知道／不確定</span></label>`}</div>`;}
   }}
+function tipHTML(i){const t=i.askTip;if(!t)return "";return `<div class="asktip"><b>問法提示</b><ul>${t.tips.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><div class="askq">示範問句：「${esc(t.q)}」</div>${$("#chat-in")||UI.mode==="guide"?`<button type="button" class="btn small" data-ask="${esc(t.q)}">把示範問句放進對話框</button>`:""}</div>`;}
 function itemHTML(i,g){
   if(i.type==="note") return `<div class="note-slot" data-note="${i.id}"></div>`;
   const fb=g&&g.key&&g.key[i.id]?`<div class="fb-slot" data-fb="${i.id}"></div>`:"";
@@ -727,6 +733,7 @@ function itemHTML(i,g){
    <div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div>
    <div class="body"><div class="lbl">${esc(i.label)}${i.score&&i.score!=="yn"?`<span class="score" data-score="${i.id}"></span>`:""}${i.em?`<em>${esc(i.em)}</em>`:""}${i.opt&&!i.em?`<em>選填</em>`:""}</div>
    ${i.hint?`<div class="hint">${i.hint}</div>`:""}
+   ${tipHTML(i)}
    ${i.guide?`<details class="wguide"><summary>撰寫指引（點開）</summary>${GUIDES[i.guide]()}</details>`:""}
    ${inputHTML(i)}
    ${i.tpl?`<div class="inline"><button type="button" class="btn small" data-tpl="${i.id}">插入撰寫格式</button><span class="msg">已有內容時會加在最後面</span></div>`:""}
@@ -1008,7 +1015,7 @@ const INTENTS=[
  {id:"compare",kk:"三個月|比較起來|跟以前比|以前比|活動量",k:"運動|活動",unlock:["p0"],ex:"跟三個月前比起來，阿嬤最近的活動是比較多、比較少，還是差不多？",msgs:[[E_,"三個月前（7 月）我還會走去據點、去廟裡幫忙，現在幾乎都待在家。"]]},
  {id:"vig",kk:"費力|很喘|跑步|爬山|流汗|劇烈|激烈|重物",unlock:["pv_d","pv_t"],ex:"過去七天，阿嬤有做讓您很喘的費力活動嗎？",msgs:[[E_,"沒有啦，那種很累的我都沒做。"],[O_,"過去七天都沒有做過費力活動。"]]},
  {id:"mod",kk:"中等|有點喘|太極|跳舞|騎腳踏車|游泳|庭院|種菜",unlock:["pm_d","pm_t"],ex:"過去七天，阿嬤有做會有點喘的中等費力活動嗎？像太極、整理庭院。",msgs:[[E_,"沒有喔。"],[O_,"過去七天沒有做到連續 10 分鐘以上的中等費力活動。初一那天上下樓梯去神明廳，上下樓總共不到 5 分鐘；手洗內衣褲大約 5 分鐘。"]]},
- {id:"walk7",kk:["幾天.*走","走.*幾天","(多少天|七天|這週|這禮拜|一週|一個禮拜|過去).*(走|散步)","(走|散步).*(多少天|七天|這週|這禮拜|一週|一個禮拜)","走.*多久","走.*幾分鐘","十分鐘|10分鐘"],x:"提不起勁|精神|懶",unlock:["pw_d","pw_t"],ex:"過去七天，阿嬤有幾天走路連續 10 分鐘以上？一次走多久？",msgs:[[E_,"在家裡就是走去廚房、上廁所那樣，一下子就到了，沒有一次走很久。這禮拜比較久的，只有禮拜天跟媳婦走去便利商店，來回大概 20 分鐘，中間在騎樓坐下來休息一次，真的在走的時間大概 15 分鐘。"]]},
+ {id:"walk7",kk:["幾天.*走","走.*幾天","(多少天|七天|這週|這禮拜|一週|一個禮拜|過去).*(走|散步)","(走|散步).*(多少天|七天|這週|這禮拜|一週|一個禮拜)","走.*多久","走.*幾分鐘","走.*(十分鐘|10分鐘)","(十分鐘|10分鐘).*走"],x:"提不起勁|精神|懶",unlock:["pw_d","pw_t"],ex:"過去七天，阿嬤有幾天走路連續 10 分鐘以上？一次走多久？",msgs:[[E_,"在家裡就是走去廚房、上廁所那樣，一下子就到了，沒有一次走很久。這禮拜比較久的，只有禮拜天跟媳婦走去便利商店，來回大概 20 分鐘，中間在騎樓坐下來休息一次，真的在走的時間大概 15 分鐘。"]]},
  {id:"sit",kk:"坐多久|坐著|坐的時間|久坐|看電視多久|都坐",unlock:["ps_t"],ex:"阿嬤一天大概坐著多久？",msgs:[[E_,"我早上 5 點半起床，晚上 9 點就睡了，白天大多坐著。"],[D_,"她除了吃飯、上廁所、洗碗，其他時間幾乎都坐在客廳看電視，我估計一天坐 11 個小時左右。"]]},
 ];
 const IN=Object.fromEntries(INTENTS.map(t=>[t.id,t]));
@@ -1124,6 +1131,8 @@ function matchQ(q){const s=norm(q);const out=[];
     if(t.k)t.k.split("|").forEach(w=>{if(new RegExp(w,"i").test(s))sc+=1;});
     if(sc>0)out.push([t,sc]);});
   out.sort((a,b)=>b[1]-a[1]);
+  /* IPAQ 問句裡舉的例子（拖地、搬重物…）不要被當成在問家事 */
+  if(/喘|費力|10分鐘|十分鐘/.test(s)&&out.some(([t])=>["vig","mod","walk7"].includes(t.id))){const vm=out.some(([t])=>["vig","mod"].includes(t.id));const keep=out.filter(([t])=>vm?["vig","mod"].includes(t.id):["walk7","sit"].includes(t.id));out.length=0;out.push(...keep);}
   /* 很短、沒有提到新話題的追問（例如「晚上呢？」）沿用上一個話題 */
   const ctx=S.lastTopic;
   if(ctx&&s.length<=12&&!out.some(([t,sc])=>(!t.of&&sc>=3)||t.of)){const cps=INTENTS.filter(t=>t.of&&t.of.includes(ctx)&&new RegExp(t.pr,"i").test(s));if(cps.length)return cps.slice(0,2);
@@ -1210,7 +1219,7 @@ function drawPanel(){const P_=$("#gpanel");if(!P_)return;const U=unlocked();cons
         if(i.type==="note")return s.items.some(x=>x.type!=="note"&&U.has(x.id))?itemHTML(i):"";
         if(U.has(i.id))return itemHTML(i,{key:K});
         const ex=exFor(i.id);
-        return `<div class="item locked" data-lock="${i.id}"><div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div><div class="body"><div class="lbl">${esc(i.label)}<em>${i.id==="respondent"?"阿嬤開口回答後開放":(i.id==="prep_steps"||i.id==="prep_note")?"自我介紹、說明來意後開放":NO_ASK.has(i.id)?"問完相關項目後開放":"尚未問到"}</em></div>${G.practice&&ex?`<button type="button" class="learnlink" data-ask="${esc(ex)}">提示：可以怎麼問？</button>`:""}</div></div>`;}).join("");
+        return `<div class="item locked" data-lock="${i.id}"><div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div><div class="body"><div class="lbl">${esc(i.label)}<em>${i.id==="respondent"?"阿嬤開口回答後開放":(i.id==="prep_steps"||i.id==="prep_note")?"自我介紹、說明來意後開放":NO_ASK.has(i.id)?"問完相關項目後開放":"尚未問到"}</em></div>${i.askTip?tipHTML(i):""}${G.practice&&ex&&!i.askTip?`<button type="button" class="learnlink" data-ask="${esc(ex)}">提示：可以怎麼問？</button>`:""}</div></div>`;}).join("");
       return `<div class="sec"><h3>${s.title}</h3><div class="items">${body}</div></div>`;}).join("");
     return `<div class="punit"><h2 class="ph ${u.dom}">${u.key}. ${u.title}</h2>${secs}</div>`;}).join("");
 }
