@@ -798,7 +798,7 @@ function openExport(){closeModal();const sc=document.createElement("div");sc.cla
 const P=(...ls)=>ls.map(l=>`<p>${l}</p>`).join("");
 const opt=(id,n)=>BY[id].opts[n];
 const SCENARIOS=[{
- id:"linchen",title:"林陳翠琴阿嬤",sub:"85 歲，泌尿道感染出院後體力與食慾變差，怕跌倒不敢出門。媳婦在旁陪同。",
+ id:"linchen",title:"林陳翠琴阿嬤",sub:"85 歲，泌尿道感染出院後體力與食慾變差，怕跌倒不敢出門。訪視時有一位家屬在旁陪同。",
  summary:"林陳翠琴女士，85 歲，喪偶，與小兒子一家同住在台中市大里區的三樓透天厝。2026 年 8 月因泌尿道感染住院 5 天，出院後體力和食慾都變差。以前她每週兩次自己走路去社區關懷據點，現在因為怕跌倒，沒有家人陪就不出門。媳婦是主要照顧者，平日要上班，擔心阿嬤白天一個人在家不安全。今天下午 2:00 學生到家中訪視，評估阿嬤的日常生活功能。",
  steps:[
  {g:"開場",title:"訪視開場與評估環境",text:P("林陳翠琴女士，85 歲，喪偶，與小兒子一家同住在台中市大里區的三樓透天厝。2026 年 8 月因泌尿道感染住院 5 天，出院後體力和食慾都變差。以前她每週兩次自己走路去社區關懷據點，現在因為怕跌倒，沒有家人陪就不出門。媳婦是主要照顧者，平日要上班，擔心阿嬤白天一個人在家不安全。今天下午 2:00 學生到家中訪視，評估阿嬤的日常生活功能。","阿嬤坐在客廳藤椅上，右耳戴助聽器，左耳聽力較差，說話要放慢、音量稍大，媳婦在旁陪同。","<b>家中格局</b>：一樓有客廳、廚房、浴室和阿嬤的臥室。阿嬤原本睡在二樓，出院後媳婦把她的床搬到一樓原本的儲藏室。二樓是神明廳和兒子夫妻的房間，三樓是孫子女的房間。樓梯單邊有扶手，階梯偏高、偏窄。","一樓浴室有坐式馬桶，但馬桶旁、淋浴區都沒有扶手。浴室門口有約 5 公分高的門檻，地板是光面磁磚。洗澡時阿嬤坐在一張矮的塑膠板凳上。","阿嬤臥室的床是一般木板床，高度偏低，床邊有一個五斗櫃。從臥室到浴室大約 6 公尺，走廊晚上沒有夜燈。",'<span class="tip">提示：請記錄你如何安排評估的順序，以及哪些項目適合請阿嬤實際做給你看。</span>'),
@@ -886,6 +886,7 @@ const E_="e",D_="d",O_="o";
 const INTENTS=[
  {id:"greet",k:"你好|您好|阿嬤好|我是|自我介紹|學生|打擾|午安|來看",ex:"阿嬤您好，我是長照系的學生，今天來跟您聊聊日常生活的情形。",msgs:[[E_,"你好你好，來坐。你講話大聲一點、慢一點喔，我左耳聽不太到。"],[D_,"你們要問什麼就問，我在旁邊幫忙補充。"]]},
  {id:"explain",k:"評估|說明|目的|等一下|大概|多久時間|同意|可以嗎|方便",ex:"等一下會問您一些生活上的問題，大約 30 分鐘，可以嗎？",msgs:[[E_,"好啊，你問，我知道的都跟你講。"]]},
+ {id:"relation",kk:["是(她|他|阿嬤|阿媽|奶奶)的$","是(她|他|阿嬤|阿媽|奶奶)的(什麼|誰|哪位|哪一位)","(您|你|妳)是(她|他|阿嬤|阿媽|奶奶)的?(女兒|媳婦|兒子|孫女|孫子|看護|家人|親戚)","(您|你|妳)是$","(您|你|妳)是誰","(您|你|妳)是哪位","什麼關係","的關係","旁邊這位","這位是","請問這位"],unlock:[],ex:"請問您是阿嬤的什麼人？",msgs:[[D_,"我是她媳婦，她小兒子的太太。"]]},
  {id:"name",kk:"名字|姓名|大名|尊姓|貴姓|芳名|名諱|怎麼稱呼|如何稱呼|稱呼您|稱呼妳|稱呼你|叫什麼|叫做什麼",unlock:["client"],ex:"請問阿嬤怎麼稱呼？",msgs:[[E_,"我叫林陳翠琴。"]]},
  {id:"age",kk:"幾歲|年齡|歲數|生日|出生|幾年次|哪一年生",unlock:["birth","age"],ex:"阿嬤今年幾歲？生日是什麼時候？",msgs:[[E_,"我民國 30 年 3 月 15 號生的，今年 85 歲了。"]]},
  {id:"marital",kk:"結婚|婚姻|先生|丈夫|老公|配偶|阿公|另一半",unlock:["marital"],ex:"阿嬤的先生還在嗎？",msgs:[[E_,"我先生已經過世了，現在跟小兒子一家住。"]]},
@@ -953,7 +954,7 @@ const MISS=[[E_,"蛤？你說什麼？大聲一點、慢一點啦，我左耳聽
 const norm=s=>s.replace(/[\s，。、？?！!「」『』：:；;,.（）()…~～]/g,"");
 function matchQ(q){const s=norm(q);const out=[];
   INTENTS.forEach(t=>{if(t.x&&new RegExp(t.x).test(s))return;let sc=0;
-    if(t.kk)t.kk.split("|").forEach(w=>{if(new RegExp(w,"i").test(s))sc+=3;});
+    if(t.kk)(Array.isArray(t.kk)?t.kk:t.kk.split("|")).forEach(w=>{if(new RegExp(w,"i").test(s))sc+=3;});
     if(t.k)t.k.split("|").forEach(w=>{if(new RegExp(w,"i").test(s))sc+=1;});
     if(sc>0)out.push([t,sc]);});
   out.sort((a,b)=>b[1]-a[1]);if(!out.length)return [];
@@ -993,11 +994,11 @@ function fbHTML(i,k){
     return `<div class="fb ref"><b>參考重點</b><div class="why" style="white-space:pre-line">${esc(k.ref)}</div></div>`;}
   const r=judge(i,k);if(r===null)return "";
   return `<div class="fb ${r?"right":"wrong"}"><b>${r?"答對了":"再想想"}</b>${r?"":`<div class="why">參考答案：${esc(ansText(i,k))}</div>`}${k.why?`<div class="why">${esc(k.why)}</div>`:""}${k.disc?`<div class="disc">討論重點：${esc(k.disc)}</div>`:""}</div>`;}
-const WHO={e:"阿嬤",d:"媳婦",o:"觀察",me:"我"};
+const WHO={e:"阿嬤",d:"家屬",o:"觀察",me:"我"};
 function bubble(m){const [w,t]=m;
   if(w==="o")return `<div class="cm obs"><span>觀察</span>${esc(t)}</div>`;
   if(w==="sys")return `<div class="cm sys">${t}</div>`;
-  return `<div class="cm ${w}"><small>${WHO[w]}</small><div>${esc(t)}</div></div>`;}
+  return `<div class="cm ${w}"><small>${m[2]||WHO[w]}</small><div>${esc(t)}</div></div>`;}
 function renderGuide(){
   G.practice=guideMode();const sc=curSc();const v=$("#view-guide");
   const pill=`<span class="mode-pill ${G.practice?"on":""}">${G.practice?"練習模式：作答後顯示參考答案":"作業模式：不顯示答案"}</span>`;
@@ -1044,7 +1045,7 @@ function refreshGuide(){const K=KEYS();
     st.textContent=s;}}
 function nextOpenGuide(){return null;}
 function startScenario(id){const sc=SCENARIOS.find(x=>x.id===id);
-  S={scenarioId:id,scenario:sc.summary,asked:[],chat:[[O_,"今天下午 2:00，你到林陳翠琴阿嬤家中訪視。阿嬤坐在客廳藤椅上，右耳戴助聽器，左耳聽力較差，說話要放慢、音量稍大，媳婦在旁陪同。"],[O_,"家中是三樓透天厝。一樓有客廳、廚房、浴室和阿嬤的臥室，二樓是神明廳和兒子夫妻的房間，三樓是孫子女的房間。"],["sys","請先自我介紹、說明來意，再開始提問。評估單會依你問到的內容逐項打開。"]]};
+  S={scenarioId:id,scenario:sc.summary,asked:[],chat:[[O_,"今天下午 2:00，你到林陳翠琴阿嬤家中訪視。阿嬤坐在客廳藤椅上，右耳戴助聽器，左耳聽力較差，說話要放慢、音量稍大，旁邊有一位家屬陪同。"],[O_,"家中是三樓透天厝。一樓有客廳、廚房、浴室和阿嬤的臥室，二樓是神明廳和兒子夫妻的房間，三樓是孫子女的房間。"],["sys","請先自我介紹、說明來意，再開始提問。評估單會依你問到的內容逐項打開。"]]};
   G.reveal={};save();renderGuide();window.scrollTo(0,0);}
 let busy=false;
 function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked||[];
@@ -1052,8 +1053,9 @@ function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked|
   const hits=matchQ(q);busy=true;
   const before=unlocked();
   setTimeout(()=>{busy=false;
-    if(!hits.length){S.miss=(S.miss||0)+1;S.chat.push(MISS[(S.miss-1)%MISS.length]);}
-    else{hits.forEach(t=>{t.msgs.forEach(m=>S.chat.push(m));if(!S.asked.includes(t.id))S.asked.push(t.id);});}
+    const lab=m=>m[0]===D_?[m[0],m[1],(S.asked.includes("relation")||S.asked.includes("caregiver"))?"媳婦":"家屬"]:m;
+    if(!hits.length){S.miss=(S.miss||0)+1;S.chat.push(lab(MISS[(S.miss-1)%MISS.length]));}
+    else{hits.forEach(t=>{if(!S.asked.includes(t.id))S.asked.push(t.id);t.msgs.forEach(m=>S.chat.push(lab(m)));});}
     const after=unlocked();const fresh=[...after].filter(x=>!before.has(x)&&BY[x]&&!START_UNLOCK.includes(x));
     if(fresh.length)S.chat.push(["sys","評估單已打開："+fresh.map(id=>`<button type="button" class="chip" data-jump="${id}">${BY[id].no} ${esc(BY[id].label.replace(/^\d+\.\s*/,"").slice(0,18))}</button>`).join("")]);
     save();drawLog();if(fresh.length){drawPanel();refresh();fresh.forEach(id=>{const el=$("#it-"+id);if(el){el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1800);}});}
@@ -1090,7 +1092,7 @@ function reportBlocks(ids){const out=[];
       const b=document.createElement("div");b.className="rp-block";b.innerHTML=headHTML+`<table><tr><td colspan="2" class="sect">${s.title}</td></tr>${rows.join("")}</table>`;headHTML="";out.push(b);});
   });
   if(S.chat&&S.chat.some(m=>m[0]==="me")){
-    const rows=S.chat.filter(m=>m[0]!=="sys").map(m=>`<tr><td class="k" style="width:14%">${{me:"評估者",e:"阿嬤",d:"媳婦",o:"觀察"}[m[0]]||""}</td><td>${esc(m[1])}</td></tr>`).join("");
+    const rows=S.chat.filter(m=>m[0]!=="sys").map(m=>`<tr><td class="k" style="width:14%">${m[2]||{me:"評估者",e:"阿嬤",d:"家屬",o:"觀察"}[m[0]]||""}</td><td>${esc(m[1])}</td></tr>`).join("");
     const b=document.createElement("div");b.className="rp-block";b.innerHTML=`<h2>訪談對話紀錄</h2><table>${rows}</table>`;out.push(b);}
   return out;}
 async function exportPDF(ids,btn){
