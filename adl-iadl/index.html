@@ -985,9 +985,9 @@ const INTENTS=[
  {id:"toilet",k:"廁所|馬桶|如廁|擦屁股|衛生紙|沖水|上廁所",x:"來不及|尿出來|漏|失禁|跌|絆|半夜起來",unlock:["b4"],ex:"阿嬤上廁所需要人幫忙嗎？",msgs:[[O_,"阿嬤白天自己拄拐杖去浴室，自己坐上、離開馬桶，自己用衛生紙擦拭、整理褲子、沖水。"],[E_,"起來的時候要扶洗手台，因為馬桶旁邊沒有東西可以扶。"]]},
  {id:"stairs",kk:"樓梯|上樓|下樓|二樓|爬樓|階梯",unlock:["b5"],ex:"阿嬤上下樓梯可以嗎？",msgs:[[O_,"出院後阿嬤平常都待在一樓，只有初一、十五會上二樓神明廳拜拜。"],[D_,"她上樓要抓著扶手，一階一階慢慢上，我一定跟在她後面，怕她往後倒。下樓的時候我走在她前面。"],[E_,"媳婦不在，我就不敢上去。"]]},
  {id:"dress",k:"穿衣|衣服|穿脫|褲子|襪子|鞋|扣子|釦子|穿",x:"洗衣|洗衣服|晾|鬆了|變鬆|誰洗|洗的|衣服.*洗",unlock:["b6"],ex:"阿嬤穿衣服、穿襪子穿鞋可以自己來嗎？",msgs:[[O_,"阿嬤平常穿鬆緊帶的褲子和開襟上衣，上衣、褲子都是自己穿脫，扣子扣得比較慢。"],[E_,"襪子穿不起來，膝蓋彎不下去，都是媳婦早上出門前幫我穿。鞋子我穿那種魔鬼氈的，自己可以。"]]},
- {id:"bowel",kk:"大便|便秘|排便|解便|軟便|大號",unlock:["b7"],ex:"阿嬤大便正常嗎？會便秘嗎？",msgs:[[E_,"大概兩三天解一次，比較硬，便秘的時候我自己吃藥袋裡的軟便藥。"],[D_,"沒有大便失禁。"]]},
- {id:"bladder",kk:"小便|尿|漏尿|失禁|夜尿|來不及|護墊|尿布|小號",unlock:["b8"],ex:"阿嬤小便會不會來不及或漏尿？晚上呢？",msgs:[[D_,"出院以後，這個月有兩次半夜來不及走到廁所就尿出來了，褲子和床單都濕了，是我起來幫她換、幫她洗的。"],[E_,"現在晚上睡覺都墊一片護墊。"],[O_,"白天沒有漏尿。"]]},
- {id:"groom",kk:"刷牙|洗臉|梳頭|洗手|修飾|刮鬍|儀容",x:"我.{0,4}(洗|消毒|擦).{0,3}手|乾洗手|手部衛生|核對|自我介紹|評估(的)?(項目|過程|流程)",unlock:["b9"],ex:"阿嬤刷牙、洗臉、梳頭都可以自己來嗎？",msgs:[[O_,"洗手、洗臉、刷牙、梳頭都是阿嬤自己在洗手台完成，不需要協助。"]]},
+ {id:"bowel",kk:"大便|便秘|排便|解便|軟便|大號|大小便|大小號|二便|排泄",unlock:["b7"],ex:"阿嬤大便正常嗎？會便秘嗎？",msgs:[[E_,"大概兩三天解一次，比較硬，便秘的時候我自己吃藥袋裡的軟便藥。"],[D_,"沒有大便失禁。"]]},
+ {id:"bladder",kk:"小便|尿|漏尿|失禁|夜尿|來不及|護墊|尿布|小號|大小便|大小號|二便|排泄|排尿",unlock:["b8"],ex:"阿嬤小便會不會來不及或漏尿？晚上呢？",msgs:[[D_,"出院以後，這個月有兩次半夜來不及走到廁所就尿出來了，褲子和床單都濕了，是我起來幫她換、幫她洗的。"],[E_,"現在晚上睡覺都墊一片護墊。"],[O_,"白天沒有漏尿。"]]},
+ {id:"groom",kk:"刷牙|洗臉|梳頭|洗手|修飾|刮鬍|儀容|盥洗|梳洗",x:"我.{0,4}(洗|消毒|擦).{0,3}手|乾洗手|手部衛生|核對|自我介紹|評估(的)?(項目|過程|流程)",unlock:["b9"],ex:"阿嬤刷牙、洗臉、梳頭都可以自己來嗎？",msgs:[[O_,"洗手、洗臉、刷牙、梳頭都是阿嬤自己在洗手台完成，不需要協助。"]]},
  {id:"bath",kk:"洗澡|沐浴|淋浴|洗頭|擦澡|泡澡",unlock:["b10"],ex:"阿嬤洗澡是自己洗嗎？",msgs:[[D_,"她自己洗會怕滑倒，所以每個禮拜二、六我下班後幫她洗。我幫她洗背、洗腳，頭髮也是我幫她洗，她自己只洗前面。其他天就用毛巾擦一擦。"]]},
  /* 衰弱 SOF */
  {id:"weight",kk:"體重|瘦|變輕|胖|公斤|減重",unlock:["s1"],ex:"跟一年前比起來，阿嬤的體重差不多還是有減少？",msgs:[[E_,"有瘦，衣服都變鬆了。"],[O_,"媳婦拿出去年 10 月社區老人健檢的單子，上面體重是 52.0 公斤。今天量的體重是 48.5 公斤。阿嬤沒有刻意減重。"]]},
@@ -1008,7 +1008,7 @@ const INTENTS=[
  {id:"compare",kk:"三個月|比較起來|跟以前比|以前比|活動量",k:"運動|活動",unlock:["p0"],ex:"跟三個月前比起來，阿嬤最近的活動是比較多、比較少，還是差不多？",msgs:[[E_,"三個月前（7 月）我還會走去據點、去廟裡幫忙，現在幾乎都待在家。"]]},
  {id:"vig",kk:"費力|很喘|跑步|爬山|流汗|劇烈|激烈|重物",unlock:["pv_d","pv_t"],ex:"過去七天，阿嬤有做讓您很喘的費力活動嗎？",msgs:[[E_,"沒有啦，那種很累的我都沒做。"],[O_,"過去七天都沒有做過費力活動。"]]},
  {id:"mod",kk:"中等|有點喘|太極|跳舞|騎腳踏車|游泳|庭院|種菜",unlock:["pm_d","pm_t"],ex:"過去七天，阿嬤有做會有點喘的中等費力活動嗎？像太極、整理庭院。",msgs:[[E_,"沒有喔。"],[O_,"過去七天沒有做到連續 10 分鐘以上的中等費力活動。初一那天上下樓梯去神明廳，上下樓總共不到 5 分鐘；手洗內衣褲大約 5 分鐘。"]]},
- {id:"walk7",kk:"幾天.*走|走.*幾天|多少天|七天|這週|這禮拜|一週|一個禮拜|走.*多久|走.*幾分鐘|十分鐘|10分鐘",x:"提不起勁|精神|懶",unlock:["pw_d","pw_t"],ex:"過去七天，阿嬤有幾天走路連續 10 分鐘以上？一次走多久？",msgs:[[E_,"在家裡走來走去，每次都只有一兩分鐘。這禮拜只有禮拜天跟媳婦走去便利商店。"],[O_,"來回大約 20 分鐘，中間休息過一次，走路時間合計約 15 分鐘。"]]},
+ {id:"walk7",kk:["幾天.*走","走.*幾天","(多少天|七天|這週|這禮拜|一週|一個禮拜|過去).*(走|散步)","(走|散步).*(多少天|七天|這週|這禮拜|一週|一個禮拜)","走.*多久","走.*幾分鐘","十分鐘|10分鐘"],x:"提不起勁|精神|懶",unlock:["pw_d","pw_t"],ex:"過去七天，阿嬤有幾天走路連續 10 分鐘以上？一次走多久？",msgs:[[E_,"在家裡走來走去，每次都只有一兩分鐘。這禮拜只有禮拜天跟媳婦走去便利商店。"],[O_,"來回大約 20 分鐘，中間休息過一次，走路時間合計約 15 分鐘。"]]},
  {id:"sit",kk:"坐多久|坐著|坐的時間|久坐|看電視多久|都坐",unlock:["ps_t"],ex:"阿嬤一天大概坐著多久？",msgs:[[E_,"我早上 5 點半起床，晚上 9 點就睡了，白天大多坐著。"],[D_,"她除了吃飯、上廁所、洗碗，其他時間幾乎都坐在客廳看電視，我估計一天坐 11 個小時左右。"]]},
 ];
 const IN=Object.fromEntries(INTENTS.map(t=>[t.id,t]));
@@ -1047,7 +1047,7 @@ const PROBES=[
  ["bladder",null,"導尿|尿管",[[D_,"沒有用導尿管。"]]],
  ["groom","刷牙|洗臉|梳頭|洗手","牙膏|準備|擠",[[E_,"牙膏我自己擠，不用人家準備。"]]],
  ["groom","刷牙|洗臉|梳頭|洗手","幫忙|協助|看著",[[E_,"不用啦，我自己在洗手台弄。"]]],
- ["bath","洗澡|沐浴|淋浴|澡","自己洗|一個人洗|自己來",[[E_,"我自己洗怕滑倒，所以都等媳婦下班幫我洗。"]]],
+ ["bath","洗澡|沐浴|淋浴|澡","自己洗|一個人洗|自己來",[[E_,"我自己洗怕滑倒，所以都等媳婦下班幫我洗。"]],{fs:true}],
  ["bath",null,"洗頭|頭髮",[[D_,"頭髮是我幫她洗的。"]]],
  ["bath","洗澡|洗","背|腳|哪裡|哪些",[[E_,"前面我自己洗，背跟腳是媳婦幫我洗。"]]],
  ["bath",null,"擦澡|毛巾|其他天|沒洗澡",[[D_,"沒洗澡的日子就用毛巾擦一擦。"]]],
@@ -1083,30 +1083,57 @@ const PROBES=[
  ["money",null,"提款|ATM|銀行|存款|年金|領錢",[[E_,"老人年金跟銀行的事情都是兒子在處理，我不會用提款機。"]]],
  ["money",null,"零用錢|找錢|香油錢|算錢|給錢",[[E_,"身上有一點零用錢，添香油錢、買小東西都我自己付，找錢我也會算。"]]],
 ];
-PROBES.forEach(([of,t,pr,msgs],n)=>{const ofs=Array.isArray(of)?of:[of];
-  INTENTS.push({id:"pb"+n,of:ofs,pr,x:ofs[0]==="out"?"陪|一起":undefined,kk:t?[`(${t}).*(${pr})`,`(${pr}).*(${t})`]:[pr],unlock:(IN[ofs[0]]&&IN[ofs[0]].unlock)||[],msgs});
+PROBES.forEach(([of,t,pr,msgs,o],n)=>{const ofs=Array.isArray(of)?of:[of];
+  INTENTS.push({id:"pb"+n,of:ofs,pr,fs:!!(o&&o.fs),x:ofs[0]==="out"?"陪|一起":undefined,kk:t?[`(${t}).*(${pr})`,`(${pr}).*(${t})`]:[pr],unlock:(IN[ofs[0]]&&IN[ofs[0]].unlock)||[],msgs});
   IN["pb"+n]=INTENTS[INTENTS.length-1];});
 const NO_AGAIN=new Set(["greet","intro","explain","prep","relation"]);
-function againMsgs(t){const m=t.msgs.find(x=>x[0]!==O_)||t.msgs[0];return [[m[0]===O_?E_:m[0],"我剛剛有講喔。"],m];}
+/* 再確認時的回答：像聊天一樣肯定，並說出評分需要的重點 */
+const CF={
+ name:[E_,"對，我叫林陳翠琴。"],age:[E_,"對啊，民國 30 年生的，85 歲了。"],marital:[E_,"對，我先生走了 8 年了。"],edu:[E_,"對啦，只有國小畢業。"],
+ identity:[D_,"對，我們是一般戶，媽媽有聽力的身障證明，中度。"],caregiver:[D_,"對，主要是我在照顧她，可是我白天要上班。"],family:[E_,"對，跟小兒子一家住，兒子、媳婦、孫女、孫子。"],
+ children:[E_,"對，兩個兒子、一個女兒。"],eldest:[E_,"對，老大 60 歲，還沒結婚，住台北。"],daughter:[E_,"對，美玲嫁到彰化，生一男一女。"],youngest:[E_,"對，志豪 55 歲，在工廠當主管。"],
+ sonage:[E_,"對，一個 60、一個 55。"],dil:[D_,"對，我 52 歲，在公司當會計。"],grandkids:[E_,"對，跟我住的兩個，女兒那邊還有兩個。"],grandage:[D_,"對，女兒 25、兒子 21，女兒比較大。"],grandschool:[D_,"對，女兒上班了，兒子還在讀大學。"],
+ complaint:[E_,"對啊，腳沒力，走一下就累，很怕跌倒。"],hospital:[D_,"對，8 月泌尿道感染住了 5 天，出院以後體力就差很多。"],appetite:[D_,"對，吃得比較少，三個月掉了兩公斤多。"],teeth:[E_,"對啊，假牙鬆了，咬東西會痛。"],
+ pmh:[D_,"對，高血壓、糖尿病、高血脂、膝關節炎、骨質疏鬆，還有耳朵聽力的問題；白內障 2019 年開過了。"],allergy:[D_,"對，磺胺類的藥不能吃。"],medlist:[D_,"對，就是血壓、血糖、血脂的藥，便秘的時候再吃軟便藥。"],
+ fall:[E_,"對，沒有真的跌倒，但是上個月差一點，嚇死我了。"],job:[E_,"對啊，種田、賣菜，做到 70 歲。"],religion:[E_,"對，我信佛，初一、十五吃素。"],social:[E_,"對啊，以前很愛去據點，出院以後都沒去了。"],
+ mood:[E_,"對啦，有時候會覺得自己沒用，什麼都要麻煩媳婦。"],famhx:[E_,"對，這個我真的不太清楚。"],daily:[D_,"對，她白天大部分都坐在客廳看電視。"],sleep:[E_,"對，半夜會起來上廁所。"],habit:[E_,"對，菸酒都沒有。"],
+ home:[D_,"對，浴室跟走廊那些我們都還沒改。"],travel:[D_,"對，都沒有出國。"],pet:[D_,"對，家裡養狗，隔壁養雞。"],sick:[D_,"對，孫女感冒已經好多了。"],cluster:[D_,"對，出院以後都沒參加。"],
+ helper:[E_,"對啊，家裡沒有請外勞，長照也不知道要怎麼申請。"],outwith:[E_,"對，要有認識的人陪我才敢坐。"],
+ transfer:[E_,"對啊，起床、站起來都我自己來，只是比較慢，要撐一下。"],walk:[D_,"對，在家裡她拿拐杖自己走沒問題。"],walkfar:[D_,"對，走遠一點、像到便利商店那樣，我一定要扶著她。"],
+ eat:[E_,"對，我自己吃，媳婦只是先把肉切好。"],toilet:[E_,"對，上廁所都我自己來，起來的時候扶一下洗手台。"],stairs:[D_,"對，她上下樓我一定要在旁邊看著，不然不放心。"],
+ dress:[E_,"對，衣服褲子自己穿，只有襪子要媳婦幫忙。"],bowel:[E_,"對，大便沒什麼問題，便秘我自己吃軟便藥。"],bladder:[D_,"對啊，這個月有兩次，都是半夜，我有點擔心，因為之前都沒有這樣。"],
+ groom:[E_,"對，刷牙洗臉都我自己來。"],bath:[D_,"對，洗澡一定要我幫忙，她自己洗會怕滑倒。"],
+ weight:[D_,"對，跟去年比瘦了 3.5 公斤，她也沒有在減肥。"],chair5:[E_,"對，不用手撐真的站不起來。"],energy:[E_,"對啊，這個禮拜幾乎每天都懶懶的。"],
+ shop:[E_,"對，一定要有人陪我才能去買。"],out:[E_,"對，都要兒子或媳婦載，我自己不敢出門。"],cook:[E_,"對，現在只會把煮好的用電鍋熱一熱。"],
+ house:[E_,"對，洗碗、摺棉被我還可以，拖地那些就不行了。"],laundry:[E_,"對，我只洗內衣褲跟襪子，其他都媳婦洗。"],phone:[E_,"對，存好的號碼我會打，沒存的就不會了。"],
+ meds:[E_,"對，媳婦分好藥盒，我就會自己吃。"],money:[E_,"對，小錢我自己付，銀行的事都兒子處理。"],
+ compare:[E_,"對啊，比三個月前少很多。"],vig:[E_,"對，那種很累的都沒做。"],mod:[E_,"對，沒有做到連續 10 分鐘以上的。"],walk7:[E_,"對，這禮拜只有禮拜天走那一次，扣掉休息大概 15 分鐘。"],sit:[D_,"對，一天大概坐 11 個小時。"],
+};
+function againMsgs(t){if(t.of){/* 同一個追問再問一次：用「對啊」接著說 */const m=t.msgs.find(x=>x[0]!==O_)||t.msgs[0];return [[m[0],/^(對|不|沒)/.test(m[1])?m[1]:"對啊，"+m[1]]];}
+  if(CF[t.id])return [CF[t.id]];const m=t.msgs.find(x=>x[0]!==O_)||t.msgs[0];return [[m[0]===O_?E_:m[0],"對啊，"+m[1]]];}
 const START_UNLOCK=["scenario","group","datetime","assessor","sex","g_problem","g_advice"];
 const NO_ASK=new Set(["scenario","group","datetime","assessor","prep_steps","respondent","prep_note","g_problem","g_advice","b_final","i_mean","sex"]);
 const MISS=[[E_,"蛤？你說什麼？大聲一點、慢一點啦，我左耳聽不太到。"],[E_,"這個我聽不太懂耶，你可以換個方式問嗎？"],[D_,"你是想問她哪一方面？吃飯、走路、洗澡、上廁所，還是買東西、出門、吃藥這些？"]];
 const norm=s=>s.replace(/[\s，。、？?！!「」『』：:；;,.（）()…~～]/g,"");
 function matchQ(q){const s=norm(q);const out=[];
-  /* 很短的追問（例如「晚上呢？」）沿用上一個話題 */
-  const ctx=S.lastTopic;if(ctx&&s.length<=12){const cps=INTENTS.filter(t=>t.of&&t.of.includes(ctx)&&new RegExp(t.pr,"i").test(s));if(cps.length)return cps.slice(0,2);}
+
   INTENTS.forEach(t=>{if(t.x&&new RegExp(t.x).test(s))return;let sc=0;
     if(t.kk)(Array.isArray(t.kk)?t.kk:t.kk.split("|")).forEach(w=>{if(new RegExp(w,"i").test(s))sc+=3;});
     if(t.k)t.k.split("|").forEach(w=>{if(new RegExp(w,"i").test(s))sc+=1;});
     if(sc>0)out.push([t,sc]);});
-  out.sort((a,b)=>b[1]-a[1]);if(!out.length)return [];
+  out.sort((a,b)=>b[1]-a[1]);
+  /* 很短、沒有提到新話題的追問（例如「晚上呢？」）沿用上一個話題 */
+  const ctx=S.lastTopic;
+  if(ctx&&s.length<=12&&!out.some(([t,sc])=>(!t.of&&sc>=3)||t.of)){const cps=INTENTS.filter(t=>t.of&&t.of.includes(ctx)&&new RegExp(t.pr,"i").test(s));if(cps.length)return cps.slice(0,2);}
+  if(!out.length)return [];
   const asked=new Set(S.asked||[]);const probes=out.filter(([t])=>t.of);
   if(probes.length){const drop=new Set();probes.forEach(([t])=>t.of.forEach(o=>drop.add(o)));const chosen=[];
-    probes.slice(0,2).forEach(([t])=>{if(!t.of.some(o=>asked.has(o))){const b=IN[t.of[0]];if(!chosen.includes(b))chosen.push(b);}chosen.push(t);});
+    probes.slice(0,2).forEach(([t])=>{const fresh=!t.of.some(o=>asked.has(o));if(fresh){const b=IN[t.of[0]];if(!chosen.includes(b))chosen.push(b);}if(!(fresh&&t.fs))chosen.push(t);});
     out.forEach(([t,sc])=>{if(!t.of&&!drop.has(t.id)&&sc>=3&&chosen.length<4&&!["greet","explain"].includes(t.id)&&!chosen.includes(t))chosen.push(t);});
     return chosen;}
   const top=out[0][1];
-  const pick=out.filter(([t,sc],n)=>n===0||sc>=3).slice(0,3).map(x=>x[0]);
+  const multi=/和|與|還有|以及|及|、|或是/.test(q);
+  const pick=out.filter(([t,sc],n)=>n===0||sc>=3||(multi&&sc>=1)).slice(0,4).map(x=>x[0]).sort((u,v)=>INTENTS.indexOf(u)-INTENTS.indexOf(v));
   const real=pick.filter(t=>t.id!=="greet"&&t.id!=="explain");
   return real.length?real:pick.slice(0,1);}
 
@@ -1201,7 +1228,7 @@ function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked|
   setTimeout(()=>{busy=false;
     const lab=m=>m[0]===D_?[m[0],m[1],(S.asked.includes("relation")||S.asked.includes("caregiver"))?"媳婦":"家屬"]:m;
     if(!hits.length){S.miss=(S.miss||0)+1;S.chat.push(lab(MISS[(S.miss-1)%MISS.length]));}
-    else{hits.forEach(t=>{const again=!t.of&&S.asked.includes(t.id)&&!NO_AGAIN.has(t.id);if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
+    else{hits.forEach(t=>{const again=S.asked.includes(t.id)&&!NO_AGAIN.has(t.id);if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
     const after=unlocked();const fresh=[...after].filter(x=>!before.has(x)&&BY[x]&&!START_UNLOCK.includes(x));
     if(fresh.length)S.chat.push(["sys","評估單已打開："+fresh.map(id=>`<button type="button" class="chip" data-jump="${id}">${BY[id].no} ${esc(BY[id].label.replace(/^\d+\.\s*/,"").slice(0,18))}</button>`).join("")]);
     save();drawLog();if(fresh.length){drawPanel();refresh();fresh.forEach(id=>{const el=$("#it-"+id);if(el){el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1800);}});}
