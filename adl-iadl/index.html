@@ -341,6 +341,25 @@ const H = {
  i8:`<p>問法：請問您能不能自己一個人處理財務？</p><ul><li>可以獨立處理財務：到郵局（銀行）提存款、支付房租、帳單、給錢、找錢等。</li><li>可以處理日常的購買：只能處理日常購買（給錢、找錢），無法處理與銀行往來或金額較大的財務往來。</li></ul>`,
 };
 
+const L_=(u,t)=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`;
+const RESOURCES=`<p><b>可參考的官方與輔具資源</b>（點連結會開新分頁）</p>
+<ul>
+<li><b>申請長照與服務</b>：${L_("https://1966.gov.tw/LTC/mp-207.html","衛福部長照專區（1966 長照服務專線）")}；${L_("https://1966.gov.tw/LTC/cp-6533-70777-207.html","申請長照服務")}；${L_("https://1966.gov.tw/LTC/lp-6451-207.html","照顧及專業服務（居家服務、專業服務）")}；${L_("https://1966.gov.tw/LTC/cp-6452-69937-207.html","交通接送")}</li>
+<li><b>輔具與居家無障礙</b>：${L_("https://1966.gov.tw/LTC/cp-6453-69940-207.html","長照輔具及居家無障礙環境改善")}；${L_("https://repat.sfaa.gov.tw/","輔具資源入口網（衛福部社家署）")}；${L_("https://rat.taichung.gov.tw/","臺中市輔具資源中心")}</li>
+<li><b>健康促進與社區資源</b>：${L_("https://health99.hpa.gov.tw/","國健署健康九九+（可搜尋「防跌」「肌少症」「營養」）")}；${L_("https://healthhub.hpa.gov.tw/","國健署長者社區資源整合運用平台")}</li>
+<li><b>照顧者支持</b>：${L_("https://1966.gov.tw/LTC/lp-6455-207.html","家庭照顧者支持服務（含喘息服務）")}；${L_("https://www.familycare.org.tw/","中華民國家庭照顧者關懷總會")}，諮詢專線 0800-507-272</li>
+</ul>`;
+const GUIDE_ADVICE=`<ol>
+<li><b>對應健康問題</b>：每個健康問題至少寫一項建議，標明對應哪一個問題（建議一對應問題一）。</li>
+<li><b>具體、做得到</b>：寫清楚誰來做、做什麼、多久做一次、怎麼做，例如「每天早晚各做一次……」，避免只寫「注意安全」「多運動」。</li>
+<li><b>從六個面向想</b>：居家環境改善、輔具、運動與日常活動、疾病與症狀處理（含回診時機）、長照與社區資源、照顧者支持。</li>
+<li><b>寫出可用的資源與申請管道</b>：例如撥打 1966 申請長照需要等級評估、向輔具中心租借或評估輔具、轉介物理治療或營養師，並查證補助項目與申請方式。</li>
+<li><b>考慮個案與家屬的意願和生活方式</b>：建議要符合個案能力、家庭照顧安排與經濟狀況。</li>
+<li><b>寫出再評估時機</b>：定期 3～6 個月、狀況改變時、介入後。</li>
+</ol>${RESOURCES}`;
+const TPL_ADVICE="建議一（對應問題一）：\n具體做法：（誰、做什麼、多久一次、怎麼做）\n可用資源：（長照服務、輔具、轉介單位、網站或專線）\n\n建議二（對應問題二）：\n具體做法：\n可用資源：\n\n建議三（對應問題三）：\n具體做法：\n可用資源：\n\n再評估時機：";
+const GUIDES={GUIDE_PROBLEM:()=>GUIDE_PROBLEM,GUIDE_ADVICE:()=>GUIDE_ADVICE};
+const TPLS={TPL_PROBLEM:()=>TPL_PROBLEM,TPL_ADVICE:()=>TPL_ADVICE};
 /* ============ 教材 ============ */
 const T_ = (id,dom,group,title,imgs,html,extra)=>Object.assign({id,dom,group,title,imgs,html},extra||{});
 const TOPICS = [
@@ -430,6 +449,7 @@ const TOPICS = [
   <li><b>中度</b>：費力活動 ≥3 天且每天 ≥20 分鐘；或中等活動／走路 ≥5 天且每天 ≥30 分鐘；或三類合計 ≥5 天且 ≥600 MET-分鐘／週。</li>
   <li><b>低度</b>：未達上述標準。</li></ul>
   <p style="font-size:13px;color:var(--muted)">此段為補充說明，課堂簡報未涵蓋 IPAQ 計分，請以授課內容為準。</p>`),
+ T_("x-resources","a","補充說明","長照與輔具資源",[],`<p>撰寫照護建議時，可以引用下列官方與輔具資源，寫出個案可申請的服務與管道。補助項目與資格會調整，引用前請上網確認最新規定。</p>${RESOURCES}`),
  T_("x-practice","a","補充說明","實作課任務",[["a54","實作課"]],`
   <ol><li>各組透過生成式 AI 擬出可評估 ADL 及 IADL 的案例，抽組別示範一問一答（手上無手機）。</li>
   <li>額外抽出組別提問，該組每位同學皆須提問。</li>
@@ -568,7 +588,7 @@ const UNITS = [
   ]},
   {title:"健康問題評估及建議",learn:"i-apply",items:[
    {id:"g_problem",type:"textarea",label:"健康問題評估",rows:10,hint:"依 ADL、衰弱、IADL、活動量結果與訪談內容，列出個案主要的健康問題，每個問題寫出依據與相關因素。",guide:"GUIDE_PROBLEM",tpl:"TPL_PROBLEM"},
-   {id:"g_advice",type:"textarea",label:"照護建議",rows:6,hint:"可從三方面撰寫：照顧計畫擬定（針對失能項目的介入、長照服務或輔具）；復健目標設定（可改善的功能項目與具體目標）；家屬衛教（提供適當協助而非過度保護）。並註明再評估時機：定期 3–6 個月、狀況改變時、介入後。",learn:"i-apply"},
+   {id:"g_advice",type:"textarea",label:"照護建議",rows:12,hint:"針對每個健康問題提出具體建議，寫出可使用的長照服務、輔具或轉介資源，並註明再評估時機。",guide:"GUIDE_ADVICE",tpl:"TPL_ADVICE",learn:"x-resources"},
   ]},
  ]},
 ];
@@ -693,7 +713,7 @@ function itemHTML(i,g){
    <div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div>
    <div class="body"><div class="lbl">${esc(i.label)}${i.score&&i.score!=="yn"?`<span class="score" data-score="${i.id}"></span>`:""}${i.em?`<em>${esc(i.em)}</em>`:""}${i.opt&&!i.em?`<em>選填</em>`:""}</div>
    ${i.hint?`<div class="hint">${i.hint}</div>`:""}
-   ${i.guide?`<details class="wguide"><summary>撰寫指引（點開）</summary>${GUIDE_PROBLEM}</details>`:""}
+   ${i.guide?`<details class="wguide"><summary>撰寫指引（點開）</summary>${GUIDES[i.guide]()}</details>`:""}
    ${inputHTML(i)}
    ${i.tpl?`<div class="inline"><button type="button" class="btn small" data-tpl="${i.id}">插入撰寫格式</button><span class="msg">已有內容時會加在最後面</span></div>`:""}
    ${fb}
@@ -782,7 +802,7 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,img[data-
   if(t.dataset.ask!==undefined){const ta=$("#chat-in");if(ta){ta.value=t.dataset.ask;ta.focus();}return;}
   if(t.dataset.jump){const el=$("#it-"+t.dataset.jump);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1600);}return;}
   if(t.id==="g-tip"){S.chat.push(["sys","提問小技巧：先自我介紹；面對阿嬤、說話慢一點、音量大一點；一次問一件事，多用是非題或選擇題；需要時請阿嬤實際做給你看；評的是最近一個月的「能力」，要問清楚需不需要別人幫忙或在旁看著。"]);save();drawLog();return;}
-  if(t.dataset.tpl){const id=t.dataset.tpl,ta=$("#f-"+id);const cur=(S[id]||"").trim();S[id]=cur?cur+"\n\n"+TPL_PROBLEM:TPL_PROBLEM;if(ta){ta.value=S[id];ta.focus();}save();refresh();return;}
+  if(t.dataset.tpl){const id=t.dataset.tpl,ta=$("#f-"+id);const tp=TPLS[BY[id].tpl]();const cur=(S[id]||"").trim();S[id]=cur?cur+"\n\n"+tp:tp;if(ta){ta.value=S[id];ta.focus();}save();refresh();return;}
   if(t.dataset.start){G.list=false;startScenario(t.dataset.start);return;}
   if(t.dataset.resume){G.list=false;renderGuide();window.scrollTo(0,0);return;}
   if(t.dataset.gstep!==undefined){S.scenarioStep=+t.dataset.gstep;save();renderGuide();window.scrollTo(0,0);return;}
