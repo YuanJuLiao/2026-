@@ -292,7 +292,14 @@ details.quiz summary{cursor:pointer;color:var(--accent)}
 .chip{border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:12.5px;cursor:pointer}
 .chatin{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:var(--surface)}
 .chatin textarea{min-height:44px;resize:none;flex:1}
-.chatfoot{display:flex;justify-content:space-between;padding:0 8px 6px;background:var(--surface)}
+.chatfoot{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap;padding:0 8px 6px;background:var(--surface)}
+.sc-who{display:grid;grid-template-columns:1fr 1fr;gap:10px}.sc-who label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.sc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.sc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sc-who{grid-template-columns:1fr}}
+.sc-stat{background:var(--sunk);border-radius:10px;padding:10px 12px}.sc-stat b{display:block;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.3}.sc-stat span{font-size:12.5px;color:var(--muted)}
+.sc-grid .sc-stat:first-child b{color:var(--accent)}
+.sc-tab{width:100%;border-collapse:collapse;font-size:14px}.sc-tab th,.sc-tab td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}.sc-tab td:last-child,.sc-tab th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.rp-score .sc-stat{background:#f1f5f5}.rp-score .sc-stat span,.rp-score .msg{color:#555}.rp-score .sc-stat b{color:#1f2a30}.rp-score .sc-grid{margin:8px 0}.rp-score .sc-tab th,.rp-score .sc-tab td{border-bottom:1px solid #ccd}
 .panel{min-width:0}
 .punit{margin-bottom:18px}
 .ph{font-size:18px;padding:6px 10px;border-radius:8px;background:var(--sunk);margin-bottom:4px}
@@ -866,6 +873,8 @@ document.addEventListener("click",e=>{const t=e.target.closest("button,img[data-
   if(t.dataset.start){G.list=false;startScenario(t.dataset.start);return;}
   if(t.dataset.resume){G.list=false;renderGuide();window.scrollTo(0,0);return;}
   if(t.dataset.gstep!==undefined){S.scenarioStep=+t.dataset.gstep;save();renderGuide();window.scrollTo(0,0);return;}
+  if(t.id==="g-score"){openScore();return;}
+  if(t.id==="do-score"){exportPDF(null,t,"conv");return;}
   if(t.id==="g-quit"){G.list=true;renderGuide();window.scrollTo(0,0);return;}
   if(t.dataset.reveal){G.reveal[t.dataset.reveal]=true;refresh();return;}
   if(t.id==="btn-export3"){openExport();return;}
@@ -1242,7 +1251,7 @@ function renderGuide(){
      <textarea id="chat-in" rows="2" placeholder="輸入你要問阿嬤或媳婦的問題，按 Enter 送出"></textarea>
      <button type="submit" class="btn primary">送出</button>
     </form>
-    <div class="chatfoot"><button type="button" class="btn ghost small" id="g-quit">換情境</button><button type="button" class="btn ghost small" id="g-tip">提問小技巧</button></div>
+    <div class="chatfoot"><button type="button" class="btn ghost small" id="g-quit">換情境</button><button type="button" class="btn ghost small" id="g-tip">提問小技巧</button><button type="button" class="btn small primary" id="g-score">結束訪談・成績單</button></div>
    </section>
    <section class="panel" aria-label="評估單" id="gpanel"></section>
   </div>`;
@@ -1274,13 +1283,13 @@ function startScenario(id){const sc=SCENARIOS.find(x=>x.id===id);
   G.reveal={};save();renderGuide();window.scrollTo(0,0);}
 let busy=false;
 function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked||[];
-  S.chat.push(["me",q]);drawLog();save();
+  S.chat.push(["me",q]);S.qtimes=S.qtimes||[];S.qtimes.push(Date.now());drawLog();save();
   const hits=matchQ(q);busy=true;
   const before=unlocked();
   setTimeout(()=>{busy=false;
     const lab=m=>m[0]===D_?[m[0],m[1],(S.asked.includes("relation")||S.asked.includes("caregiver"))?"媳婦":"家屬"]:m;
     if(!hits.length){S.miss=(S.miss||0)+1;S.chat.push(lab(MISS[(S.miss-1)%MISS.length]));}
-    else{hits.forEach(t=>{const again=S.asked.includes(t.id)&&!NO_AGAIN.has(t.id)&&!t.id.startsWith("ctx_");if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
+    else{if(hits.some(t=>!S.asked.includes(t.id)))S.hit=(S.hit||0)+1;else S.rep=(S.rep||0)+1;hits.forEach(t=>{const again=S.asked.includes(t.id)&&!NO_AGAIN.has(t.id)&&!t.id.startsWith("ctx_");if(!S.asked.includes(t.id))S.asked.push(t.id);(again?againMsgs(t):t.msgs).forEach(m=>S.chat.push(lab(m)));if(!["greet","intro","explain","prep","relation"].includes(t.id))S.lastTopic=t.of?t.of[0]:t.id;});}
     const after=unlocked();const fresh=[...after].filter(x=>!before.has(x)&&BY[x]&&!START_UNLOCK.includes(x));
     if(fresh.length)S.chat.push(["sys","評估單已打開："+fresh.map(id=>`<button type="button" class="chip" data-jump="${id}">${BY[id].no} ${esc(BY[id].label.replace(/^\d+\.\s*/,"").slice(0,18))}</button>`).join("")]);
     save();drawLog();if(fresh.length){drawPanel();refresh();fresh.forEach(id=>{const el=$("#it-"+id);if(el){el.classList.add("focus");setTimeout(()=>el.classList.remove("focus"),1800);}});}
@@ -1470,6 +1479,54 @@ function fmt(i){const v=S[i.id];
    case "dur":{if(!v)return E;if(v.unk)return "☑ 不知道／不確定";if(!v.h&&!v.m)return E;return `一天 ${esc(v.h||0)} 小時 ${esc(v.m||0)} 分鐘`;}
    default:return v!==undefined&&String(v).trim()!==""?esc(v):E;}}
 const plain=h=>h.replace(/<br>/g,"\n").replace(/<\/li>/g,"\n").replace(/<\/div>/g," ").replace(/<\/span>/g," ").replace(/<[^>]+>/g,"").replace(/[ \t]+/g," ").replace(/\n\s+/g,"\n").trim();
+/* ============ 訪談成績單 ============ */
+const fmtDur=ms=>{const t=Math.max(0,Math.round(ms/1000));return Math.floor(t/60)+" 分 "+String(t%60).padStart(2,"0")+" 秒";};
+const fmtClock=ts=>{const d=new Date(ts);return d.toLocaleDateString("zh-TW")+" "+d.toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false});};
+function convStats(){const K=KEYS(),U=unlocked();
+  const askable=ALL.filter(i=>i.type!=="note"&&!i.opt&&!NO_ASK.has(i.id));const got=askable.filter(i=>U.has(i.id)).length;
+  const JT=new Set(["radio","checklist","checks","number","days","dur","date"]);const kids=Object.keys(K).filter(id=>BY[id]&&JT.has(BY[id].type));let ok=0,done=0;kids.forEach(id=>{const r=judge(BY[id],K[id]);if(r!==null){done++;if(r)ok++;}});
+  const qs=(S.chat||[]).filter(m=>m[0]==="me").length;const miss=S.miss||0;
+  const valid=S.hit!==undefined?S.hit:Math.max(0,qs-miss);const rep=S.rep!==undefined?S.rep:Math.max(0,qs-miss-valid);
+  const t=S.qtimes||[];const dur=t.length>1?t[t.length-1]-t[0]:0;
+  const cov=askable.length?got/askable.length:0,acc=kids.length?ok/kids.length:0,eff=qs?valid/qs:0;
+  const score=Math.round((cov*40+acc*40+eff*20)*10)/10;
+  const units=UNITS.map(u=>{const its=u.secs.flatMap(x=>x.items);const ak=its.filter(i=>askable.includes(i));const kk=its.filter(i=>K[i.id]&&JT.has(i.type));
+    let o=0;kk.forEach(i=>{if(judge(i,K[i.id]))o++;});return {u,got:ak.filter(i=>U.has(i.id)).length,ask:ak.length,ok:o,key:kk.length};}).filter(x=>x.ask||x.key);
+  return {got,askable:askable.length,ok,done,keyed:kids.length,qs,valid,miss,rep,dur,t0:t[0],t1:t[t.length-1],cov,acc,eff,score,units};}
+function scoreHTML(st,forPdf){
+  const cell=(b,l)=>`<div class="sc-stat"><b>${b}</b><span>${l}</span></div>`;
+  return `<div class="sc-grid">${cell(st.score.toFixed(1),"綜合分數／100")}${cell(st.dur?fmtDur(st.dur):"—","訪談用時")}${cell(st.qs,"提問句數")}${cell(st.got+" / "+st.askable,"問到的評估項目")}${cell(st.ok+" / "+st.keyed,"勾選正確的項目")}${cell(st.qs?Math.round(st.eff*100)+"%":"—","有效提問比例")}</div>
+  <table class="sc-tab"><tr><th>計分項目</th><th>算法</th><th>得分</th></tr>
+  <tr><td>問得完整</td><td>問到 ${st.got} / ${st.askable} 項 × 40</td><td>${(st.cov*40).toFixed(1)}</td></tr>
+  <tr><td>評得正確</td><td>勾選正確 ${st.ok} / ${st.keyed} 項 × 40（不含文字填寫題）</td><td>${(st.acc*40).toFixed(1)}</td></tr>
+  <tr><td>問得精準</td><td>有效提問 ${st.valid} / ${st.qs} 句 × 20</td><td>${(st.eff*20).toFixed(1)}</td></tr>
+  <tr><td colspan="2"><b>綜合分數</b>（同分時，用時較短者勝）</td><td><b>${st.score.toFixed(1)}</b></td></tr></table>
+  <p class="msg" style="margin:0">有效提問：問到新內容的句子。另有重複提問 ${st.rep} 句、阿嬤聽不懂 ${st.miss} 句。用時從第一句提問算到最後一句${st.qs&&st.qs>1?`，平均每句 ${Math.round(st.dur/1000/Math.max(1,st.qs-1))} 秒`:""}。</p>`;}
+function openScore(){closeModal();const st=convStats();const sc=document.createElement("div");sc.className="scrim";sc.dataset.close="";
+  const m=document.createElement("div");m.className="modal";m.setAttribute("role","dialog");m.setAttribute("aria-label","訪談成績單");m.style.width="min(620px,calc(100% - 32px))";
+  m.innerHTML=`<h3>訪談成績單</h3>
+  ${st.qs?"":`<p class="msg bad" style="margin:0">還沒有提問紀錄，先到對話框問阿嬤問題。</p>`}
+  <div class="sc-who"><label>姓名<input id="sc-name" type="text" value="${esc(S.assessor||"")}" placeholder="例：王小明"></label><label>組別／學號<input id="sc-group" type="text" value="${esc(S.group||"")}" placeholder="例：第 3 組"></label></div>
+  ${scoreHTML(st)}
+  ${G.practice?"":`<p class="msg" style="margin:0">作業模式只顯示答對幾項，不顯示哪一題答錯。</p>`}
+  <p class="msg" id="x-msg"></p>
+  <div class="acts"><button type="button" class="btn ghost" data-close>繼續訪談</button><button type="button" class="btn primary" id="do-score"${st.qs?"":" disabled"}>下載成績單 PDF</button></div>`;
+  document.body.append(sc,m);}
+document.addEventListener("input",e=>{if(e.target.id==="sc-name"){S.assessor=e.target.value;save();}if(e.target.id==="sc-group"){S.group=e.target.value;save();}});
+function convLogRows(){let qi=0;const t=S.qtimes||[];
+  return (S.chat||[]).filter(m=>m[0]!=="sys").map(m=>{let tm="";if(m[0]==="me"){const ts=t[qi++];tm=ts&&t[0]?`<span style="color:#888;font-size:11px">＋${fmtDur(ts-t[0]).replace(" 分 ",":").replace(" 秒","")}</span><br>`:"";}
+    return `<tr><td class="k" style="width:16%">${tm}${m[2]||{me:"評估者",e:"阿嬤",d:"家屬",o:"觀察"}[m[0]]||""}</td><td>${esc(m[1])}</td></tr>`;}).join("");}
+function convBlocks(){const st=convStats();const sc=curSc();const out=[];
+  const h=document.createElement("div");h.className="rp-block";
+  h.innerHTML=`<h1>情境對話訪談成績單</h1><div class="sub">亞洲大學長期照護學系｜高齡周全性健康評估與實作｜${G.practice?"練習模式":"作業模式"}</div>
+  <table><tr><th style="width:16%">姓名</th><td>${esc(S.assessor)||E}</td><th style="width:16%">組別／學號</th><td>${esc(S.group)||E}</td></tr>
+  <tr><th>情境</th><td colspan="3">${esc(sc?sc.title:"")}</td></tr>
+  <tr><th>第一句提問</th><td>${st.t0?fmtClock(st.t0):E}</td><th>最後一句提問</th><td>${st.t1?fmtClock(st.t1):E}</td></tr></table>
+  <div class="rp-score">${scoreHTML(st,true)}</div>`;out.push(h);
+  const u=document.createElement("div");u.className="rp-block";
+  u.innerHTML=`<h2>各單元完成情形</h2><table><tr><td class="sect">單元</td><td class="sect">問到的項目</td><td class="sect">勾選正確</td></tr>${st.units.map(x=>`<tr><td>${x.u.key}. ${esc(x.u.title)}</td><td>${x.got} / ${x.ask}</td><td>${x.key?x.ok+" / "+x.key:"—"}</td></tr>`).join("")}</table>`;out.push(u);
+  if(st.qs){const b=document.createElement("div");b.className="rp-block";b.innerHTML=`<h2>訪談對話紀錄</h2><table>${convLogRows()}</table>`;out.push(b);}
+  return out;}
 function reportBlocks(ids){const out=[];
   const head=document.createElement("div");head.className="rp-block";
   head.innerHTML=`<h1>高齡周全性健康評估問卷－ADL/IADL</h1><div class="sub">亞洲大學長期照護學系｜高齡周全性健康評估與實作｜匯出內容：${ids.map(id=>{const u=UNITS.find(x=>x.id===id);return u.key+". "+u.title;}).join("、")}</div>
@@ -1490,10 +1547,9 @@ function reportBlocks(ids){const out=[];
       const b=document.createElement("div");b.className="rp-block";b.innerHTML=headHTML+`<table><tr><td colspan="2" class="sect">${s.title}</td></tr>${rows.join("")}</table>`;headHTML="";out.push(b);});
   });
   if(S.chat&&S.chat.some(m=>m[0]==="me")){
-    const rows=S.chat.filter(m=>m[0]!=="sys").map(m=>`<tr><td class="k" style="width:14%">${m[2]||{me:"評估者",e:"阿嬤",d:"家屬",o:"觀察"}[m[0]]||""}</td><td>${esc(m[1])}</td></tr>`).join("");
-    const b=document.createElement("div");b.className="rp-block";b.innerHTML=`<h2>訪談對話紀錄</h2><table>${rows}</table>`;out.push(b);}
+    const st=convStats();const b=document.createElement("div");b.className="rp-block";b.innerHTML=`<h2>訪談對話紀錄</h2><p style="font-size:12px;margin:0 0 4px">提問 ${st.qs} 句・用時 ${st.dur?fmtDur(st.dur):"—"}・問到 ${st.got} / ${st.askable} 項・綜合分數 ${st.score.toFixed(1)}</p><table>${convLogRows()}</table>`;out.push(b);}
   return out;}
-async function exportPDF(ids,btn){
+async function exportPDF(ids,btn,mode){
   const msg=$("#x-msg");const say=(m,c)=>{if(msg){msg.textContent=m;msg.className="msg "+(c||"");}else toast(m);};
   if(!window.html2canvas||!window.jspdf){say("PDF 元件尚未載入，請稍候再試","bad");return;}
   const old=btn.textContent;btn.disabled=true;btn.textContent="產生中…";
@@ -1501,7 +1557,7 @@ async function exportPDF(ids,btn){
     await document.fonts.ready;
     const host=$("#report");host.innerHTML="";const wrap=document.createElement("div");wrap.className="rp";host.appendChild(wrap);
     window._genoPng=(S.geno&&S.geno.people&&S.geno.people.length)?await svgToPng(genoSVG(null,false)):null;
-    const blocks=reportBlocks(ids);blocks.forEach(b=>wrap.appendChild(b));
+    const blocks=mode==="conv"?convBlocks():reportBlocks(ids);blocks.forEach(b=>wrap.appendChild(b));
     await Promise.all($$("img",wrap).map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;})));
     const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:"mm",format:"a4"});
     const M=12,W=210-2*M,Hh=297-2*M-6;let y=M,page=1;
@@ -1514,8 +1570,8 @@ async function exportPDF(ids,btn){
     }
     footer();host.innerHTML="";
     const blob=pdf.output("blob");
-    const part=ids.length===UNITS.length?"完整":ids.map(id=>UNITS.find(u=>u.id===id).title.replace(/（.*?）/g,"")).join("+");
-    const fname=`ADL_IADL評估單_${S.group?S.group+"組_":""}${S.assessor||"學生"}_${part}.pdf`.replace(/[\\/:*?"<>|]/g,"");
+    const part=mode==="conv"?"":ids.length===UNITS.length?"完整":ids.map(id=>UNITS.find(u=>u.id===id).title.replace(/（.*?）/g,"")).join("+");
+    const fname=(mode==="conv"?`訪談成績單_${S.group?S.group+"_":""}${S.assessor||"學生"}_${convStats().score.toFixed(1)}分.pdf`:`ADL_IADL評估單_${S.group?S.group+"組_":""}${S.assessor||"學生"}_${part}.pdf`).replace(/[\\/:*?"<>|]/g,"");
     await saveFile(fname,blob);say("已產生 PDF："+fname,"ok");
   }catch(err){const c=err&&err.code;say(c==="declined"?"已取消下載":c==="rate_limited"?"已有一個下載視窗開啟，請先處理後再試":c==="nodl"?"這個檢視無法下載檔案。請在 claude.ai 中開啟此頁再匯出。":"產生 PDF 時發生問題，請再試一次","bad");}
   finally{btn.disabled=false;btn.textContent=old;}
