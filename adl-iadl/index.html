@@ -949,7 +949,7 @@ const INTENTS=[
  {id:"sit",kk:"坐多久|坐著|坐的時間|久坐|看電視多久|都坐",unlock:["ps_t"],ex:"阿嬤一天大概坐著多久？",msgs:[[E_,"我早上 5 點半起床，晚上 9 點就睡了，白天大多坐著。"],[D_,"她除了吃飯、上廁所、洗碗，其他時間幾乎都坐在客廳看電視，我估計一天坐 11 個小時左右。"]]},
 ];
 const IN=Object.fromEntries(INTENTS.map(t=>[t.id,t]));
-const START_UNLOCK=["scenario","group","datetime","assessor","sex","prep_steps","respondent","prep_note","g_problem","g_advice"];
+const START_UNLOCK=["scenario","group","datetime","assessor","sex","prep_steps","prep_note","g_problem","g_advice"];
 const NO_ASK=new Set(["scenario","group","datetime","assessor","prep_steps","respondent","prep_note","g_problem","g_advice","b_final","i_mean","sex"]);
 const MISS=[[E_,"蛤？你說什麼？大聲一點、慢一點啦，我左耳聽不太到。"],[E_,"這個我聽不太懂耶，你可以換個方式問嗎？"],[D_,"你是想問她哪一方面？吃飯、走路、洗澡、上廁所，還是買東西、出門、吃藥這些？"]];
 const norm=s=>s.replace(/[\s，。、？?！!「」『』：:；;,.（）()…~～]/g,"");
@@ -972,6 +972,7 @@ const KEYS=()=>{const sc=curSc();const k={};if(sc)sc.steps.forEach(st=>Object.as
 function guideMode(){return location.hash.slice(1)==="practice";}
 function curSc(){return SCENARIOS.find(x=>x.id===S.scenarioId)||null;}
 function unlocked(){const u=new Set(START_UNLOCK);(S.asked||[]).forEach(id=>(IN[id]&&IN[id].unlock||[]).forEach(x=>u.add(x)));
+  if((S.chat||[]).some(m=>m[0]==="e"))u.add("respondent");
   if(BIDS.every(id=>u.has(id)))u.add("b_final");if(IIDS.every(id=>u.has(id)))u.add("i_mean");return u;}
 function exFor(itemId){const t=INTENTS.find(t=>(t.unlock||[]).includes(itemId));return t?t.ex:"";}
 function dmin(v){return (+(v&&v.h||0))*60+(+(v&&v.m||0));}
@@ -1034,7 +1035,7 @@ function drawPanel(){const P_=$("#gpanel");if(!P_)return;const U=unlocked();cons
         if(i.type==="note")return s.items.some(x=>x.type!=="note"&&U.has(x.id))?itemHTML(i):"";
         if(U.has(i.id))return itemHTML(i,{key:K});
         const ex=exFor(i.id);
-        return `<div class="item locked" data-lock="${i.id}"><div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div><div class="body"><div class="lbl">${esc(i.label)}<em>${NO_ASK.has(i.id)?"問完相關項目後開放":"尚未問到"}</em></div>${G.practice&&ex?`<button type="button" class="learnlink" data-ask="${esc(ex)}">提示：可以怎麼問？</button>`:""}</div></div>`;}).join("");
+        return `<div class="item locked" data-lock="${i.id}"><div class="no"><span class="dot" aria-hidden="true"></span><span>${i.no}</span></div><div class="body"><div class="lbl">${esc(i.label)}<em>${i.id==="respondent"?"阿嬤開口回答後開放":NO_ASK.has(i.id)?"問完相關項目後開放":"尚未問到"}</em></div>${G.practice&&ex?`<button type="button" class="learnlink" data-ask="${esc(ex)}">提示：可以怎麼問？</button>`:""}</div></div>`;}).join("");
       return `<div class="sec"><h3>${s.title}</h3><div class="items">${body}</div></div>`;}).join("");
     return `<div class="punit"><h2 class="ph ${u.dom}">${u.key}. ${u.title}</h2>${secs}</div>`;}).join("");
 }
