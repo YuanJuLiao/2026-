@@ -253,6 +253,19 @@ details.quiz summary{cursor:pointer;color:var(--accent)}
 .wguide{background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:14px;line-height:1.7}
 .wguide summary{cursor:pointer;color:var(--accent);font-weight:500}
 .wguide ol{margin:6px 0;padding-left:1.3em}.wguide ul{margin:2px 0;padding-left:1.2em}.wguide li{margin:3px 0}.wguide p{margin:6px 0 0}
+.geno{display:grid;gap:10px}
+.geno-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:#fff;padding:6px;touch-action:none}
+.geno-wrap svg{display:block;max-width:none}
+.geno-legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted)}
+.gmembers summary{cursor:pointer;font-weight:500}
+.gcards{display:grid;gap:8px;margin-top:8px}
+.gcard{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:grid;gap:6px;background:var(--paper)}
+.gcard.client{border-color:var(--accent)}
+.grow2{display:flex;flex-wrap:wrap;gap:8px;align-items:end}
+.grow2 label{display:grid;gap:2px;font-size:12.5px;color:var(--muted);flex:1 1 120px;min-width:0}
+.grow2 input[type=text],.grow2 input[type=number],.grow2 select{padding:5px 8px;font-size:14px;color:var(--ink)}
+.grow2 select{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px}
+.grow2.chk label:not(.ill){display:flex;flex:0 0 auto;gap:4px;align-items:center;font-size:14px;color:var(--ink)}
 /* 情境對話 */
 .chatlayout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;padding-block:18px 80px;align-items:start}
 .chatpane{position:sticky;top:calc(env(safe-area-inset-top,0px) + 84px);height:calc(100vh - 104px);display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
@@ -496,7 +509,7 @@ const UNITS = [
    {id:"cg2",type:"text",label:"次要照顧者（關係／說明）",opt:true},
   ]},
   {title:"受評者家族樹",items:[
-   {id:"tree",type:"family",label:"受評者家族樹",hint:"常用符號：□ 男性、○ 女性、■● 塗黑代表個案或罹病者、╳ 已歿；手足由左至右依出生序排列；以虛線圈出同住者。可文字描述，或上傳手繪家族樹照片。"},
+   {id:"tree",type:"family",label:"受評者家族樹",hint:"在下方新增家庭成員，設定父母、配偶、年齡、已歿、疾病與同住，系統會依家系圖符號自動畫出家族樹，並帶入匯出的 PDF。"},
   ]},
  ]},
  {id:"prep",key:"B",dom:"a",title:"評估準備與病史收集",secs:[
@@ -663,7 +676,7 @@ function answered(i){const v=S[i.id];
     case "note":return true;
     case "checks":return Array.isArray(v)&&v.length>0;
     case "checklist":return Array.isArray(v)&&v.length===i.opts.length;
-    case "family":return !!(v&&String(v).trim())||!!S.tree_img;
+    case "family":return !!(v&&String(v).trim())||!!S.tree_img||((S.geno&&S.geno.people||[]).length>=2);
     case "radio":return !!v&&(!i.other||v!==i.other||!!(S[i.id+"_o"]||"").trim());
     case "days":return !!v&&(v.none||(v.d!==undefined&&v.d!==""));
     case "dur":return !!v&&(v.unk||!!v.h||!!v.m);
@@ -700,7 +713,8 @@ function inputHTML(i){const v=S[i.id];const name=i.id;
    case "textarea":return `<textarea id="f-${name}" data-k="${name}" rows="${i.rows||3}">${esc(v)}</textarea>${i.caseBtn?`<div class="inline"><button type="button" class="btn small" id="use-case">帶入課堂案例（張非）</button></div>`:""}`;
    case "radio":return `<div class="choices${i.stack?" stack":""}" role="radiogroup">${i.opts.map((o,k)=>`<label class="choice"><input type="radio" name="r-${name}" id="f-${name}-${k}" data-k="${name}" value="${esc(o)}" ${v===o?"checked":""}><span>${esc(o)}</span></label>`).join("")}</div>${i.other?`<input type="text" id="f-${name}_o" data-k="${name}_o" value="${esc(S[name+"_o"])}" placeholder="其他（請說明）" ${v===i.other?"":"hidden"}>`:""}${i.withNote?`<input type="text" id="f-${name}_n" data-k="${name}_n" value="${esc(S[name+"_n"])}" placeholder="${esc(i.notePh||"補充說明（選填）")}">`:""}`;
    case "checks":case "checklist":{const a=Array.isArray(v)?v:[];return `<div class="choices">${i.opts.map((o,k)=>`<label class="choice sq"><input type="checkbox" id="f-${name}-${k}" data-k="${name}" value="${esc(o)}" ${a.includes(o)?"checked":""}><span>${i.type==="checklist"?"✓ ":""}${esc(o)}</span></label>`).join("")}</div>`;}
-   case "family":return `<textarea id="f-${name}" data-k="${name}" rows="4" placeholder="例：個案為長子，配偶同住；育有一子一女，長女住台中……">${esc(v)}</textarea>
+   case "family":return `<div class="geno-host" id="geno-${i.id}">${genoEditor(i)}</div>`;
+   case "family_old":return `<textarea id="f-${name}" data-k="${name}" rows="4" placeholder="例：個案為長子，配偶同住；育有一子一女，長女住台中……">${esc(v)}</textarea>
      <div class="inline"><label class="btn small" for="f-tree-file">上傳手繪家族樹照片</label><input type="file" id="f-tree-file" accept="image/*" hidden>${S.tree_img?`<button type="button" class="btn small ghost" id="tree-del">移除照片</button>`:""}</div>
      ${S.tree_img?`<img class="tree-img" src="${S.tree_img}" alt="家族樹照片">`:""}`;
    case "days":{const o=v||{};return `<div class="dd"><label><input type="number" min="0" max="7" step="1" id="f-${name}-d" data-obj="${name}" data-f="d" value="${esc(o.d)}" ${o.none?"disabled":""}> 天</label><label class="choice sq"><input type="checkbox" id="f-${name}-none" data-obj="${name}" data-f="none" ${o.none?"checked":""}><span>${esc(i.none)}</span></label></div>`;}
@@ -848,7 +862,7 @@ const SCENARIOS=[{
   items:["group","datetime","assessor","client","sex","birth","age","marital","edu","identity","cg","cg_sex","cg_rel","tree"],
   key:{client:{ref:"林陳翠琴"},sex:{ans:"生理女"},birth:{ans:"1941-03-15",why:"民國 30 年＝西元 1941 年。"},age:{ans:"85"},marital:{ans:"喪偶"},edu:{ans:"國小"},
    identity:{ans:["一般戶","領有身心障礙證明（手冊）"],why:"一般戶，且持有新制身心障礙證明（第二類，聽力，中度）。"},cg:{ans:"有"},cg_sex:{ans:"生理女"},cg_rel:{ref:"媳婦（52 歲）"},
-   tree:{ref:"個案林陳翠琴（女，85 歲）；先生 8 年前因心臟病過世。子女三人：長子志明 60 歲，未婚，住台北、電子公司上班；二女兒美玲 58 歲，已婚住彰化、家管，女婿開貨運，育有外孫 32 歲（台中上班）、外孫女 29 歲（護理師）；小兒子志豪 55 歲，工廠主管，與媳婦 52 歲（會計）同住，育有孫女 25 歲（銀行上班）、孫子 21 歲（大學三年級）。以虛線圈出同住者：個案、小兒子、媳婦、孫女、孫子；主要照顧者為媳婦。"}}},
+   tree:{refGeno:true,ref:"個案林陳翠琴（女，85 歲）；先生 8 年前因心臟病過世。子女三人：長子志明 60 歲，未婚，住台北、電子公司上班；二女兒美玲 58 歲，已婚住彰化、家管，女婿開貨運，育有外孫 32 歲（台中上班）、外孫女 29 歲（護理師）；小兒子志豪 55 歲，工廠主管，與媳婦 52 歲（會計）同住，育有孫女 25 歲（銀行上班）、孫子 21 歲（大學三年級）。以虛線圈出同住者：個案、小兒子、媳婦、孫女、孫子；主要照顧者為媳婦。"}}},
  {g:"病史",title:"病史摘要",text:P("<b>主訴</b>：阿嬤說：「出院以後腳就沒什麼力氣，走一下就累，很怕跌倒，所以都不太敢出門。」","<b>現在病史</b>：2026 年 8 月因泌尿道感染住院 5 天，出院後食慾變差。三個月內體重從 51.0 公斤降到 48.5 公斤。上排假牙鬆動，咀嚼會痛。","<b>過去病史</b>：高血壓、第二型糖尿病、高血脂、退化性膝關節炎（右膝較嚴重）、骨質疏鬆、雙側感音性聽力損失，2019 年雙眼白內障手術。磺胺類藥物過敏。","<b>目前用藥</b>：Amlodipine 5 mg 每日一次、Metformin 500 mg 每日兩次、Atorvastatin 10 mg 睡前一次、Sennoside 12 mg 便秘時使用；另外自購葡萄糖胺和鈣片。","<b>心理社會史</b>：年輕時務農，之後在傳統市場賣菜到 70 歲。信佛，初一、十五吃素，以前常去廟裡幫忙。SPMSQ 答錯 2 題，GDS-15 為 4 分。","<b>跌倒史</b>：上個月某天半夜起床上廁所，走廊太暗，阿嬤在浴室門檻絆了一下，扶住門框沒有跌倒。過去一年沒有真正跌倒過。"),
   items:["hpi","pmh","fh","psy","life"],
   key:{hpi:{ref:"主訴：出院後腳沒力氣、走一下就累、怕跌倒不敢出門。2026 年 8 月泌尿道感染住院 5 天，出院後食慾變差，三個月內體重 51.0 → 48.5 公斤；上排假牙鬆動、咀嚼痛。用藥：Amlodipine 5 mg QD、Metformin 500 mg BID、Atorvastatin 10 mg HS、Sennoside 12 mg PRN；自購葡萄糖胺、鈣片。上個月夜間如廁在門檻絆到，差點跌倒。"},
@@ -1041,7 +1055,7 @@ function fbHTML(i,k){
   if(!G.practice||!k)return "";
   if(k.ref!==undefined){
     if(!G.reveal[i.id])return answered(i)?`<button type="button" class="btn small" data-reveal="${i.id}">看參考重點</button>`:"";
-    return `<div class="fb ref"><b>參考重點</b><div class="why" style="white-space:pre-line">${esc(k.ref)}</div></div>`;}
+    return `<div class="fb ref"><b>參考重點</b><div class="why" style="white-space:pre-line">${esc(k.ref)}</div>${k.refGeno?`<div class="geno-wrap" style="margin-top:8px">${genoSVG(REF_GENO,false)}</div>`:""}</div>`;}
   const r=judge(i,k);if(r===null)return "";
   return `<div class="fb ${r?"right":"wrong"}"><b>${r?"答對了":"再想想"}</b>${r?"":`<div class="why">參考答案：${esc(ansText(i,k))}</div>`}${k.why?`<div class="why">${esc(k.why)}</div>`:""}${k.disc?`<div class="disc">討論重點：${esc(k.disc)}</div>`:""}</div>`;}
 const WHO={e:"阿嬤",d:"家屬",o:"觀察",me:"我"};
@@ -1112,13 +1126,144 @@ function ask(q){q=q.trim();if(!q||busy)return;S.chat=S.chat||[];S.asked=S.asked|
   },matchMedia("(prefers-reduced-motion: reduce)").matches?0:450);
 }
 
+/* ============ 家族樹繪製 ============ */
+const GX=78,GY=120,SZ=36;
+const ST_OPTS=[["married","結婚"],["divorced","離婚"],["separated","分居"],["cohabit","同居"]];
+function gid(){return "p"+Math.random().toString(36).slice(2,8);}
+function gData(src){const g=src||S.geno||{people:[]};g.people=g.people||[];return g;}
+const ckey=(a,b)=>[a,b].sort().join("|");
+function genoLayout(g){
+  const P=Object.fromEntries(g.people.map(p=>[p.id,p]));
+  const sp=p=>p.sp&&P[p.sp]?P[p.sp]:null;
+  const hasPar=p=>!!(p.par&&p.par.split("|").every(x=>P[x]));
+  const kidsOf=p=>{const s=sp(p);const keys=new Set([p.id]);if(s){keys.add(s.id);keys.add(ckey(p.id,s.id));}
+    return g.people.filter(c=>c.par&&keys.has(c.par)).sort((a,b)=>(+b.age||-1)-(+a.age||-1));};
+  const memo={},pos={},seen=new Set();
+  function unitW(p,stack){if(memo[p.id]!==undefined)return memo[p.id];stack=stack||new Set();if(stack.has(p.id))return 1;stack.add(p.id);
+    const own=sp(p)?2:1;const kw=kidsOf(p).reduce((t,k)=>t+unitW(k,stack),0);return memo[p.id]=Math.max(own,kw);}
+  function place(p,x0,gen){if(seen.has(p.id))return;const s=sp(p);seen.add(p.id);if(s)seen.add(s.id);
+    const w=unitW(p),own=s?2:1,st=x0+(w-own)/2;
+    let pair=[p];if(s)pair=(p.sex==="F"&&s.sex==="M")?[s,p]:[p,s];
+    pair.forEach((q,i)=>{pos[q.id]={x:(st+i)*GX+GX/2,y:gen*GY+50};});
+    const ks=kidsOf(p);const kw=ks.reduce((t,k)=>t+unitW(k),0);let kx=x0+(w-kw)/2;
+    ks.forEach(k=>{place(k,kx,gen+1);kx+=unitW(k);});}
+  let x=0;
+  g.people.forEach(p=>{if(seen.has(p.id))return;const s=sp(p);if(hasPar(p))return;if(s&&hasPar(s))return;place(p,x,0);x+=unitW(p)+0.4;});
+  g.people.forEach(p=>{if(!pos[p.id]){pos[p.id]={x:x*GX+GX/2,y:50};x+=1;}});
+  g.people.forEach(p=>{const q=pos[p.id];q.x+=(+p.dx||0);q.y+=(+p.dy||0);});
+  return {P,pos,sp,kidsOf};
+}
+function hull(pts){pts=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);if(pts.length<3)return pts;const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+  const lo=[],up=[];for(const p of pts){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p);}
+  for(const p of pts.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p);}
+  return lo.slice(0,-1).concat(up.slice(0,-1));}
+function genoSVG(src,interactive){
+  const g=gData(src);if(!g.people.length)return "";
+  const {P,pos,sp,kidsOf}=genoLayout(g);const h=SZ/2;const out=[];const ink="#1d2a30";
+  let maxX=0,maxY=0;Object.values(pos).forEach(q=>{maxX=Math.max(maxX,q.x);maxY=Math.max(maxY,q.y);});
+  const W=maxX+GX,Hh=maxY+90;
+  /* 同住圈 */
+  const home=g.people.filter(p=>p.home).map(p=>pos[p.id]);
+  if(home.length){const pad=26,pts=[];home.forEach(q=>{pts.push([q.x-pad,q.y-pad],[q.x+pad,q.y-pad],[q.x-pad,q.y+pad+22],[q.x+pad,q.y+pad+22]);});
+    const hp=hull(pts);out.push(`<path d="M${hp.map(p=>p.join(",")).join("L")}Z" fill="none" stroke="#5a7a80" stroke-width="1.6" stroke-dasharray="7 5" stroke-linejoin="round"/>`);}
+  /* 婚姻線 */
+  const done=new Set();
+  g.people.forEach(p=>{const s=sp(p);if(!s)return;const k=ckey(p.id,s.id);if(done.has(k))return;done.add(k);
+    const a=pos[p.id],b=pos[s.id];const L=a.x<b.x?a:b,R=a.x<b.x?b:a;const y=(L.y+R.y)/2;const st=p.st||s.st||"married";
+    out.push(`<line x1="${L.x+h}" y1="${L.y}" x2="${R.x-h}" y2="${R.y}" stroke="${ink}" stroke-width="2" ${st==="cohabit"?'stroke-dasharray="6 4"':""}/>`);
+    const mx=(L.x+R.x)/2;if(st==="divorced")out.push(`<path d="M${mx-6},${y+9}L${mx},${y-9}M${mx+2},${y+9}L${mx+8},${y-9}" stroke="${ink}" stroke-width="2"/>`);
+    if(st==="separated")out.push(`<path d="M${mx-3},${y+9}L${mx+3},${y-9}" stroke="${ink}" stroke-width="2"/>`);});
+  /* 子女線 */
+  const drawn=new Set();
+  g.people.forEach(p=>{const s=sp(p);const k=s?ckey(p.id,s.id):p.id;if(drawn.has(k))return;drawn.add(k);
+    const ks=kidsOf(p);if(!ks.length)return;const a=pos[p.id],b=s?pos[s.id]:a;const ox=(a.x+b.x)/2,oy=Math.max(a.y,b.y)+(s?0:h);
+    const kp=ks.map(c=>pos[c.id]);const barY=Math.min(...kp.map(q=>q.y))-h-22;
+    out.push(`<line x1="${ox}" y1="${oy}" x2="${ox}" y2="${barY}" stroke="${ink}" stroke-width="1.6"/>`);
+    const xs=kp.map(q=>q.x).concat(ox);out.push(`<line x1="${Math.min(...xs)}" y1="${barY}" x2="${Math.max(...xs)}" y2="${barY}" stroke="${ink}" stroke-width="1.6"/>`);
+    kp.forEach(q=>out.push(`<line x1="${q.x}" y1="${barY}" x2="${q.x}" y2="${q.y-h}" stroke="${ink}" stroke-width="1.6"/>`));});
+  /* 成員 */
+  g.people.forEach(p=>{const q=pos[p.id];const x=q.x,y=q.y;const sh=[];
+    const shape=(r,extra)=>p.sex==="F"?`<circle cx="${x}" cy="${y}" r="${r}" ${extra}/>`:`<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" ${extra}/>`;
+    if(p.client)sh.push(shape(h+5,`fill="none" stroke="${ink}" stroke-width="2"`));
+    sh.push(shape(h,`fill="#fff" stroke="${ink}" stroke-width="2"`));
+    if(p.ill){sh.push(p.sex==="F"?`<path d="M${x},${y}L${x+h},${y}A${h},${h} 0 0 1 ${x},${y+h}Z" fill="${ink}"/>`:`<rect x="${x}" y="${y}" width="${h}" height="${h}" fill="${ink}"/>`);}
+    if(p.dead)sh.push(`<path d="M${x-h-4},${y-h-4}L${x+h+4},${y+h+4}M${x+h+4},${y-h-4}L${x-h-4},${y+h+4}" stroke="${ink}" stroke-width="2"/>`);
+    if(p.age!==undefined&&p.age!=="")sh.push(`<text x="${p.ill?x-h/2+1:x}" y="${p.ill?y-3:y+5}" text-anchor="middle" font-size="${p.ill?11:13}" font-weight="700" fill="${ink}">${esc(p.age)}</text>`);
+    sh.push(`<text x="${x}" y="${y+h+17}" text-anchor="middle" font-size="12.5" fill="${ink}">${esc(p.name||"")}</text>`);
+    const sub=[p.ill,p.note].filter(Boolean).join("；");
+    if(sub)sh.push(`<text x="${x}" y="${y+h+32}" text-anchor="middle" font-size="10.5" fill="#55656b">${esc(sub.slice(0,16))}</text>`);
+    out.push(`<g ${interactive?`data-drag="${p.id}" style="cursor:grab"`:""}>${sh.join("")}</g>`);});
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${Hh}" width="${W}" height="${Hh}" font-family="Noto Sans TC, PingFang TC, Microsoft JhengHei, sans-serif" style="background:#fff">${out.join("")}</svg>`;
+}
+const GENO_LEGEND=`<div class="geno-legend"><span>□ 男</span><span>○ 女</span><span>╳ 已歿</span><span>雙框：案主</span><span>右下塗黑：疾病／身障</span><span>符號內數字：年齡</span><span>實線：結婚・虛線：同居・雙斜線：離婚</span><span>虛線圈：同住者</span></div>`;
+function genoEditor(i){const g=gData();const v=S[i.id];
+  const opts=(cur,excl)=>`<option value="">（無）</option>`+g.people.filter(p=>p.id!==excl).map(p=>`<option value="${p.id}" ${cur===p.id?"selected":""}>${esc(p.name||"未命名")}</option>`).join("");
+  const parOpts=(cur,me)=>{const seenK=new Set();let o=`<option value="">（無／第一代）</option>`;
+    g.people.forEach(p=>{if(p.id===me)return;const s=p.sp&&g.people.find(x=>x.id===p.sp);if(s&&s.id!==me){const k=ckey(p.id,s.id);if(seenK.has(k))return;seenK.add(k);o+=`<option value="${k}" ${cur===k?"selected":""}>${esc((p.name||"未命名")+" ＋ "+(s.name||"未命名"))}</option>`;}
+      o+=`<option value="${p.id}" ${cur===p.id?"selected":""}>${esc(p.name||"未命名")}（單親）</option>`;});return o;};
+  const cards=g.people.map(p=>`<div class="gcard${p.client?" client":""}">
+     <div class="grow2"><label>稱謂／姓名<input type="text" data-gp="${p.id}" data-gf="name" value="${esc(p.name)}" placeholder="例：長子志明"></label>
+      <label>性別<select data-gp="${p.id}" data-gf="sex"><option value="M" ${p.sex==="M"?"selected":""}>男</option><option value="F" ${p.sex==="F"?"selected":""}>女</option></select></label>
+      <label>年齡<input type="number" min="0" max="130" data-gp="${p.id}" data-gf="age" value="${esc(p.age)}"></label></div>
+     <div class="grow2"><label>父母<select data-gp="${p.id}" data-gf="par">${parOpts(p.par,p.id)}</select></label>
+      <label>配偶／伴侶<select data-gp="${p.id}" data-gf="sp">${opts(p.sp,p.id)}</select></label>
+      ${p.sp?`<label>關係<select data-gp="${p.id}" data-gf="st">${ST_OPTS.map(([k,t])=>`<option value="${k}" ${(p.st||"married")===k?"selected":""}>${t}</option>`).join("")}</select></label>`:""}</div>
+     <div class="grow2 chk"><label><input type="checkbox" data-gp="${p.id}" data-gf="client" ${p.client?"checked":""}> 案主</label><label><input type="checkbox" data-gp="${p.id}" data-gf="dead" ${p.dead?"checked":""}> 已歿</label><label><input type="checkbox" data-gp="${p.id}" data-gf="home" ${p.home?"checked":""}> 同住</label>
+      <label class="ill">疾病／身障（右下塗黑）<input type="text" data-gp="${p.id}" data-gf="ill" value="${esc(p.ill)}" placeholder="例：糖尿病、聽損"></label>
+      <label class="ill">其他註記<input type="text" data-gp="${p.id}" data-gf="note" value="${esc(p.note)}" placeholder="例：主要照顧者、住台北"></label>
+      <button type="button" class="btn small ghost" data-gdel="${p.id}">刪除</button></div></div>`).join("");
+  return `<div class="geno">
+   <div class="inline"><button type="button" class="btn small primary" data-gadd="1">＋ 新增成員</button>${g.people.length?`<button type="button" class="btn small" data-glayout="1">重新自動排版</button><button type="button" class="btn small ghost" data-gclear="${S.genoArm?"2":"1"}">${S.genoArm?"再按一次確認清除":"清除家族樹"}</button>`:""}</div>
+   ${g.people.length?`<div class="geno-wrap" id="geno-svg">${genoSVG(null,true)}</div>${GENO_LEGEND}<p class="msg" style="margin:0">可拖曳符號微調位置；排列亂了按「重新自動排版」。兄弟姊妹依年齡由左（長）到右（幼）排列。</p>`:`<p class="msg" style="margin:0">先按「新增成員」加入案主本人，再依序加入配偶、子女、孫子女，設定每個人的父母與配偶，家族樹會自動畫出來。</p>`}
+   ${g.people.length?`<details class="gmembers" open><summary>成員資料（${g.people.length} 人）</summary><div class="gcards">${cards}</div></details>`:""}
+   <label class="row" style="display:grid;gap:4px"><small class="msg">文字補充說明（選填）</small><textarea id="f-${i.id}" data-k="${i.id}" rows="2" placeholder="例：家族中慢性病史、主要支持者、聯絡頻率">${esc(v)}</textarea></label>
+   <details><summary class="msg" style="cursor:pointer">也可以上傳手繪家族樹照片</summary><div class="inline" style="margin-top:6px"><label class="btn small" for="f-tree-file">上傳照片</label><input type="file" id="f-tree-file" accept="image/*" hidden>${S.tree_img?`<button type="button" class="btn small ghost" id="tree-del">移除照片</button>`:""}</div>${S.tree_img?`<img class="tree-img" src="${S.tree_img}" alt="家族樹照片">`:""}</details>
+  </div>`;}
+let gBusy=false;
+function redrawGeno(){if(gBusy)return;const el=$("#geno-tree");if(!el){save();return;}gBusy=true;const ae=document.activeElement;if(ae&&el.contains(ae))ae.blur();gBusy=false;const open=el.querySelector(".gmembers")?.open;el.innerHTML=genoEditor(BY.tree);const m=el.querySelector(".gmembers");if(m&&open===false)m.open=false;save();refresh();}
+document.addEventListener("change",e=>{const t=e.target;if(!t.dataset.gp)return;const g=gData();const p=g.people.find(x=>x.id===t.dataset.gp);if(!p)return;const f=t.dataset.gf;
+  const val=t.type==="checkbox"?t.checked:t.value;
+  if(f==="sp"){const old=p.sp&&g.people.find(x=>x.id===p.sp);if(old&&old.sp===p.id){old.sp="";}p.sp=val;const n=val&&g.people.find(x=>x.id===val);if(n){const o2=n.sp&&g.people.find(x=>x.id===n.sp);if(o2&&o2.id!==p.id)o2.sp="";n.sp=p.id;n.st=p.st||"married";}}
+  else if(f==="st"){p.st=val;const n=p.sp&&g.people.find(x=>x.id===p.sp);if(n)n.st=val;}
+  else if(f==="client"&&val){g.people.forEach(x=>x.client=false);p.client=true;}
+  else p[f]=val;
+  S.geno=g;redrawGeno();});
+document.addEventListener("click",e=>{const t=e.target.closest("[data-gadd],[data-gdel],[data-glayout],[data-gclear]");if(!t)return;const g=gData();
+  if(t.dataset.gadd){g.people.push(g.people.length?{id:gid(),name:"",sex:"M"}:{id:gid(),name:"案主",sex:"F",client:true,home:true});S.geno=g;redrawGeno();
+    setTimeout(()=>{const ins=$$("#geno-tree [data-gf=name]");const last=ins[ins.length-1];if(last){last.focus();last.scrollIntoView({block:"center",behavior:"smooth"});}},30);}
+  if(t.dataset.gdel){const id=t.dataset.gdel;g.people=g.people.filter(p=>p.id!==id);g.people.forEach(p=>{if(p.sp===id)p.sp="";if(p.par&&p.par.split("|").includes(id)){const rest=p.par.split("|").filter(x=>x!==id);p.par=rest.join("|");}});S.geno=g;redrawGeno();}
+  if(t.dataset.glayout){g.people.forEach(p=>{delete p.dx;delete p.dy;});S.geno=g;redrawGeno();}
+  if(t.dataset.gclear){if(t.dataset.gclear==="2"){S.geno={people:[]};S.genoArm=false;}else{S.genoArm=true;setTimeout(()=>{if(S.genoArm){S.genoArm=false;redrawGeno();}},3500);}redrawGeno();}
+},true);
+/* 拖曳微調 */
+let gdrag=null;
+document.addEventListener("pointerdown",e=>{const gEl=e.target.closest("[data-drag]");if(!gEl)return;const svg=gEl.ownerSVGElement;const p=gData().people.find(x=>x.id===gEl.dataset.drag);if(!p)return;
+  const m=svg.getScreenCTM().inverse();const pt=new DOMPoint(e.clientX,e.clientY).matrixTransform(m);gdrag={p,sx:pt.x,sy:pt.y,dx:+p.dx||0,dy:+p.dy||0,svg};e.preventDefault();});
+document.addEventListener("pointermove",e=>{if(!gdrag)return;const m=gdrag.svg.getScreenCTM().inverse();const pt=new DOMPoint(e.clientX,e.clientY).matrixTransform(m);
+  gdrag.p.dx=Math.round(gdrag.dx+pt.x-gdrag.sx);gdrag.p.dy=Math.round(gdrag.dy+pt.y-gdrag.sy);const w=$("#geno-svg");if(w){w.innerHTML=genoSVG(null,true);gdrag.svg=w.querySelector("svg");}});
+document.addEventListener("pointerup",()=>{if(gdrag){gdrag=null;save();}});
+function svgToPng(svgStr){return new Promise(res=>{try{const img=new Image();img.onload=()=>{const sc=2,c=document.createElement("canvas");c.width=img.width*sc;c.height=img.height*sc;const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);res(c.toDataURL("image/png"));};img.onerror=()=>res(null);img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgStr);}catch(e){res(null);}});}
+/* 參考家族樹（林陳翠琴） */
+const REF_GENO={people:[
+ {id:"r1",name:"先生",sex:"M",dead:true,sp:"r2",st:"married"},
+ {id:"r2",name:"林陳翠琴",sex:"F",age:"85",client:true,home:true,ill:"慢性病、聽損",sp:"r1",st:"married"},
+ {id:"r3",name:"長子志明",sex:"M",age:"60",par:"r1|r2",note:"未婚、住台北"},
+ {id:"r4",name:"女兒美玲",sex:"F",age:"58",par:"r1|r2",sp:"r5",st:"married"},
+ {id:"r5",name:"女婿",sex:"M",sp:"r4",st:"married"},
+ {id:"r6",name:"小兒子志豪",sex:"M",age:"55",par:"r1|r2",sp:"r7",st:"married",home:true},
+ {id:"r7",name:"媳婦",sex:"F",age:"52",sp:"r6",st:"married",home:true,note:"主要照顧者"},
+ {id:"r8",name:"外孫",sex:"M",age:"32",par:"r4|r5"},
+ {id:"r9",name:"外孫女",sex:"F",age:"29",par:"r4|r5"},
+ {id:"r10",name:"孫女",sex:"F",age:"25",par:"r6|r7",home:true},
+ {id:"r11",name:"孫子",sex:"M",age:"21",par:"r6|r7",home:true}]};
+
 /* ============ PDF ============ */
 const E='<span class="empty">（未填）</span>';
 function fmt(i){const v=S[i.id];
   switch(i.type){
    case "checks":case "checklist":{const a=Array.isArray(v)?v:[];if(!a.length)return E;let s=a.map(x=>"☑ "+esc(x)).join("\n");if(i.type==="checklist"){const miss=i.opts.filter(o=>!a.includes(o));if(miss.length)s+="\n☐ "+miss.map(esc).join("　☐ ");}return s;}
    case "radio":{if(!v)return E;let s="☑ "+esc(v);if(i.other&&v===i.other&&S[i.id+"_o"])s+="："+esc(S[i.id+"_o"]);if(i.withNote&&S[i.id+"_n"])s+="\n補充："+esc(S[i.id+"_n"]);return s;}
-   case "family":{let s=v?esc(v):"";if(S.tree_img)s+=(s?"\n":"")+`<img src="${S.tree_img}">`;return s||E;}
+   case "family":{let s="";if(window._genoPng)s+=`<img src="${window._genoPng}">`;if(v)s+=(s?"\n":"")+esc(v);if(S.tree_img)s+=(s?"\n":"")+`<img src="${S.tree_img}">`;return s||E;}
    case "days":{if(!v)return E;return v.none?"☑ "+esc(i.none):(v.d!==undefined&&v.d!==""?esc(v.d)+" 天":E);}
    case "dur":{if(!v)return E;if(v.unk)return "☑ 不知道／不確定";if(!v.h&&!v.m)return E;return `一天 ${esc(v.h||0)} 小時 ${esc(v.m||0)} 分鐘`;}
    default:return v!==undefined&&String(v).trim()!==""?esc(v):E;}}
@@ -1137,6 +1282,7 @@ function reportBlocks(ids){const out=[];
         if(i.type==="note"){const r=i.fn(S);if(r&&!(r[0]==="info"&&/這裡會/.test(r[2])))rows.push(`<tr><td class="k">${esc(r[1])}</td><td>${esc(plain(r[2]))}</td></tr>`);return;}
         if(!vis(i))return;if(["scenario","group","datetime","assessor","client"].includes(i.id))return;
         const sc=i.score&&i.score!=="yn"?`（${scoreOf(i,S[i.id])??"—"} / ${maxOf(i)} 分）`:"";
+        if(i.type==="family"){rows.push(`<tr><td colspan="2" class="k" style="width:auto">${esc(i.label)}</td></tr><tr><td colspan="2" style="text-align:center">${fmt(i)}</td></tr>`);return;}
         rows.push(`<tr><td class="k">${esc(i.label)}${sc}</td><td>${fmt(i)}</td></tr>`);});
       if(!rows.length)return;
       const b=document.createElement("div");b.className="rp-block";b.innerHTML=headHTML+`<table><tr><td colspan="2" class="sect">${s.title}</td></tr>${rows.join("")}</table>`;headHTML="";out.push(b);});
@@ -1152,6 +1298,7 @@ async function exportPDF(ids,btn){
   try{
     await document.fonts.ready;
     const host=$("#report");host.innerHTML="";const wrap=document.createElement("div");wrap.className="rp";host.appendChild(wrap);
+    window._genoPng=(S.geno&&S.geno.people&&S.geno.people.length)?await svgToPng(genoSVG(null,false)):null;
     const blocks=reportBlocks(ids);blocks.forEach(b=>wrap.appendChild(b));
     await Promise.all($$("img",wrap).map(im=>im.complete?0:new Promise(r=>{im.onload=im.onerror=r;})));
     const {jsPDF}=window.jspdf;const pdf=new jsPDF({unit:"mm",format:"a4"});
