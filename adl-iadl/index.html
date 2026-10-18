@@ -1218,8 +1218,8 @@ function genoSVG(src,interactive){
     const shape=(r,extra)=>p.sex==="F"?`<circle cx="${x}" cy="${y}" r="${r}" ${extra}/>`:`<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" ${extra}/>`;
     sh.push(shape(h,`fill="${p.client?`url(#${hid})`:"#fff"}" stroke="${ink}" stroke-width="2"`));
     if(p.ill)sh.push(p.sex==="F"?`<path d="M${x},${y}L${x+h},${y}A${h},${h} 0 0 1 ${x},${y+h}Z" fill="${ink}"/>`:`<rect x="${x}" y="${y}" width="${h}" height="${h}" fill="${ink}"/>`);
-    if(p.dead)sh.push(`<path d="M${x-h-4},${y-h-4}L${x+h+4},${y+h+4}M${x+h+4},${y-h-4}L${x-h-4},${y+h+4}" stroke="${ink}" stroke-width="2"/>`);
-    if(p.age!==undefined&&p.age!=="")sh.push(`<text x="${p.ill?x-h/2+1:x}" y="${p.ill?y-3:y+5}" text-anchor="middle" font-size="${p.ill?11:13}" font-weight="700" fill="${ink}" ${p.client?'stroke="#fff" stroke-width="4" paint-order="stroke"':""}>${esc(p.age)}</text>`);
+    if(p.dead){const d=p.sex==="F"?h*0.707:h;sh.push(`<path d="M${x-d},${y-d}L${x+d},${y+d}M${x+d},${y-d}L${x-d},${y+d}" stroke="${ink}" stroke-width="2" stroke-linecap="butt"/>`);}
+    if(p.age!==undefined&&p.age!=="")sh.push(`<text x="${p.ill?x-h/2+1:x}" y="${p.ill?y-3:y+5}" text-anchor="middle" font-size="${p.ill?11:13}" font-weight="700" fill="${ink}" ${(p.client||p.dead)?'stroke="#fff" stroke-width="4" paint-order="stroke"':""}>${esc(p.age)}</text>`);
     sh.push(`<text x="${x}" y="${y+h+17}" text-anchor="middle" font-size="12.5" fill="${ink}">${esc(p.name||"")}</text>`);
     const sub=[p.ill,p.note].filter(Boolean).join("；");
     if(sub)sh.push(`<text x="${x}" y="${y+h+32}" text-anchor="middle" font-size="10.5" fill="#55656b">${esc(sub.slice(0,16))}</text>`);
