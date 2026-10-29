@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>照顧服務員檢定練習</title>
+<meta name="description" content="照顧服務員單一級技術士技能檢定：學科題庫練習、模擬考、錯題本與術科步驟自我檢核。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+(function(){try{var t=localStorage.getItem('ce_theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);var f=localStorage.getItem('ce_font');if(f)document.documentElement.setAttribute('data-font',f);}catch(e){}})();
+</script>
+<style>
+:root{
+  --bg:#f6f4ef; --surface:#ffffff; --surface-2:#efece5; --ink:#1f2a2c; --ink-2:#55605f; --line:#dcd7cc;
+  --brand:#0f6f68; --brand-ink:#ffffff; --brand-soft:#dcefeb;
+  --ok:#1d7a3e; --ok-soft:#e1f2e6; --bad:#b3261e; --bad-soft:#fbe6e4; --warn:#8a5a00; --warn-soft:#fbf0d9;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05);
+  --fs:17px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141a1b; --surface:#1d2526; --surface-2:#252f30; --ink:#e8ecea; --ink-2:#a6b1af; --line:#334042;
+    --brand:#4fbfb3; --brand-ink:#0d1a19; --brand-soft:#1f3836;
+    --ok:#6fd08f; --ok-soft:#1c3324; --bad:#ff8a80; --bad-soft:#3a2120; --warn:#f2c46b; --warn-soft:#3a3020;
+    --shadow:0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141a1b; --surface:#1d2526; --surface-2:#252f30; --ink:#e8ecea; --ink-2:#a6b1af; --line:#334042;
+  --brand:#4fbfb3; --brand-ink:#0d1a19; --brand-soft:#1f3836;
+  --ok:#6fd08f; --ok-soft:#1c3324; --bad:#ff8a80; --bad-soft:#3a2120; --warn:#f2c46b; --warn-soft:#3a3020;
+  --shadow:0 1px 2px rgba(0,0,0,.3);
+}
+:root[data-font="s"]{--fs:15px}
+:root[data-font="m"]{--fs:17px}
+:root[data-font="l"]{--fs:21px}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.65;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 0;flex-wrap:wrap}
+.brand{font-weight:700;font-size:1.05rem;margin-right:auto;display:flex;align-items:center;gap:8px}
+.brand .dot{width:22px;height:22px;border-radius:6px;background:var(--brand);display:inline-grid;place-items:center;color:var(--brand-ink);font-size:.75rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:4px 11px;font-size:.82rem;cursor:pointer;min-height:34px}
+.seg button[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink)}
+.seg .a1{font-size:.75rem}.seg .a2{font-size:.9rem}.seg .a3{font-size:1.08rem}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:0 0 auto;border:0;background:transparent;padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:500;color:var(--ink-2);min-height:40px}
+nav.tabs button[aria-selected="true"]{background:var(--brand-soft);color:var(--brand)}
+main{padding:18px 0 60px}
+h2{font-size:1.25rem;margin:.2em 0 .5em}
+h3{font-size:1.05rem;margin:1.2em 0 .5em}
+.muted{color:var(--ink-2)}
+.small{font-size:.85rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+.grp-title{font-size:.85rem;color:var(--ink-2);margin:14px 0 6px;font-weight:700;letter-spacing:.05em}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.cat{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left;min-height:56px}
+.cat[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.cat .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:0 0 auto;display:grid;place-items:center;font-size:.75rem;color:var(--brand-ink)}
+.cat[aria-pressed="true"] .box{background:var(--brand);border-color:var(--brand)}
+.cat .nm{font-weight:500;line-height:1.3}
+.cat .meta{font-size:.75rem;color:var(--ink-2)}
+.prog{height:4px;background:var(--surface-2);border-radius:4px;margin-top:4px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--brand)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);padding:9px 16px;border-radius:10px;cursor:pointer;font-weight:500;min-height:44px}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:5px 11px;min-height:36px;font-size:.85rem}
+label.opt{display:inline-flex;align-items:center;gap:6px}
+select{font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-height:40px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:.85rem;color:var(--ink-2);margin-bottom:8px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--ink-2)}
+.tag.del{background:var(--warn-soft);color:var(--warn)}
+.qtext{font-size:1.1rem;font-weight:500;margin:0 0 14px}
+.qimg{max-width:180px;max-height:180px;display:block;margin:0 0 12px;border-radius:8px;background:#fff;padding:6px}
+.opts{display:grid;gap:8px}
+.op{display:flex;gap:10px;align-items:flex-start;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:11px 13px;cursor:pointer;min-height:48px;width:100%}
+.op:hover:not(:disabled){border-color:var(--brand)}
+.op .k{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-size:.85rem;font-weight:700;margin-top:1px}
+.op img{max-height:90px;max-width:120px;background:#fff;border-radius:6px;padding:4px}
+.op.sel{border-color:var(--brand);background:var(--brand-soft)}
+.op.right{border-color:var(--ok);background:var(--ok-soft)}
+.op.right .k{background:var(--ok);color:#fff}
+.op.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.op.wrong .k{background:var(--bad);color:#fff}
+.op:disabled{cursor:default}
+.fb{margin-top:14px;border-radius:12px;padding:12px 14px}
+.fb.ok{background:var(--ok-soft)}.fb.no{background:var(--bad-soft)}
+.fb b{display:block;margin-bottom:2px}
+.fb.ok b{color:var(--ok)}.fb.no b{color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.bigscore{font-size:2.6rem;font-weight:700;line-height:1.1}
+.pass{color:var(--ok)}.fail{color:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stat{background:var(--surface-2);border-radius:10px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.3rem}
+.grid-nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:6px;margin-top:10px}
+.grid-nums button{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 0;cursor:pointer;font-size:.8rem;min-height:36px}
+.grid-nums button.done{background:var(--brand-soft);border-color:var(--brand)}
+.grid-nums button.cur{outline:2px solid var(--brand)}
+.grid-nums button.w{background:var(--bad-soft);border-color:var(--bad)}
+.grid-nums button.r{background:var(--ok-soft);border-color:var(--ok)}
+.timer{font-variant-numeric:tabular-nums;font-weight:700}
+.timer.low{color:var(--bad)}
+.list .item{border-top:1px solid var(--line);padding:12px 0}
+.list .item:first-child{border-top:0}
+.empty{text-align:center;padding:30px 10px;color:var(--ink-2)}
+.sets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.set{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px;cursor:pointer;text-align:left}
+.set[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.set b{font-size:1.1rem}
+.tlist{display:grid;gap:8px}
+.titem{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;width:100%}
+.titem .no{font-weight:700;color:var(--brand);margin-right:8px}
+.case{background:var(--surface-2);border-radius:10px;padding:12px 14px;margin:10px 0}
+.zero{background:var(--warn-soft);color:var(--ink);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.9rem}
+.zero b{color:var(--warn)}
+.sec{margin-top:16px}
+.sec h4{margin:0 0 6px;font-size:.98rem;display:flex;justify-content:space-between;gap:8px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-top:1px dashed var(--line);cursor:pointer}
+.step:first-of-type{border-top:0}
+.step input{width:22px;height:22px;margin-top:3px;accent-color:var(--brand);flex:0 0 auto}
+.step .tx{flex:1}
+.step .pt{flex:0 0 auto;font-size:.8rem;color:var(--ink-2);white-space:nowrap}
+.step.hide .tx{color:transparent;background:var(--surface-2);border-radius:6px;user-select:none}
+.step.hide .tx{position:relative;min-height:2.2em}
+.step.hide .tx::after{content:"點一下顯示步驟";color:var(--ink-2);font-size:.85rem;position:absolute;left:10px;top:50%;transform:translateY(-50%);white-space:nowrap}
+.sticky-score{position:sticky;bottom:10px;margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+footer{border-top:1px solid var(--line);padding:18px 0 30px;font-size:.8rem;color:var(--ink-2)}
+.hidden{display:none!important}
+@media (max-width:520px){
+  .sets{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .bigscore{font-size:2.1rem}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <div class="brand"><span class="dot">照</span>照顧服務員檢定練習</div>
+      <div class="seg" role="group" aria-label="背景">
+        <button data-theme-btn="auto" title="跟隨系統">自動</button>
+        <button data-theme-btn="light">淺色</button>
+        <button data-theme-btn="dark">深色</button>
+      </div>
+      <div class="seg" role="group" aria-label="字體大小">
+        <button class="a1" data-font-btn="s">小</button>
+        <button class="a2" data-font-btn="m">中</button>
+        <button class="a3" data-font-btn="l">大</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="practice">學科練習</button>
+      <button role="tab" data-tab="exam">模擬考</button>
+      <button role="tab" data-tab="wrong">錯題本</button>
+      <button role="tab" data-tab="tech">術科練習</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="v-practice"></section>
+  <section id="v-exam" class="hidden"></section>
+  <section id="v-wrong" class="hidden"></section>
+  <section id="v-tech" class="hidden"></section>
+</main>
+
+<footer class="wrap">
+  <div id="srcnote"></div>
+  <div style="margin-top:6px">題目與答案依勞動部勞動力發展署技能檢定中心公告之參考資料；每題解析為教學補充說明，若與最新法規或公告不同，以官方資料為準。作答紀錄只存在本裝置的瀏覽器中。</div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+(function(){
+'use strict';
+var D=window.CARE_DATA, QS=D.qs, CATS=D.cats;
+var KEYS='①②③④';
+
+/* ---------- storage ---------- */
+function load(k,def){try{var v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var stats=load('ce_stats',{});   // idx -> [tries, correct]
+var wrongs=load('ce_wrong',{});  // idx -> count
+function record(i,ok){
+  var s=stats[i]||[0,0]; s[0]++; if(ok)s[1]++; stats[i]=s; save('ce_stats',stats);
+  if(!ok){wrongs[i]=(wrongs[i]||0)+1;}
+  save('ce_wrong',wrongs);
+}
+
+/* ---------- theme & font ---------- */
+var root=document.documentElement;
+function setTheme(t){ if(t==='auto'){root.removeAttribute('data-theme');try{localStorage.removeItem('ce_theme')}catch(e){}} else {root.setAttribute('data-theme',t);try{localStorage.setItem('ce_theme',t)}catch(e){}} syncSeg(); }
+function setFont(f){ root.setAttribute('data-font',f); try{localStorage.setItem('ce_font',f)}catch(e){} syncSeg(); }
+function syncSeg(){
+  var t=root.getAttribute('data-theme')||'auto', f=root.getAttribute('data-font')||'m';
+  document.querySelectorAll('[data-theme-btn]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.themeBtn===t)});
+  document.querySelectorAll('[data-font-btn]').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.fontBtn===f)});
+}
+document.querySelectorAll('[data-theme-btn]').forEach(function(b){b.onclick=function(){setTheme(b.dataset.themeBtn)}});
+document.querySelectorAll('[data-font-btn]').forEach(function(b){b.onclick=function(){setFont(b.dataset.fontBtn)}});
+syncSeg();
+
+/* ---------- tabs ---------- */
+var curTab='practice';
+function showTab(t){
+  curTab=t;
+  document.querySelectorAll('[data-tab]').forEach(function(b){b.setAttribute('aria-selected',b.dataset.tab===t)});
+  ['practice','exam','wrong','tech'].forEach(function(v){document.getElementById('v-'+v).classList.toggle('hidden',v!==t)});
+  try{localStorage.setItem('ce_tab',t)}catch(e){}
+  if(t==='practice'&&!P.active)renderPracticeHome();
+  if(t==='wrong'&&!W.active)renderWrongHome();
+  if(t==='exam'&&!X.active&&!X.done)renderExamHome();
+  if(t==='tech'&&!T.cur)renderTechHome();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){showTab(b.dataset.tab)}});
+
+/* ---------- helpers ---------- */
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function catLabel(c){var x=CATS[c];return x.code+' '+x.name;}
+function el(id){return document.getElementById(id)}
+
+/* question card (shared) */
+function qCard(i,opts){
+  // opts: {pos,total,chosen,reveal,onPick,headExtra}
+  var q=QS[i], h='';
+  h+='<div class="card"><div class="qhead"><span>'+(opts.pos!=null?'第 '+(opts.pos+1)+' / '+opts.total+' 題':'')+'</span><span><span class="tag">'+esc(catLabel(q.c))+' 第'+q.n+'題</span>'+(q.d?' <span class="tag del">官方已刪題</span>':'')+'</span></div>';
+  h+='<p class="qtext">'+esc(q.q)+'</p>';
+  if(q.img)h+='<img class="qimg" src="'+q.img+'" alt="題目圖示">';
+  h+='<div class="opts">';
+  for(var k=1;k<=4;k++){
+    var cls='op';
+    if(opts.reveal){ if(k===q.a)cls+=' right'; else if(k===opts.chosen)cls+=' wrong'; }
+    else if(k===opts.chosen)cls+=' sel';
+    var body=q.oi?'<img src="'+q.oi[k-1]+'" alt="選項'+k+'圖示">':esc(q.o[k-1]);
+    h+='<button class="'+cls+'" data-k="'+k+'"'+(opts.reveal?' disabled':'')+'><span class="k">'+k+'</span><span>'+body+'</span></button>';
+  }
+  h+='</div>';
+  if(opts.reveal){
+    var ok=opts.chosen===q.a;
+    h+='<div class="fb '+(ok?'ok':'no')+'"><b>'+(opts.chosen==null?'正確答案：'+KEYS[q.a-1]:(ok?'答對了！':'答錯了，正確答案是 '+KEYS[q.a-1]))+'</b>'+esc(q.e)+'</div>';
+  }
+  h+='</div>';
+  return h;
+}
+function bindOpts(container,fn){container.querySelectorAll('.op').forEach(function(b){b.onclick=function(){fn(+b.dataset.k)}})}
+
+/* ================= PRACTICE ================= */
+var P={active:false,sel:load('ce_sel',[0]),order:load('ce_order','seq'),count:load('ce_count','20'),onlyNew:false};
+function catProgress(c){
+  var tot=0,done=0,right=0;
+  QS.forEach(function(q,i){if(q.c===c){tot++;if(stats[i]){done++;if(stats[i][1]>0)right++;}}});
+  return {tot:tot,done:done,right:right};
+}
+function renderPracticeHome(){
+  var v=el('v-practice');
+  var h='<h2>學科練習</h2><p class="muted small">選擇要練習的類別（可複選），每題作答後立即顯示對錯與解析。</p>';
+  ['專業科目','共同科目'].forEach(function(g){
+    h+='<div class="grp-title">'+g+(g==='共同科目'?'（90006–90009）':'（17800 照顧服務員）')+'</div><div class="cats">';
+    CATS.forEach(function(c,ci){ if(c.grp!==g)return;
+      var p=catProgress(ci), on=P.sel.indexOf(ci)>=0;
+      h+='<button class="cat" data-c="'+ci+'" aria-pressed="'+on+'"><span class="box">'+(on?'✓':'')+'</span><span style="flex:1"><span class="nm">'+(g==='專業科目'?'工作項目'+String(ci+1).padStart(2,'0')+' ':'')+esc(c.name)+'</span><div class="meta">'+c.n+' 題・已練 '+p.done+'</div><div class="prog"><i style="width:'+(p.done/p.tot*100)+'%"></i></div></span></button>';
+    });
+    h+='</div>';
+  });
+  h+='<div class="row" style="margin-top:10px"><button class="btn sm ghost" id="selPro">全選專業</button><button class="btn sm ghost" id="selCom">全選共同</button><button class="btn sm ghost" id="selAll">全部</button><button class="btn sm ghost" id="selNone">清除</button></div>';
+  h+='<div class="card" style="margin-top:14px"><div class="row">';
+  h+='<label class="opt">順序 <select id="pOrder"><option value="seq">依題號</option><option value="rand">隨機</option></select></label>';
+  h+='<label class="opt">題數 <select id="pCount"><option>10</option><option>20</option><option>50</option><option value="all">全部</option></select></label>';
+  h+='<label class="opt"><input type="checkbox" id="pNew"> 只練沒做過的</label>';
+  h+='</div><div class="row" style="margin-top:12px"><button class="btn primary" id="pStart">開始練習</button><span class="muted small" id="pInfo"></span></div></div>';
+  v.innerHTML=h;
+  el('pOrder').value=P.order; el('pCount').value=P.count; el('pNew').checked=P.onlyNew;
+  v.querySelectorAll('.cat').forEach(function(b){b.onclick=function(){var c=+b.dataset.c,ix=P.sel.indexOf(c);if(ix>=0)P.sel.splice(ix,1);else P.sel.push(c);save('ce_sel',P.sel);renderPracticeHome();}});
+  el('selPro').onclick=function(){P.sel=[0,1,2,3,4,5];save('ce_sel',P.sel);renderPracticeHome()};
+  el('selCom').onclick=function(){P.sel=[6,7,8,9];save('ce_sel',P.sel);renderPracticeHome()};
+  el('selAll').onclick=function(){P.sel=[0,1,2,3,4,5,6,7,8,9];save('ce_sel',P.sel);renderPracticeHome()};
+  el('selNone').onclick=function(){P.sel=[];save('ce_sel',P.sel);renderPracticeHome()};
+  el('pOrder').onchange=function(){P.order=this.value;save('ce_order',P.order)};
+  el('pCount').onchange=function(){P.count=this.value;save('ce_count',P.count);info()};
+  el('pNew').onchange=function(){P.onlyNew=this.checked;info()};
+  function pool(){return QS.map(function(q,i){return i}).filter(function(i){return P.sel.indexOf(QS[i].c)>=0&&(!P.onlyNew||!stats[i])});}
+  function info(){var n=pool().length;el('pInfo').textContent='符合條件 '+n+' 題';el('pStart').disabled=!n;}
+  info();
+  el('pStart').onclick=function(){
+    var pl=pool(); if(P.order==='rand')pl=shuffle(pl);
+    if(P.count!=='all')pl=pl.slice(0,+P.count);
+    P.active=true;P.list=pl;P.pos=0;P.ans={};renderPracticeQ();
+  };
+}
+function renderPracticeQ(){
+  var v=el('v-practice'), i=P.list[P.pos], chosen=P.ans[P.pos];
+  var right=0,doneN=0;Object.keys(P.ans).forEach(function(k){doneN++;if(P.ans[k]===QS[P.list[k]].a)right++;});
+  var h='<div class="row" style="justify-content:space-between;margin-bottom:10px"><button class="btn sm ghost" id="pBack">← 回選單</button><span class="muted small">本回答對 '+right+' / '+doneN+'</span></div>';
+  h+=qCard(i,{pos:P.pos,total:P.list.length,chosen:chosen,reveal:chosen!=null});
+  h+='<div class="nav"><button class="btn" id="pPrev"'+(P.pos===0?' disabled':'')+'>上一題</button>';
+  if(P.pos<P.list.length-1)h+='<button class="btn primary" id="pNext">下一題</button>';
+  else h+='<button class="btn primary" id="pEnd">完成</button>';
+  h+='</div>';
+  v.innerHTML=h;
+  bindOpts(v,function(k){ if(P.ans[P.pos]!=null)return; P.ans[P.pos]=k; record(i,k===QS[i].a); renderPracticeQ(); });
+  el('pBack').onclick=function(){P.active=false;renderPracticeHome()};
+  el('pPrev').onclick=function(){P.pos--;renderPracticeQ();window.scrollTo(0,0)};
+  if(el('pNext'))el('pNext').onclick=function(){P.pos++;renderPracticeQ();window.scrollTo(0,0)};
+  if(el('pEnd'))el('pEnd').onclick=function(){renderPracticeEnd(right,doneN)};
+}
+function renderPracticeEnd(right,doneN){
+  var v=el('v-practice');
+  var wr=P.list.filter(function(i,k){return P.ans[k]!=null&&P.ans[k]!==QS[i].a});
+  var h='<div class="card" style="text-align:center"><div class="muted">本回練習結果</div><div class="bigscore">'+right+' / '+doneN+'</div><div class="muted small">答錯的題目已自動加入「錯題本」</div></div>';
+  h+='<div class="row"><button class="btn primary" id="pAgain">再練一回</button>'+(wr.length?'<button class="btn" id="pRedo">只重練本回錯題（'+wr.length+'）</button>':'')+'</div>';
+  v.innerHTML=h;
+  el('pAgain').onclick=function(){P.active=false;renderPracticeHome()};
+  if(el('pRedo'))el('pRedo').onclick=function(){P.list=wr;P.pos=0;P.ans={};renderPracticeQ()};
+}
+
+/* ================= EXAM ================= */
+var X={active:false,done:false,timer:null};
+function buildExam(){
+  var proCats=[0,1,2,3,4,5], comCats=[6,7,8,9];
+  var avail=function(c){return QS.map(function(q,i){return i}).filter(function(i){return QS[i].c===c&&!QS[i].d})};
+  var sizes=proCats.map(function(c){return avail(c).length}), tot=sizes.reduce(function(a,b){return a+b},0);
+  var raw=sizes.map(function(s){return s/tot*64}), base=raw.map(Math.floor), rem=64-base.reduce(function(a,b){return a+b},0);
+  raw.map(function(r,i){return [r-Math.floor(r),i]}).sort(function(a,b){return b[0]-a[0]}).slice(0,rem).forEach(function(x){base[x[1]]++});
+  var list=[];
+  proCats.forEach(function(c,k){list=list.concat(shuffle(avail(c)).slice(0,base[k]))});
+  comCats.forEach(function(c){list=list.concat(shuffle(avail(c)).slice(0,4))});
+  return list;
+}
+function renderExamHome(){
+  var v=el('v-exam'); var hist=load('ce_exams',[]);
+  var h='<h2>模擬考</h2><div class="card"><p style="margin-top:0">比照正式學科測試：<b>80 題單選</b>、每題 1.25 分、<b>100 分鐘</b>、<b>60 分及格</b>。</p><ul class="small muted" style="padding-left:1.2em;margin:0 0 12px"><li>專業科目 64 題：依六個工作項目的題數比例抽題</li><li>共同科目 16 題：職業安全衛生、工作倫理與職業道德、環境保護、節能減碳各 4 題</li><li>官方已刪除的題目不會出現在模擬考</li><li>交卷後才顯示成績、答案與解析</li></ul><button class="btn primary" id="xStart">開始模擬考</button></div>';
+  if(hist.length){h+='<h3>最近成績</h3><div class="card list">';hist.slice(-8).reverse().forEach(function(r){h+='<div class="item row" style="justify-content:space-between"><span>'+esc(r.t)+'</span><b class="'+(r.s>=60?'pass':'fail')+'">'+r.s+' 分</b></div>'});h+='</div>';}
+  v.innerHTML=h;
+  el('xStart').onclick=function(){X.list=buildExam();X.ans={};X.pos=0;X.active=true;X.done=false;X.end=Date.now()+100*60*1000;startTimer();renderExamQ();};
+}
+function startTimer(){clearInterval(X.timer);X.timer=setInterval(function(){var t=el('xTimer');var left=X.end-Date.now();if(left<=0){clearInterval(X.timer);submitExam();return;}if(t){var m=Math.floor(left/60000),s=Math.floor(left%60000/1000);t.textContent=m+':'+String(s).padStart(2,'0');t.classList.toggle('low',left<5*60000);}},1000);}
+function renderExamQ(){
+  var v=el('v-exam'), i=X.list[X.pos], n=Object.keys(X.ans).length;
+  var left=X.end-Date.now(),m=Math.floor(left/60000),s=Math.floor(left%60000/1000);
+  var h='<div class="row" style="justify-content:space-between;margin-bottom:10px"><span>剩餘時間 <span class="timer" id="xTimer">'+m+':'+String(s).padStart(2,'0')+'</span></span><span class="muted small">已作答 '+n+' / 80</span></div>';
+  h+=qCard(i,{pos:X.pos,total:80,chosen:X.ans[X.pos],reveal:false});
+  h+='<div class="nav"><button class="btn" id="xPrev"'+(X.pos===0?' disabled':'')+'>上一題</button>'+(X.pos<79?'<button class="btn primary" id="xNext">下一題</button>':'<button class="btn primary" id="xSub">交卷</button>')+'</div>';
+  h+='<div class="card" style="margin-top:14px"><div class="row" style="justify-content:space-between"><b class="small">答題卡</b><button class="btn sm" id="xSub2">交卷</button></div><div class="grid-nums">';
+  for(var k=0;k<80;k++)h+='<button data-j="'+k+'" class="'+(X.ans[k]!=null?'done':'')+(k===X.pos?' cur':'')+'">'+(k+1)+'</button>';
+  h+='</div></div>';
+  v.innerHTML=h;
+  bindOpts(v,function(k){X.ans[X.pos]=k;renderExamQ();});
+  el('xPrev').onclick=function(){X.pos--;renderExamQ();window.scrollTo(0,0)};
+  if(el('xNext'))el('xNext').onclick=function(){X.pos++;renderExamQ();window.scrollTo(0,0)};
+  var sub=function(){var un=80-Object.keys(X.ans).length;if(un>0&&!confirmInline(un))return;submitExam();};
+  if(el('xSub'))el('xSub').onclick=sub; el('xSub2').onclick=sub;
+  v.querySelectorAll('.grid-nums button').forEach(function(b){b.onclick=function(){X.pos=+b.dataset.j;renderExamQ();window.scrollTo(0,0)}});
+}
+function confirmInline(un){
+  if(X.confirming){X.confirming=false;return true;}
+  X.confirming=true;
+  var b=el('xSub2'); b.textContent='還有 '+un+' 題未答，再按一次交卷'; b.classList.add('primary');
+  if(el('xSub')){el('xSub').textContent='再按一次確定交卷';}
+  setTimeout(function(){X.confirming=false},6000);
+  return false;
+}
+function submitExam(){
+  clearInterval(X.timer); X.active=false; X.done=true;
+  var right=0; X.list.forEach(function(i,k){var ok=X.ans[k]===QS[i].a; if(ok)right++; if(X.ans[k]!=null)record(i,ok); else {wrongs[i]=(wrongs[i]||0)+1;}});
+  save('ce_wrong',wrongs);
+  var score=Math.round(right*1.25*100)/100;
+  var hist=load('ce_exams',[]); var d=new Date(); hist.push({t:(d.getMonth()+1)+'/'+d.getDate()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'),s:score}); save('ce_exams',hist.slice(-30));
+  X.score=score;X.right=right;X.filter='wrong';renderExamResult();
+}
+function renderExamResult(){
+  var v=el('v-exam'), pass=X.score>=60;
+  var byCat={}; X.list.forEach(function(i,k){var c=QS[i].c;byCat[c]=byCat[c]||[0,0];byCat[c][1]++;if(X.ans[k]===QS[i].a)byCat[c][0]++;});
+  var h='<div class="card" style="text-align:center"><div class="muted">模擬考成績</div><div class="bigscore '+(pass?'pass':'fail')+'">'+X.score+' 分</div><div>'+(pass?'及格！':'未達 60 分，再加油')+'</div><div class="stats"><div class="stat"><b>'+X.right+'</b>答對</div><div class="stat"><b>'+(80-X.right-(80-Object.keys(X.ans).length))+'</b>答錯</div><div class="stat"><b>'+(80-Object.keys(X.ans).length)+'</b>未答</div></div></div>';
+  h+='<div class="card"><b class="small">各類別答對情形</b><div class="list small" style="margin-top:6px">';
+  Object.keys(byCat).sort(function(a,b){return a-b}).forEach(function(c){var x=byCat[c];h+='<div class="item row" style="justify-content:space-between;padding:6px 0"><span>'+esc(catLabel(+c))+'</span><span>'+x[0]+' / '+x[1]+'</span></div>'});
+  h+='</div></div>';
+  h+='<div class="row" style="margin-bottom:10px"><div class="seg"><button data-f="wrong" aria-pressed="'+(X.filter==='wrong')+'">只看錯題</button><button data-f="all" aria-pressed="'+(X.filter==='all')+'">全部題目</button></div><button class="btn sm" id="xAgain">再考一次</button></div>';
+  X.list.forEach(function(i,k){ if(X.filter==='wrong'&&X.ans[k]===QS[i].a)return; h+=qCard(i,{pos:k,total:80,chosen:X.ans[k],reveal:true}); });
+  if(X.filter==='wrong'&&X.right===80)h+='<div class="empty">全部答對，太厲害了！</div>';
+  v.innerHTML=h;
+  v.querySelectorAll('[data-f]').forEach(function(b){b.onclick=function(){X.filter=b.dataset.f;renderExamResult()}});
+  el('xAgain').onclick=function(){X.done=false;renderExamHome()};
+  window.scrollTo(0,0);
+}
+
+/* ================= WRONG BOOK ================= */
+var W={active:false};
+function renderWrongHome(){
+  var v=el('v-wrong'); var ids=Object.keys(wrongs).map(Number).filter(function(i){return wrongs[i]>0}).sort(function(a,b){return a-b});
+  var h='<h2>錯題本</h2>';
+  if(!ids.length){v.innerHTML=h+'<div class="card empty">目前沒有錯題。<br>在「學科練習」或「模擬考」答錯的題目會自動收進這裡。</div>';return;}
+  var byC={}; ids.forEach(function(i){var c=QS[i].c;(byC[c]=byC[c]||[]).push(i)});
+  h+='<p class="muted small">共 '+ids.length+' 題。重練時答對的題目會從錯題本移除。</p><div class="row" style="margin-bottom:12px"><button class="btn primary" id="wAll">重練全部錯題</button><button class="btn" id="wList">瀏覽錯題與解析</button><button class="btn ghost sm" id="wClear">清空錯題本</button></div><div class="cats">';
+  Object.keys(byC).sort(function(a,b){return a-b}).forEach(function(c){h+='<button class="cat" data-c="'+c+'"><span style="flex:1"><span class="nm">'+esc(catLabel(+c))+'</span><div class="meta">'+byC[c].length+' 題，點一下只重練這類</div></span></button>'});
+  h+='</div>';
+  v.innerHTML=h;
+  el('wAll').onclick=function(){startWrong(shuffle(ids))};
+  el('wList').onclick=function(){renderWrongList(ids)};
+  var cl=el('wClear'); cl.onclick=function(){if(cl.dataset.c){wrongs={};save('ce_wrong',wrongs);renderWrongHome();}else{cl.dataset.c=1;cl.textContent='再按一次確定清空';}};
+  v.querySelectorAll('.cat').forEach(function(b){b.onclick=function(){startWrong(shuffle(byC[b.dataset.c]))}});
+}
+function renderWrongList(ids){
+  var v=el('v-wrong'); var h='<div class="row" style="margin-bottom:10px"><button class="btn sm ghost" id="wBack">← 回錯題本</button></div>';
+  ids.forEach(function(i){h+=qCard(i,{reveal:true,chosen:null}).replace('<div class="qhead"><span></span>','<div class="qhead"><span>答錯 '+wrongs[i]+' 次</span>')});
+  v.innerHTML=h; el('wBack').onclick=renderWrongHome;
+}
+function startWrong(list){W.active=true;W.list=list;W.pos=0;W.ans={};renderWrongQ();}
+function renderWrongQ(){
+  var v=el('v-wrong'), i=W.list[W.pos], chosen=W.ans[W.pos];
+  var h='<div class="row" style="justify-content:space-between;margin-bottom:10px"><button class="btn sm ghost" id="wBack">← 回錯題本</button><span class="muted small">錯題重練</span></div>';
+  h+=qCard(i,{pos:W.pos,total:W.list.length,chosen:chosen,reveal:chosen!=null});
+  if(chosen!=null&&chosen===QS[i].a)h+='<p class="small muted" style="margin-top:-6px">✓ 已從錯題本移除</p>';
+  h+='<div class="nav"><button class="btn" id="wPrev"'+(W.pos===0?' disabled':'')+'>上一題</button>'+(W.pos<W.list.length-1?'<button class="btn primary" id="wNext">下一題</button>':'<button class="btn primary" id="wEnd">完成</button>')+'</div>';
+  v.innerHTML=h;
+  bindOpts(v,function(k){if(W.ans[W.pos]!=null)return;W.ans[W.pos]=k;var ok=k===QS[i].a;var s=stats[i]||[0,0];s[0]++;if(ok)s[1]++;stats[i]=s;save('ce_stats',stats);if(ok){delete wrongs[i];}else{wrongs[i]=(wrongs[i]||0)+1;}save('ce_wrong',wrongs);renderWrongQ();});
+  el('wBack').onclick=function(){W.active=false;renderWrongHome()};
+  el('wPrev').onclick=function(){W.pos--;renderWrongQ()};
+  if(el('wNext'))el('wNext').onclick=function(){W.pos++;renderWrongQ();window.scrollTo(0,0)};
+  if(el('wEnd'))el('wEnd').onclick=function(){W.active=false;renderWrongHome()};
+}
+
+/* ================= TECH ================= */
+var T={cur:null,set:null,hide:false,chk:{}};
+var TESTS=D.prac.tests, SETS=D.prac.sets;
+function tById(id){for(var i=0;i<TESTS.length;i++)if(TESTS[i].id===id)return TESTS[i];}
+function renderTechHome(){
+  var v=el('v-tech');
+  var h='<h2>術科練習</h2><p class="muted small">術科共 7 題，分甲、乙、丙三套，每套 4 題；每題都要 60 分以上才算及格。選一題進去，可以逐步勾選做到的步驟、自己算分，也可以把步驟遮起來練背。</p>';
+  h+='<div class="card"><div class="row" style="justify-content:space-between"><b>模擬抽題</b><button class="btn sm primary" id="tDraw">隨機抽一套</button></div><div class="sets" style="margin-top:10px">';
+  ['甲','乙','丙'].forEach(function(s){h+='<button class="set" data-s="'+s+'" aria-pressed="'+(T.set===s)+'"><b>'+s+'套</b><div class="small muted">'+SETS[s].map(function(id){return id}).join('・')+'</div></button>'});
+  h+='</div><div id="tSetInfo" class="small" style="margin-top:10px"></div></div>';
+  h+='<h3>所有試題</h3><div class="tlist">';
+  TESTS.forEach(function(t){var inS=T.set&&SETS[T.set].indexOf(t.id)>=0;var best=load('ce_tbest',{})[t.id];h+='<button class="titem" data-t="'+t.id+'"'+(T.set&&!inS?' style="opacity:.45"':'')+'><span><span class="no">'+t.id+'</span>'+esc(t.name)+(t.must?' <span class="tag">必考</span>':'')+'</span><span class="small muted">'+t.time+' 分鐘'+(best!=null?'・最高 '+best:'')+'</span></button>'});
+  h+='</div>';
+  v.innerHTML=h;
+  function setInfo(){var e=el('tSetInfo');if(!T.set){e.textContent='點選一套可標出該套要考的題目。';return;}e.innerHTML='<b>'+T.set+'套</b>：'+SETS[T.set].map(function(id){return id+' '+esc(tById(id).name)}).join('、')+(T.set==='丙'?'<br><span class="muted">丙套的「06 會陰沖洗」再抽情況 A（女性）或 B（男性）。</span>':'');}
+  setInfo();
+  v.querySelectorAll('.set').forEach(function(b){b.onclick=function(){T.set=T.set===b.dataset.s?null:b.dataset.s;renderTechHome()}});
+  el('tDraw').onclick=function(){T.set=['甲','乙','丙'][Math.floor(Math.random()*3)];renderTechHome();};
+  v.querySelectorAll('.titem').forEach(function(b){b.onclick=function(){T.cur=b.dataset.t;T.chk={};renderTech()}});
+}
+function renderTech(){
+  var v=el('v-tech'), t=tById(T.cur);
+  var h='<div class="row" style="justify-content:space-between;margin-bottom:10px"><button class="btn sm ghost" id="tBack">← 回術科列表</button><label class="opt small"><input type="checkbox" id="tHide"'+(T.hide?' checked':'')+'> 遮住步驟練背</label></div>';
+  h+='<div class="card"><h2 style="margin:0">'+t.id+' '+esc(t.name)+'</h2><div class="small muted">測試時間 '+t.time+' 分鐘'+(t.must?'・必考題':'')+'・滿分 100，60 分及格</div>';
+  h+='<div class="case"><b>情境：</b>'+esc(t.case)+'</div>';
+  if(t.zero&&t.zero.length){h+='<div class="zero"><b>注意（零分或重做情形）</b><ul style="margin:4px 0 0;padding-left:1.2em">';t.zero.forEach(function(z){h+='<li>'+esc(z)+'</li>'});h+='</ul></div>';}
+  var si=0;
+  t.secs.forEach(function(s,sx){
+    h+='<div class="sec"><h4><span>'+esc(s.h)+'</span><span class="muted small">'+s.pts+' 分</span></h4>';
+    s.items.forEach(function(it,ix){var key=sx+'-'+ix;h+='<label class="step'+(T.hide&&!T.chk['r'+key]?' hide':'')+'" data-key="'+key+'"><input type="checkbox" data-c="'+key+'"'+(T.chk[key]?' checked':'')+'><span class="tx">'+esc(it[0])+'</span><span class="pt">'+it[1]+' 分</span></label>';});
+    h+='</div>';
+  });
+  h+='<div class="sticky-score"><span>自評得分 <b id="tScore">0</b> / 100</span><span class="row"><button class="btn sm" id="tReset">清除勾選</button><button class="btn sm primary" id="tSave">記錄這次分數</button></span></div></div>';
+  v.innerHTML=h;
+  function calc(){
+    var sc=0;
+    t.secs.forEach(function(s,sx){
+      var isA=s.h.indexOf('情況A')>=0, isB=s.h.indexOf('情況B')>=0;
+      s.items.forEach(function(it,ix){if(T.chk[sx+'-'+ix])sc+=it[1]});
+    });
+    if(t.id==='06'){ // A/B 擇一：只取較高的那一段
+      var a=0,b=0;t.secs.forEach(function(s,sx){var tot=0;s.items.forEach(function(it,ix){if(T.chk[sx+'-'+ix])tot+=it[1]});if(s.h.indexOf('情況A')>=0)a=tot;if(s.h.indexOf('情況B')>=0)b=tot;});
+      sc=sc-a-b+Math.max(a,b);
+    }
+    var e=el('tScore');e.textContent=sc;e.className=sc>=60?'pass':'';
+    return sc;
+  }
+  calc();
+  v.querySelectorAll('.step input').forEach(function(c){c.onchange=function(){T.chk[c.dataset.c]=c.checked;calc()}});
+  v.querySelectorAll('.step.hide').forEach(function(s){s.addEventListener('click',function(e){if(s.classList.contains('hide')){e.preventDefault();s.classList.remove('hide');T.chk['r'+s.dataset.key]=true;}})});
+  el('tHide').onchange=function(){T.hide=this.checked;Object.keys(T.chk).forEach(function(k){if(k[0]==='r')delete T.chk[k]});renderTech()};
+  el('tBack').onclick=function(){T.cur=null;renderTechHome()};
+  el('tReset').onclick=function(){T.chk={};renderTech()};
+  el('tSave').onclick=function(){var sc=calc();var b=load('ce_tbest',{});if(b[t.id]==null||sc>b[t.id])b[t.id]=sc;save('ce_tbest',b);this.textContent='已記錄 '+sc+' 分';};
+}
+
+/* ---------- init ---------- */
+el('srcnote').textContent='題庫版本：學科 '+D.ver['17800']+'；共同科目 '+D.ver['90006']+'、'+D.ver['90007']+'、'+D.ver['90008']+'、'+D.ver['90009']+'；術科 '+D.ver.tech+'。';
+var startTab='practice';try{var st=localStorage.getItem('ce_tab');if(st&&['practice','exam','wrong','tech'].indexOf(st)>=0)startTab=st;}catch(e){}
+showTab(startTab);
+})();
+</script>
+</body>
+</html>
