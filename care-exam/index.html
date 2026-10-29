@@ -135,6 +135,17 @@ select{font:inherit;padding:6px 8px;border-radius:8px;border:1px solid var(--lin
 .step.hide .tx{position:relative;min-height:2.2em}
 .step.hide .tx::after{content:"點一下顯示步驟";color:var(--ink-2);font-size:.85rem;position:absolute;left:10px;top:50%;transform:translateY(-50%);white-space:nowrap}
 .sticky-score{position:sticky;bottom:10px;margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.voice{border:1.5px solid var(--brand);background:var(--brand-soft);border-radius:12px;padding:12px 14px;margin:12px 0}
+.voice .vt{background:var(--surface);border-radius:8px;padding:8px 10px;min-height:2.6em;margin-top:8px;font-size:.9rem;color:var(--ink-2);max-height:9em;overflow:auto}
+.voice textarea{width:100%;font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--surface);color:var(--ink);min-height:4em;margin-top:8px}
+.mic{display:inline-flex;align-items:center;gap:6px}
+.mic.on{background:var(--bad);border-color:var(--bad);color:#fff}
+.mic.on::before{content:"";width:9px;height:9px;border-radius:50%;background:#fff;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+.step.voiced .pt::before{content:"🎤 ";}
+.step.voiced{background:var(--ok-soft);border-radius:8px}
+.missed{background:var(--warn-soft);border-radius:10px;padding:10px 14px;margin-top:10px;font-size:.9rem}
+.missed ol{margin:4px 0 0;padding-left:1.3em}
 footer{border-top:1px solid var(--line);padding:18px 0 30px;font-size:.8rem;color:var(--ink-2)}
 .hidden{display:none!important}
 @media (max-width:520px){
@@ -182,6 +193,7 @@ footer{border-top:1px solid var(--line);padding:18px 0 30px;font-size:.8rem;colo
 </footer>
 
 <script src="data.js"></script>
+<script src="voice-keys.js"></script>
 <script>
 (function(){
 'use strict';
@@ -215,7 +227,7 @@ syncSeg();
 /* ---------- tabs ---------- */
 var curTab='practice';
 function showTab(t){
-  curTab=t;
+  curTab=t; if(t!=='tech'&&typeof stopRec==='function')stopRec();
   document.querySelectorAll('[data-tab]').forEach(function(b){b.setAttribute('aria-selected',b.dataset.tab===t)});
   ['practice','exam','wrong','tech'].forEach(function(v){document.getElementById('v-'+v).classList.toggle('hidden',v!==t)});
   try{localStorage.setItem('ce_tab',t)}catch(e){}
@@ -436,6 +448,7 @@ function renderWrongQ(){
 /* ================= TECH ================= */
 var T={cur:null,set:null,hide:false,chk:{}};
 var TESTS=D.prac.tests, SETS=D.prac.sets;
+function stopRec(){if(T.rec){T.listening=false;var r=T.rec;T.rec=null;try{r.onend=null;r.stop()}catch(e){}}}
 function tById(id){for(var i=0;i<TESTS.length;i++)if(TESTS[i].id===id)return TESTS[i];}
 function renderTechHome(){
   var v=el('v-tech');
@@ -451,7 +464,7 @@ function renderTechHome(){
   setInfo();
   v.querySelectorAll('.set').forEach(function(b){b.onclick=function(){T.set=T.set===b.dataset.s?null:b.dataset.s;renderTechHome()}});
   el('tDraw').onclick=function(){T.set=['甲','乙','丙'][Math.floor(Math.random()*3)];renderTechHome();};
-  v.querySelectorAll('.titem').forEach(function(b){b.onclick=function(){T.cur=b.dataset.t;T.chk={};renderTech()}});
+  v.querySelectorAll('.titem').forEach(function(b){b.onclick=function(){T.cur=b.dataset.t;T.chk={};T.heard={};T.transcript='';renderTech()}});
 }
 function renderTech(){
   var v=el('v-tech'), t=tById(T.cur);
@@ -459,6 +472,9 @@ function renderTech(){
   h+='<div class="card"><h2 style="margin:0">'+t.id+' '+esc(t.name)+'</h2><div class="small muted">測試時間 '+t.time+' 分鐘'+(t.must?'・必考題':'')+'・滿分 100，60 分及格</div>';
   h+='<div class="case"><b>情境：</b>'+esc(t.case)+'</div>';
   if(t.zero&&t.zero.length){h+='<div class="zero"><b>注意（零分或重做情形）</b><ul style="margin:4px 0 0;padding-left:1.2em">';t.zero.forEach(function(z){h+='<li>'+esc(z)+'</li>'});h+='</ul></div>';}
+  h+='<div class="voice"><div class="row" style="justify-content:space-between"><b>🎤 語音口述檢核</b><span class="row"><button class="btn sm primary mic" id="vMic">開始口述</button><button class="btn sm" id="vType">改用打字</button></span></div>';
+  h+='<div class="small muted" style="margin-top:4px">勾選上方「遮住步驟練背」後按「開始口述」，邊做邊說出每個步驟；講到的步驟會自動打勾並顯示出來，講完按「停止」看漏了哪些。</div>';
+  h+='<div class="vt" id="vText">（口述內容會顯示在這裡）</div><div id="vTypeBox" class="hidden"><textarea id="vInput" placeholder="把操作步驟打在這裡，例如：先跟陳太太說明要量生命徵象，剪指甲、脫手錶，洗手……"></textarea><button class="btn sm primary" id="vCheck" style="margin-top:6px">檢核</button></div><div id="vMissed"></div></div>';
   var si=0;
   t.secs.forEach(function(s,sx){
     h+='<div class="sec"><h4><span>'+esc(s.h)+'</span><span class="muted small">'+s.pts+' 分</span></h4>';
@@ -483,9 +499,59 @@ function renderTech(){
   calc();
   v.querySelectorAll('.step input').forEach(function(c){c.onchange=function(){T.chk[c.dataset.c]=c.checked;calc()}});
   v.querySelectorAll('.step.hide').forEach(function(s){s.addEventListener('click',function(e){if(s.classList.contains('hide')){e.preventDefault();s.classList.remove('hide');T.chk['r'+s.dataset.key]=true;}})});
-  el('tHide').onchange=function(){T.hide=this.checked;Object.keys(T.chk).forEach(function(k){if(k[0]==='r')delete T.chk[k]});renderTech()};
-  el('tBack').onclick=function(){T.cur=null;renderTechHome()};
-  el('tReset').onclick=function(){T.chk={};renderTech()};
+  el('tHide').onchange=function(){stopRec();T.hide=this.checked;Object.keys(T.chk).forEach(function(k){if(k[0]==='r')delete T.chk[k]});renderTech()};
+  el('tBack').onclick=function(){stopRec();T.cur=null;renderTechHome()};
+  el('tReset').onclick=function(){stopRec();T.chk={};T.heard={};T.transcript='';renderTech()};
+  /* ---- voice check ---- */
+  var KEYS=(window.VOICE_KEYS||{})[t.id]||[];
+  function norm(s){return String(s).replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)}).replace(/[\s，。、！？：；,.!?:;「」『』（）()～~\-—]/g,'').toLowerCase();}
+  function hit(txt,rule){return rule.split('&').every(function(g){return g.split('|').some(function(alt){return txt.indexOf(norm(alt))>=0})})}
+  var heard=T.heard||{}; T.heard=heard;
+  function applyText(raw){
+    var txt=norm(raw); if(!txt)return;
+    KEYS.forEach(function(sec,sx){(sec||[]).forEach(function(rule,ix){
+      var key=sx+'-'+ix; if(heard[key]||!rule)return;
+      if(hit(txt,rule)){heard[key]=1;T.chk[key]=true;T.chk['r'+key]=true;
+        var lab=v.querySelector('.step[data-key="'+key+'"]');
+        if(lab){lab.classList.remove('hide');lab.classList.add('voiced');lab.querySelector('input').checked=true;}
+      }
+    })});
+    calc();
+  }
+  function showMissed(){
+    var miss=[];
+    t.secs.forEach(function(s,sx){
+      if(t.id==='06'&&(s.h.indexOf('情況')>=0)){ // 只看講得較多的那一種情況
+        var other=t.secs.filter(function(z){return z.h.indexOf('情況')>=0&&z!==s})[0], ox=t.secs.indexOf(other);
+        var mine=s.items.filter(function(_,ix){return heard[sx+'-'+ix]}).length, theirs=other.items.filter(function(_,ix){return heard[ox+'-'+ix]}).length;
+        if(mine<theirs||(mine===theirs&&s.h.indexOf('情況B')>=0))return;
+      }
+      s.items.forEach(function(it,ix){if(!heard[sx+'-'+ix])miss.push('【'+s.h.replace(/（.*）/,'')+'】'+it[0])});
+    });
+    var box=el('vMissed');
+    if(!Object.keys(heard).length){box.innerHTML='';return;}
+    box.innerHTML=miss.length?'<div class="missed"><b>還沒講到的步驟（'+miss.length+' 項）</b>'+(T.hide?'<div class="small muted">點下方被遮住的步驟可以看答案</div>':'<ol>'+miss.map(function(m){return '<li>'+esc(m)+'</li>'}).join('')+'</ol>')+'</div>':'<div class="missed" style="background:var(--ok-soft)"><b>所有步驟都講到了！</b></div>';
+  }
+  Object.keys(heard).forEach(function(key){var lab=v.querySelector('.step[data-key="'+key+'"]');if(lab)lab.classList.add('voiced')});
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, mic=el('vMic'), vt=el('vText');
+  if(T.transcript)vt.textContent=T.transcript;
+  if(!SR){mic.disabled=true;mic.textContent='此瀏覽器不支援語音';vt.textContent='這個瀏覽器不支援語音辨識。請用手機的 Chrome 或 Safari、電腦的 Chrome 或 Edge 開啟（LINE、Facebook 內建瀏覽器不支援）；也可以按「改用打字」。';}
+  mic.onclick=function(){
+    if(T.rec){T.listening=false;try{T.rec.stop()}catch(e){};return;}
+    var rec=new SR(); rec.lang='zh-TW'; rec.continuous=true; rec.interimResults=true;
+    T.rec=rec; T.listening=true; T.transcript=T.transcript||''; var base=T.transcript;
+    mic.classList.add('on'); mic.textContent='停止';
+    rec.onresult=function(e){var fin='',tmp='';for(var i=e.resultIndex;i<e.results.length;i++){var r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else tmp+=r[0].transcript;}
+      if(fin){T.transcript+=fin+' ';applyText(fin);}
+      if(tmp)applyText(tmp);
+      vt.textContent=(T.transcript+tmp)||'…';vt.scrollTop=vt.scrollHeight;};
+    rec.onerror=function(e){if(e.error==='not-allowed'||e.error==='service-not-allowed'){T.listening=false;vt.textContent='無法使用麥克風：請允許這個網頁使用麥克風後再試一次。';}};
+    rec.onend=function(){ if(T.listening&&T.rec===rec){try{rec.start();return;}catch(e){}} T.rec=null;T.listening=false;mic.classList.remove('on');mic.textContent='開始口述';applyText(T.transcript);showMissed();};
+    try{rec.start();vt.textContent='請開始說…';}catch(e){vt.textContent='無法啟動語音辨識：'+e.message;}
+  };
+  el('vType').onclick=function(){el('vTypeBox').classList.toggle('hidden')};
+  el('vCheck').onclick=function(){var s=el('vInput').value;T.transcript=(T.transcript||'')+s+' ';vt.textContent=T.transcript;applyText(s);showMissed();};
+  showMissed();
   el('tSave').onclick=function(){var sc=calc();var b=load('ce_tbest',{});if(b[t.id]==null||sc>b[t.id])b[t.id]=sc;save('ce_tbest',b);this.textContent='已記錄 '+sc+' 分';};
 }
 
