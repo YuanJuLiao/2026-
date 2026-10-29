@@ -342,7 +342,7 @@ function buildExam(){
 }
 function renderExamHome(){
   var v=el('v-exam'); var hist=load('ce_exams',[]);
-  var h='<h2>模擬考</h2><div class="card"><p style="margin-top:0">比照正式學科測試：<b>80 題單選</b>、每題 1.25 分、<b>100 分鐘</b>、<b>60 分及格</b>。</p><ul class="small muted" style="padding-left:1.2em;margin:0 0 12px"><li>專業科目 64 題：依六個工作項目的題數比例抽題</li><li>共同科目 16 題：職業安全衛生、工作倫理與職業道德、環境保護、節能減碳各 4 題</li><li>官方已刪除的題目不會出現在模擬考</li><li>交卷後才顯示成績、答案與解析</li></ul><button class="btn primary" id="xStart">開始模擬考</button></div>';
+  var h='<h2>模擬考</h2><div class="card"><p style="margin-top:0">比照正式學科測試（電腦或紙筆測驗）：<b>80 題單選</b>、每題 1.25 分、滿分 100 分、<b>60 分及格</b>，測驗時間 <b>100 分鐘</b>。</p><ul class="small muted" style="padding-left:1.2em;margin:0 0 12px"><li>專業科目 64 題：依六個工作項目的題數比例抽題</li><li>共同科目 16 題：職業安全衛生、工作倫理與職業道德、環境保護、節能減碳各 4 題</li><li>官方已刪除的題目不會出現在模擬考</li><li>交卷後才顯示成績、答案與解析</li></ul><button class="btn primary" id="xStart">開始模擬考</button></div>';
   if(hist.length){h+='<h3>最近成績</h3><div class="card list">';hist.slice(-8).reverse().forEach(function(r){h+='<div class="item row" style="justify-content:space-between"><span>'+esc(r.t)+'</span><b class="'+(r.s>=60?'pass':'fail')+'">'+r.s+' 分</b></div>'});h+='</div>';}
   v.innerHTML=h;
   el('xStart').onclick=function(){X.list=buildExam();X.ans={};X.pos=0;X.active=true;X.done=false;X.end=Date.now()+100*60*1000;startTimer();renderExamQ();};
