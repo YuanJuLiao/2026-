@@ -474,6 +474,9 @@ function renderTech(){
   if(t.zero&&t.zero.length){h+='<div class="zero"><b>注意（零分或重做情形）</b><ul style="margin:4px 0 0;padding-left:1.2em">';t.zero.forEach(function(z){h+='<li>'+esc(z)+'</li>'});h+='</ul></div>';}
   h+='<div class="voice"><div class="row" style="justify-content:space-between"><b>🎤 語音口述檢核</b><span class="row"><button class="btn sm primary mic" id="vMic">開始口述</button><button class="btn sm" id="vType">改用打字</button></span></div>';
   h+='<div class="small muted" style="margin-top:4px">勾選上方「遮住步驟練背」後按「開始口述」，邊做邊說出每個步驟；講到的步驟會自動打勾並顯示出來，講完按「停止」看漏了哪些。</div>';
+  var inApp=/Line\/|FBAN|FBAV|Instagram/i.test(navigator.userAgent);
+  if(inApp)h+='<div class="missed" style="margin-top:8px"><b>你正在 LINE 或 Facebook 的內建瀏覽器中，無法使用語音。</b><br><a href="'+location.href.split('?')[0]+'?openExternalBrowser=1">點這裡改用手機瀏覽器開啟</a>，或按右上角「⋯」選「用預設瀏覽器開啟」。</div>';
+  h+='<details class="small" style="margin-top:6px"><summary style="cursor:pointer;color:var(--brand)">使用前請注意</summary><ul style="margin:6px 0 0;padding-left:1.2em"><li>請用手機的 Chrome 或 Safari、電腦的 Chrome 或 Edge 開啟。從 LINE 直接點連結開的內建瀏覽器不支援語音，要先改用外部瀏覽器開。</li><li>第一次使用要按「允許麥克風」。語音辨識需要網路。</li><li>網頁是比對關鍵詞，說法和標準步驟差太多時可能判斷不到。如果某個步驟明明講了卻沒打勾，請告訴老師是哪一題、你怎麼說的。</li><li>語音檢核只能確認步驟有沒有背齊，實際操作是否正確仍以老師指導為準。</li></ul></details>';
   h+='<div class="vt" id="vText">（口述內容會顯示在這裡）</div><div id="vTypeBox" class="hidden"><textarea id="vInput" placeholder="把操作步驟打在這裡，例如：先跟陳太太說明要量生命徵象，剪指甲、脫手錶，洗手……"></textarea><button class="btn sm primary" id="vCheck" style="margin-top:6px">檢核</button></div><div id="vMissed"></div></div>';
   var si=0;
   t.secs.forEach(function(s,sx){
